@@ -50,7 +50,18 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        // return parent::render($request, $exception);
+
+        if ($request->is('api*') && $exception instanceof \Illuminate\Auth\AuthenticationException) {
+            $message = [
+                "result" => (object) null,
+                "message" => "Unauthenticated",
+                "status" => false,
+                "code" => 401
+            ];
+            return response()->json($message, 200);
+        }
+
         return parent::render($request, $exception);
-      
     }
 }
