@@ -1,138 +1,237 @@
-@extends('layouts.layout')
+"use strict";
 
-@section('addcss')
-<link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
-<link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
-<link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
-<style>
-.modal-dialog{
-      overflow-y: initial !important
+var data_table = '#datatable';
+function get_all_data() {
+    var category_id = $('#category_id').val();
+    var blog_title = $('#blog_title').val();
+    var blog_content = $('#blog_content').val();
+    var status = $('#status').val();
+    var token = jQuery("#csrf-token").prop("content");
+    jQuery(data_table).dataTable({
+        responsive: true,
+        processing: true,
+        serverSide: true,
+        pagingType: "full_numbers",
+        scrollY: '50vh',
+        //scrollX: true,
+        scrollCollapse: true,
+        searching: false,
+        order: [0, 'ASC'],
+        pageLength: 10,
+        "columns": [
+            {"data": "category_id"},
+            {"data": "blog_title"},
+            {"data": "status"},
+            {"data": "view"},
+            {"data": "edit"},
+            {"data": "delete"}
+        ],
+        columnDefs: [
+            {
+                targets: [0],
+                searchable: true,
+                sortable: true
+            },
+            {
+                targets: [1],
+                searchable: true,
+                sortable: true
+            },
+            {
+                targets: [2],
+                searchable: true,
+                sortable: false,
+            },
+            {
+                targets: [3],
+                searchable: true,
+                sortable: false,
+            },
+            {
+                targets: [4],
+                searchable: true,
+                sortable: false,
+            },
+            {
+                targets: [5],
+                searchable: true,
+                sortable: false,
+            }
+        ],
+        language: {
+            emptyTable: "No data available",
+            zeroRecords: "No matching records found...",
+            infoEmpty: "No records available"
+        },
+        oLanguage: {
+            "sProcessing": ''
+        },
+        ajax: {
+            "url": controller_url + '/list-data',
+            "type": "POST",
+            "async": false,
+            "data": {'_token': token, 'category_id': category_id, 'blog_title': blog_title, 'blog_content': blog_content, 'status': status},
+        },
+        drawCallback: function () {
+            jQuery('<li><a onclick="refresh_tab()" style="cursor:pointer" title="Refresh"><i class="ion-refresh" style="font-size:25px"></i></a></li>').prependTo('div.dataTables_paginate ul.pagination');
+        }
+    });
 }
-#top-5-scroll{
-  height: 420px;
-  overflow-y: auto;
+
+function refresh_tab() {
+    jQuery(data_table).dataTable().fnDestroy();
+    get_all_data();
+    jQuery("#datatable_list_filter").css('display', 'none');
 }
-</style>
-@endsection
 
-@section('content')
-<div class="main-content">
-    <section class="section">
-        <div class="section-header">
-            <div class="col-lg-12">
-                @php
-                $routeName = explode('.', \Request::route()->getName());
-                @endphp
-                <h1>Blog</h1>
-                <a href="{{route("blog.create")}}" class="float-right btn btn-primary">Add New</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body" style="padding: 0px">
-                        <div id="accordion">
-                            <div class="accordion">
-                                <div class="accordion-header collapsed" role="button" data-toggle="collapse" data-target="#panel-body-1" aria-expanded="false">
-                                    <h4>Filter</h4>
-                                </div>
-                                <div class="accordion-body collapse" id="panel-body-1" data-parent="#accordion">
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                            <div class="form-group">
-                                                <select name="category_id" id="category_id" class="form-control select1" required="">
-                                                    <option value="" data-type="">Select Category</option>
-                                                    @foreach($all_avilable_category as $cat)
-                                                    <option value="{{$cat->category_id}}" >{{$cat->category_name}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                            <div class="form-group">
-                                                <input type="text" placeholder="Blog Title" name="blog_title" id="blog_title" class="form-control">
-                                            </div>
-                                        </div>
+function filterGlobal() {
+    jQuery(data_table).dataTable().search(
+            jQuery('#global_filter').val()
+            ).draw();
+}
 
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                            <div class="form-group">
-                                                <select class="form-control" id="status" name="status">
-                                                    <option value="">Status (All)</option>
-                                                    <option value="1">Active</option>
-                                                    <option value="2">In Active</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12">
-                                            <input type="button" name="resetfilter" value="Reset Filter" id="reset-filter" class="btn btn-light float-right reset_filter">
-                                            <input type="button" name="filter" value="Filter" id="apply-filter" class="btn btn-primary float-right search_filter" style="margin-right: 15px;">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped" id="datatable">
-                                <thead>
-                                    <tr>
-                                        <th>Category</th>
-                                        <th>Blog Title</th>
-                                        <th>Status</th>
-                                        <th>Report</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
+function filterColumn(i) {
+    jQuery(data_table).dataTable().column(i).search(
+            jQuery('#col' + i + '_filter').val()
+            ).draw();
+}
 
+jQuery(document).ready(function () {
+    get_all_data();
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Blog Report </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="view-reports">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
+    // change active / inactive status
+    jQuery(document).on('change', '.change_status', function () {
+        var status;
+        var id;
+        if (jQuery(this).is(':checked')) {
+            status = 1;
+        } else {
+            status = 0;
+        }
+        id = jQuery(this).attr('data-id');
+        if (!isNaN(id)) {
+            jQuery.ajax({
+                "url": controller_url + '/change_status',
+                type: "POST",
+                data: {
+                    'id': id,
+                    'status': status,
+                },
+                dataType: 'json',
+                cache: false,
+                success: function (response) {
+                    if (response.success == true) {
+                        iziToast.success({
+                            message: response.message,
+                            position: 'topRight'
+                        });
+                    } else {
+                        iziToast.error({
+                            message: response.message,
+                            position: 'topRight'
+                        });
+                    }
+                },
+                error: function () {
+                    iziToast.error({
+                        message: "Problem in performing your action",
+                        position: 'topRight'
+                    });
+                }
+            });
+        } else {
+            iziToast.error({
+                message: "Problem in performing your action",
+                position: 'topRight'
+            });
+        }
+    });
 
-@section('addjs')
-<script src="{{asset("public/assets/modules/datatables/datatables.min.js")}}"></script>
-<script src="{{asset("public/assets/modules/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js")}}"></script>
-<script src="{{asset("public/assets/modules/datatables/Select-1.2.4/js/dataTables.select.min.js")}}"></script>
-<script src="{{asset("public/assets/modules/jquery-ui/jquery-ui.min.js")}}"></script>
+    // delete data
+    jQuery(document).on('click', '.delete_data_button', function () {
+        var id;
+        var this_row = jQuery(this);
+        id = jQuery(this).attr('data-id');
+        if (!isNaN(id)) {
+            swal({
+                title: 'Are you sure you want to delete this user?',
+                text: 'Once deleted, you will not be able to recover this data!',
+                icon: 'warning',
+                buttons: true,
+                dangerMode: true,
+            }).then(function(willDelete) {
+                if (willDelete) {
+                    jQuery.ajax({
+                        "url": controller_url + '/delete',
+                        type: "POST",
+                        data: {
+                            'id': id,
+                        },
+                        dataType: 'json',
+                        cache: false,
+                        success: function (response) {
+                            if (response.success == true) {
+                                setTimeout(function () {
+                                    swal(response.message, {
+                                        icon: 'success',
+                                    });
+                                    jQuery(data_table).DataTable().row(this_row).remove().draw(false);
+                                }, 2000);
 
-<script type="text/javascript">
-var controller_url = "{{route('blog.index')}}";
-</script>
+                            } else {
+                                setTimeout(function () {
+                                    swal(response.message, {
+                                        icon: 'error',
+                                    });
+                                }, 2000);
+                            }
+                        },
+                        error: function () {
+                            setTimeout(function () {
+                                swal("Problem in performing your action.", {
+                                    icon: 'info',
+                                });
+                            }, 2000);
+                        }
+                    });
+                }
+            });
+        }
+    });
 
-<!-- Page Specific JS File -->
-<script src="{{asset("public/assets/pages-js/blog/index.js?v1")}}"></script>
-@endsection
+    jQuery('.search_filter').click(function () {
+        jQuery(data_table).dataTable().fnDestroy();
+        get_all_data();
+    });
+
+    jQuery('.reset_filter').click(function () {
+        $('#blog_title').val('');
+        $('#category_id').val('');
+        $('#status').val('');
+        setTimeout(function () {
+            jQuery(data_table).dataTable().fnDestroy();
+            get_all_data();
+        }, 100);
+    });
+
+    //show modal
+
+    jQuery(document).on('click', '.show_modal', function () 
+    {
+        var id;
+
+        id = jQuery(this).attr('data-id');
+        jQuery.ajax({
+            "url": controller_url + '/show',
+            type: "POST",
+            data: {
+                'id': id,
+            },
+            dataType: 'json',
+            cache: false,
+            success: function (response) {
+                $('#view-reports').html(response);
+            }
+        })
+    });
+});
