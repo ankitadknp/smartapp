@@ -8,6 +8,7 @@ use App\Http\Controllers\API\BlogController;
 use App\Http\Controllers\API\PublicFeedController;
 use App\Http\Controllers\API\CouponController;
 use App\Http\Controllers\API\ShareController;
+use App\Http\Controllers\API\NotificationController;
 
 
 Route::post('register', [UserController::class, 'register']);
@@ -49,5 +50,8 @@ Route::middleware('auth:api')->group( function ()
     Route::post('filter_coupon', [CouponController::class, 'filter_coupon']);
 
     Route::post('share', [ShareController::class, 'share']);
+
+    Route::post('add_notification', [NotificationController::class, 'add_notification']);
+    Route::get('notification_list', [NotificationController::class, 'notification_list']);
 });
 

@@ -22,13 +22,13 @@ class CouponController extends Controller
         $user_id = Auth::user()->id;
 
         $validator = Validator::make($request->all(), [
-            'coupon_code' => 'required',
+            'coupon_code' => 'required|max:20',
             'discount_amount' => 'required',
             'discount_type' => 'required',
             'location' => 'required',
             'expiry_date' => 'required',
             'term_condition'=> 'required',
-            'coupon_title'=> 'required',
+            'coupon_title'=> 'required|max:50',
             'coupon_description'=> 'required',
         ]);
 
@@ -140,7 +140,7 @@ class CouponController extends Controller
 
         $validator = Validator::make($request->all(), [
             'coupon_id'=> 'required',
-            'coupon_code' => 'required',
+            'coupon_code' => 'required|max:20',
             'discount_amount' => 'required',
             'discount_type' => 'required',
             'location' => 'required',

@@ -241,7 +241,7 @@ class PublicFeedController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Added Blog Report Successfully',
+            'message' => 'Added Public Feed Report Successfully',
             'status' => 200
         ]);
     }

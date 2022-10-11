@@ -87,6 +87,7 @@ class LanguageController extends Controller
         $lan_data = Language::where('language_id',$request->language_id)->first();
 
         $success['language_name'] =  $lan_data->language_name;
+        $success['language_code'] =  $lan_data->language_code;
 
         return response()->json([
             'success' => true,

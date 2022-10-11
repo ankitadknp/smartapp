@@ -43,9 +43,9 @@ class DashboardController extends Controller
         $admin = \Auth::user();
 
         $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            "email" => "email|unique:users,email,$admin->id,id",
+            'first_name' => 'required|max:50',
+            'last_name' => 'required|max:50',
+            "email" => "email|unique:users,email,$admin->id,id|max:50",
         ]);
 
         $admin->first_name = $request->get("first_name");

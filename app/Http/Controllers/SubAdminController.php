@@ -121,9 +121,9 @@ class SubAdminController extends Controller {
     public function store(Request $request) {
 
         $request->validate([
-            "email" => "email|unique:users,email,NULL,id",
-            'first_name' => 'required',
-            'last_name' => 'required',
+            "email" => "email|unique:users,email,NULL,id|max:50",
+            'first_name' => 'required|max:50',
+            'last_name' => 'required|max:50',
             "password" => "required",
         ]);
 
@@ -178,11 +178,12 @@ class SubAdminController extends Controller {
     public function update(Request $request, User $user,$id) 
     {
         $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
+            'first_name' => 'required|max:50',
+            'last_name' => 'required|max:50',
             'email' => [
                 'required',
                 'email',
+                'max:50',
                 Rule::unique('users')->ignore($id)
                     ->where('user_status', 4)
             ],

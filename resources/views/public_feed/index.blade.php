@@ -4,6 +4,15 @@
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
+<style>
+.modal-dialog{
+      overflow-y: initial !important
+}
+#top-5-scroll{
+  height: 420px;
+  overflow-y: auto;
+}
+</style>
 @endsection
 
 @section('content')
@@ -91,7 +100,8 @@
         </button>
       </div>
       <div class="modal-body">
-        ...
+            <div id="view-reports">
+            </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

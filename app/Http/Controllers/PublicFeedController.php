@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\PublicFeed;
 use App\PublicFeedImage;
 use App\PublicFeedReport;
+use App\User;
+use Illuminate\Support\Facades\Config;
 
 class PublicFeedController extends Controller {
 
@@ -296,13 +298,30 @@ class PublicFeedController extends Controller {
         $feed = PublicFeedReport::where('public_feed_id','=',$id)->get();
 
         $feed_report = [];
+        $path = Config::get('constants.USER_ICON');
 
-        foreach ($feed as $val)
+        if ($feed != '[]' )
         {
-            $report = $val->report;
-            $feed_report[] = $report;
+            $all_report = '<div class="card-body" id="top-5-scroll"><ul class="list-unstyled list-unstyled-border">';
+            foreach ($feed as $val)
+            {
+                $user = User::find($val->user_id);
+                $u_name = $user['first_name']. ' '.$user['last_name'];
+                $report = $val->report;
+                $date =  date_format($val->created_at,"Y-m-d");
+                $report = $val->report;
+
+                $all_report .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-square bg-primary" data-width="64%"></div><div class="budget-price-label">'.$report.'</div></div><div class="budget-price"></div></div></div></li></ul></div>';
+            }
+
+            $all_report .= '</ul></div>';
+            $feed_report = $all_report;
+
+        } else {
+            $feed_report = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
         }
-        return $feed_report;
+
+        return json_encode($feed_report);
 
     }   
 
