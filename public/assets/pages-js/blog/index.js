@@ -230,8 +230,7 @@ jQuery(document).ready(function () {
             dataType: 'json',
             cache: false,
             success: function (response) {
-                var report =  ("<ul><li>" + response).replace(/,/g, '</li><li>')+ '</li></ul>';
-                $('.modal-body').html(report);
+                $('#view-reports').html(response);
             }
         })
     });

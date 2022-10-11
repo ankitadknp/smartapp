@@ -21,26 +21,27 @@ class UserController extends Controller
         if ($request->user_status == 1) {
 
             $validator = Validator::make($request->all(), [
-                'business_name' => 'required',
-                'registration_number' => 'required|numeric',
+                'business_name' => 'required|max:50',
+                'registration_number' => 'required|max:30',
                 'email' => [
                     'required',
                     'email',
+                    'max:50',
                     Rule::unique('users')
                         ->where('user_status', $request->user_status)
                 ],
                 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
                 'password' => 'min:6|required_with:password_confirmation|same:password_confirmation',
                 'password_confirmation' => 'min:6',
-                'website' => 'required',
+                'website' => 'required|max:50',
                 'business_activity' => 'required',
                 'business_sector' => 'required',
                 'establishment_year' => 'required',
                 'business_logo' => 'required',
                 'business_hours' => 'required',
-                'street_address_name' => 'required',
+                'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
-                'district' => 'required',
+                'district' => 'required|max:50',
            
             ]);
 
@@ -67,24 +68,25 @@ class UserController extends Controller
                 'email' => [
                     'required',
                     'email',
+                    'max:50',
                     Rule::unique('users')
                         ->where('user_status', $request->user_status)
                 ],
                 'password' => 'min:6|required_with:password_confirmation|same:password_confirmation',
                 'password_confirmation' => 'min:6',
-                'first_name' => 'required|string',
-                'last_name' => 'required|string',
+                'first_name' => 'required|string|max:50',
+                'last_name' => 'required|string|max:50',
                 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
-                'id_number' => 'required|numeric',
+                'id_number' => 'required|max:20',
                 'marital_status' => 'required',
                 'no_of_child' => 'required',
-                'occupation' => 'required',
+                'occupation' => 'required|max:50',
                 'education_level' => 'required',
-                'street_address_name' => 'required',
+                'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
                 'house_number' => 'required',
-                'city' => 'required',
-                'district' => 'required',
+                'city' => 'required|max:50',
+                'district' => 'required|max:50',
             ]);
 
             if($user_validator->fails()){
@@ -465,24 +467,25 @@ class UserController extends Controller
         if ($request->user_status == 1) {
 
             $validator = Validator::make($request->all(), [
-                'business_name' => 'required',
-                'registration_number' => 'required|numeric',
+                'business_name' => 'required|max:50',
+                'registration_number' => 'required|max:30',
                 'email' => [
                     'required',
                     'email',
+                    'max:50',
                     Rule::unique('users')->ignore($id)
                         ->where('user_status', $request->user_status)
                 ],
                 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
-                'website' => 'required',
+                'website' => 'required|max:50',
                 'business_activity' => 'required',
                 'business_sector' => 'required',
                 'establishment_year' => 'required',
                 'business_logo' => 'required',
                 'business_hours' => 'required',
-                'street_address_name' => 'required',
+                'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
-                'district' => 'required',
+                'district' => 'required|max:50',
             ]);
 
             if($validator->fails()){
@@ -502,22 +505,23 @@ class UserController extends Controller
                 'email' => [
                     'required',
                     'email',
+                    'max:50',
                     Rule::unique('users')->ignore($id)
                         ->where('user_status', $request->user_status)
                 ],
-                'first_name' => 'required|string',
-                'last_name' => 'required|string',
+                'first_name' => 'required|string|max:50',
+                'last_name' => 'required|string|max:50',
                 'phone_number' =>'required|string|min:10|max:15|regex:/[0-9]{9}/',
-                'id_number' => 'required|numeric',
+                'id_number' => 'required|max:20',
                 'marital_status' => 'required',
                 'no_of_child' => 'required',
-                'occupation' => 'required',
+                'occupation' => 'required|max:50',
                 'education_level' => 'required',
-                'street_address_name' => 'required',
+                'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
                 'house_number' => 'required',
-                'city' => 'required',
-                'district' => 'required',
+                'city' => 'required|max:50',
+                'district' => 'required|max:50',
             ]);
 
             if($user_validator->fails()){
