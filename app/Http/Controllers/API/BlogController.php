@@ -150,7 +150,7 @@ class BlogController extends Controller
                 ->leftJoin('blog_like', function($join) {
                     $join->on('blog.blog_id', '=', 'blog_like.blog_id');
                 })
-                ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'))
+                ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'),DB::raw("ExtractValue(blog.blog_content, '//text()') as blog_content"))
                 ->where('blog.status','=',1)
                 ->orderby('blog.blog_id','DESC')
                 ->get();
@@ -163,7 +163,7 @@ class BlogController extends Controller
             ->leftJoin('blog_like', function($join) {
                 $join->on('blog.blog_id', '=', 'blog_like.blog_id');
             })
-            ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'))
+            ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'),DB::raw("ExtractValue(blog.blog_content, '//text()') as blog_content"))
             ->where('blog.blog_title', 'LIKE', '%'.$search.'%')
             ->orWhere('blog.blog_content', 'LIKE', '%'.$search.'%')
             ->where('blog.status','=',1)

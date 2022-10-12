@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Response;
 use DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Config;
 
 class PublicFeedController extends Controller
 {
@@ -141,10 +142,12 @@ class PublicFeedController extends Controller
     {
         $search = $request->search;
 
+       
+
         if ($search == '') 
         {
             $feed = PublicFeed::with('images')
-                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
+                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'),DB::raw("ExtractValue(public_feed.content, '//text()') as content"))
                 ->leftJoin('public_feed_like', function($join) {
                         $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id');
                     })
@@ -154,7 +157,7 @@ class PublicFeedController extends Controller
         } else {
 
             $feed = PublicFeed::with('images')
-                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
+                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'),DB::raw("ExtractValue(public_feed.content, '//text()') as content"))
                 ->leftJoin('public_feed_like', function($join) {
                         $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id');
                     })

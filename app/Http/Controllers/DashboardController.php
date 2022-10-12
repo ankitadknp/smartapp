@@ -19,6 +19,7 @@ class DashboardController extends Controller
         $total_categories = \App\Category::where("status", 1)->get()->count();
         $total_blog = \App\Blog::where("status", 1)->get()->count();
         $total_feed = \App\PublicFeed::where("status", 1)->get()->count();
+        $total_lan = \App\Language::get()->count();
 
 
         return view('dashboard.index')->with(
@@ -29,6 +30,7 @@ class DashboardController extends Controller
                             "total_categories" => $total_categories,
                             "total_blog" => $total_blog,
                             "total_feed" => $total_feed,
+                            "total_lan" => $total_lan,
                         )
         );
     }

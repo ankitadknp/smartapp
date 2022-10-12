@@ -60,4 +60,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("list-data", "SubAdminController@load_data_in_table")->name("sub_admin.load_data_in_table");
         Route::post("change_status", "SubAdminController@change_status")->name("sub_admin.change_status");
     });
+
+    //Language Module Routing
+    Route::resource("language", "LanguageController");
+    Route::prefix('language')->group(function () {
+        Route::post("delete", "LanguageController@destroy")->name("language.delete");
+        Route::post("list-data", "LanguageController@load_data_in_table")->name("language.load_data_in_table");
+        Route::post("change_status", "LanguageController@change_status")->name("language.change_status");
+    });
 });

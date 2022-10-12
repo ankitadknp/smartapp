@@ -154,7 +154,7 @@ jQuery(document).ready(function () {
         id = jQuery(this).attr('data-id');
         if (!isNaN(id)) {
             swal({
-                title: 'Are you sure you want to delete this user?',
+                title: 'Are you sure you want to delete this record?',
                 text: 'Once deleted, you will not be able to recover this data!',
                 icon: 'warning',
                 buttons: true,

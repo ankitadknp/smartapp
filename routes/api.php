@@ -47,7 +47,6 @@ Route::middleware('auth:api')->group( function ()
     Route::get('active_inactive_coupon', [CouponController::class, 'active_inactive_coupon']);
     Route::post('coupon_statistics', [CouponController::class, 'coupon_statistics']);
     Route::post('save_coupon', [CouponController::class, 'save_coupon']);
-    Route::post('filter_coupon', [CouponController::class, 'filter_coupon']);
 
     Route::post('share', [ShareController::class, 'share']);
 

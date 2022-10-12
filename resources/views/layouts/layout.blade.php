@@ -42,6 +42,12 @@
                 </a>
             </li>
 
+            <li class="{{ request()->is('language') || request()->is('language/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('language.index')}}">
+                    <i class="fa fa-language"></i><span>Language</span>
+                </a>
+            </li>
+
         </ul>
     </aside>
 </div>
