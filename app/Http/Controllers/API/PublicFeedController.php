@@ -142,14 +142,15 @@ class PublicFeedController extends Controller
     {
         $search = $request->search;
 
-       
+        $user_id = Auth::user()->id;
 
         if ($search == '') 
         {
             $feed = PublicFeed::with('images')
                 ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'),DB::raw("ExtractValue(public_feed.content, '//text()') as content"))
-                ->leftJoin('public_feed_like', function($join) {
-                        $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id');
+                ->leftJoin('public_feed_like', function($join) use($user_id){
+                        $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
+                        ->where('public_feed_like.user_id',$user_id);
                     })
                 ->where('public_feed.status','=',1)
                 ->get();
@@ -158,8 +159,9 @@ class PublicFeedController extends Controller
 
             $feed = PublicFeed::with('images')
                 ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'),DB::raw("ExtractValue(public_feed.content, '//text()') as content"))
-                ->leftJoin('public_feed_like', function($join) {
-                        $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id');
+                ->leftJoin('public_feed_like', function($join) use($user_id) {
+                        $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
+                        ->where('public_feed_like.user_id',$user_id);
                     })
                 ->where('public_feed.public_feed_title', 'LIKE', '%'.$search.'%')
                 ->orWhere('public_feed.content', 'LIKE', '%'.$search.'%')

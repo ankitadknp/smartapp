@@ -15,7 +15,7 @@ function get_all_data() {
         scrollY: '50vh',
         scrollCollapse: true,
         searching: false,
-        order: [0, 'ASC'],
+        order: [0, 'DESC'],
         pageLength: 10,
         "columns": [
             {"data": "language_name"},
@@ -115,7 +115,7 @@ jQuery(document).ready(function () {
                                         icon: 'success',
                                     });
                                     jQuery(data_table).DataTable().row(this_row).remove().draw(false);
-                                }, 2000);
+                                });
 
                             } else {
                                 setTimeout(function () {

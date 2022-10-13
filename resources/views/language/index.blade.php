@@ -4,6 +4,16 @@
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
+<style>
+
+#saveBtn:disabled {
+  background: #999;
+  color: #555;
+  cursor: not-allowed;
+  border: 1px solid #999999;
+}
+
+</style>
 @endsection
 
 @section('content')
@@ -16,7 +26,7 @@
                 $routeName = explode('.', \Request::route()->getName());
                 @endphp
                 <h1>Language</h1>
-                <a href="{{route("language.create")}}" class="float-right btn btn-primary add_language">Add New</a>
+                <a href="#" class="float-right btn btn-primary add_language">Add New</a>
             </div>
         </div>
         <div class="row">
@@ -96,29 +106,27 @@
                         <div class="row">
                             <div class="col-sm-12 form-group">
                                 <label>Language Name</label>
-                                <input type="text" name="language_name" id="lan_name" placeholder="Language Name"  class="form-control">
-                                <div class="invalid-feedback">
-                                    Please enter language name
-                                </div>
+                                <input type="text" name="language_name" id="lan_name" placeholder="Language Name"  class="form-control" >
+                                <span class="text-danger">
+                                    <strong id="name-error"></strong>
+                                </span>
                             </div>
 
                             <div class="col-sm-12 form-group">
                                 <label>Language Code</label>
-                                <input type="text" placeholder="Language Code" name="language_code" class="form-control" required="" id="lan_code">
-                                <div class="invalid-feedback">
-                                    Please enter language code
-                                </div>
+                                <input type="text" placeholder="Language Code" name="language_code" class="form-control" required="" id="lan_code" >
+                                <span class="text-danger">
+                                    <strong id="code-error"></strong>
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer text-right">
-                        <button class="btn btn-primary" id="saveBtn">Save</button>
-                        <!-- <button type="submit" id="btn-save" name="btnsave" class="btn btn-primary" >Submit</button> -->
+                        <button type="button" class="btn btn-primary" id="saveBtn" name="btnsave" >Save</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </form>
             </div>
-         
         </div>
     </div>
 </div>
@@ -139,11 +147,15 @@
         $('#saveBtn').html("Save");
         $('#exampleModalLongTitle').html("Add Language");
         $('#add_language').modal('show');
-        return false;
+        $( '#name-error').html( "" );
+        $( '#code-error').html( "" );
     });
 
     $('body').on('click', '.edit_language', function () {
         var language_id = $(this).data('id');
+        $( '#name-error').html( "" );
+        $( '#code-error').html( "" );
+
         $.get('language/'+language_id+'/edit', function (data) {
             $('#exampleModalLongTitle').html("Edit Language");
             $('#saveBtn').html("Update");
@@ -156,27 +168,40 @@
 
     $('#saveBtn').click(function (e) {
         e.preventDefault();
-        $(this).html('Sending..');
 
         $.ajax({
           data: $('#language_form').serialize(),
           url: "",
           type: "POST",
           dataType: 'json',
-          success: function (data) {
+      
+            success: function (data) 
+            {
+                
+                if(data.success){
 
-              $('#language_form').trigger("reset");
-              $('#ajaxModel').modal('hide');
-              table.draw();
+                    $('#language_form').trigger("reset");
+                    $('#add_language').modal('hide');
+                    jQuery(data_table).DataTable().draw();
+                    // $('#datatable').DataTable().draw();
 
-          },
-          error: function (data) {
-              console.log('Error:', data);
-              $('#saveBtn').html('Save Changes');
-          }
-      });
+                    setTimeout(function () {
+                        swal(data.message, {
+                            icon: 'success',
+                        });
+                    });
+                } else {
+                    $( '#name-error').html( data.errors.language_name );
+                    $( '#code-error').html( data.errors.language_code );
+                }
+            },
+            error: function (data) {
+                console.log('Error:', data);
+                $('#saveBtn').html('Save Changes');
+            }
+        });
     });
-    
+  
 </script>
 
 

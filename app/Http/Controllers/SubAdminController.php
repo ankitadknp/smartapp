@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
-use Hash;
-use DB;
+use Hash,Redirect,Response,DB,Validator;
 use Illuminate\Validation\Rule;
 
 class SubAdminController extends Controller {
@@ -37,21 +36,14 @@ class SubAdminController extends Controller {
         $draw = !empty($request->get("draw")) ? $request->get("draw") : 1;
 
         $sidx = !empty($request->get("order")[0]['column']) ? $request->get("order")[0]['column'] : 0;
-        $sord = !empty($request->get("order")[0]['dir']) ? $request->get("order")[0]['dir'] : 'ASC';
+        $sord = !empty($request->get("order")[0]['dir']) ? $request->get("order")[0]['dir'] : 'DESC';
 
         $name = !empty($request->get("name")) ? $request->get("name") : '';
         $email = !empty($request->get("email")) ? $request->get("email") : '';
         $mobileno = !empty($request->get("mobileno")) ? $request->get("mobileno") : '';
         $status = !empty($request->get("status")) ? $request->get("status") : '';
 
-        if ($sidx == 0) {
-            $sidx = 'first_name';
-        } else if ($sidx == 1) {
-            $sidx = 'email';
-        } else {
-            $sidx = 'id';
-        }
-
+        $sidx = 'id';
 
         $list_query = User::select("*", DB::raw("CONCAT(first_name, ' ', last_name) AS 
         name"))->where('user_status','=',4);
@@ -92,7 +84,7 @@ class SubAdminController extends Controller {
                                                                 <span class="custom-switch-indicator"></span>
                                                               </label>';
 
-                $all_records[$index]['edit'] = '<a href="' . route($this->route_name.".edit", $value->id).'" class="btn btn-light">Edit</a>';
+                $all_records[$index]['edit'] = '<a href="#" class="btn btn-light edit_sub_admin" data-id="' . $value->id . '">Edit</a>';
 
                 $all_records[$index]['delete'] = '<button type="button" class="btn btn-danger delete_data_button" data-id="' . $value->id . '">Delete</button>';
 
@@ -118,28 +110,71 @@ class SubAdminController extends Controller {
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) {
+    public function store(Request $request) 
+    {
 
-        $request->validate([
-            "email" => "email|unique:users,email,NULL,id|max:50",
-            'first_name' => 'required|max:50',
-            'last_name' => 'required|max:50',
-            "password" => "required",
-        ]);
+        $id = $request->user_id;
 
+        if ( empty($id) )
+        {
+            $validator = Validator::make($request->all(),[
+                'email' => [
+                    'required',
+                    'email',
+                    'max:50',
+                    Rule::unique('users')
+                        ->where('user_status', 4)
+                ],
+                "password" => "required",
+                'first_name' => 'required|max:50',
+                'last_name' => 'required|max:50',
+            ]);
 
-        $add_new_user = array(
-            "first_name" => $request->get("first_name"),
-            "last_name" => $request->get("last_name"),
-            "email" => $request->get("email"),
-            "password" => Hash::make($request->get("password")),
-            'user_status' =>4,
-            'status'=>1
+            $add_new_user = array(
+                "first_name" => $request->get("first_name"),
+                "last_name" => $request->get("last_name"),
+                "email" => $request->get("email"),
+                "password" => Hash::make($request->get("password")),
+                'user_status' =>4,
+                'status'=>1
+            );
+    
+            $msg = 'User Added Successfully.';
+
+        } else {
+            $validator = Validator::make($request->all(),[
+                'first_name' => 'required|max:50',
+                'last_name' => 'required|max:50',
+                'email' => [
+                    'required',
+                    'email',
+                    'max:50',
+                    Rule::unique('users')->ignore($id)
+                        ->where('user_status', 4)
+                ],
+            ]);
+            $add_new_user = array(
+                "first_name" => $request->get("first_name"),
+                "last_name" => $request->get("last_name"),
+                "email" => $request->get("email"),
+            );
+    
+            $msg = 'User Update Successfully';
+        }
+
+        if($validator->fails())
+        {
+            return Response::json(['errors' => $validator->errors()]);
+        }
+
+        User::updateOrCreate(['id' => $id],$add_new_user);
+
+        return response()->json(
+            [
+                'success' => true,
+                'message' => $msg
+            ]
         );
-
-        $added_user = User::create($add_new_user);
-
-        return redirect()->route($this->route_name . ".index")->with("success", $this->module_singular_name . " Added Successfully");
     }
 
     public function change_status(Request $request) 
@@ -169,35 +204,10 @@ class SubAdminController extends Controller {
     }
 
  
-    public function edit(User $user,$id) 
+    public function edit($id) 
     {
-        $user=User::where('id',$id)->first();
-        return view($this->route_name.".edit", ['user' => $user]);
-    }
-
-    public function update(Request $request, User $user,$id) 
-    {
-        $request->validate([
-            'first_name' => 'required|max:50',
-            'last_name' => 'required|max:50',
-            'email' => [
-                'required',
-                'email',
-                'max:50',
-                Rule::unique('users')->ignore($id)
-                    ->where('user_status', 4)
-            ],
-        ]);
-
-        $user=User::where('id',$id)->first();
-
-        $user->first_name = $request->get("first_name");
-        $user->last_name = $request->get("last_name");
-        $user->email = $request->get("email");
-
-        $added_user = $user->update();
-     
-        return redirect()->route($this->route_name . ".index")->with("success", $this->module_singular_name . " Update Successfully");
+        $user = User::where('id',$id)->first();
+        return Response::json($user);
     }
 
     /**

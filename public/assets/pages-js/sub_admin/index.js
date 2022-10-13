@@ -17,7 +17,7 @@ function get_all_data() {
         //scrollX: true,
         scrollCollapse: true,
         searching: false,
-        order: [0, 'ASC'],
+        order: [0, 'DESC'],
         pageLength: 10,
         "columns": [
             {"data": "name"},
@@ -171,14 +171,14 @@ jQuery(document).ready(function () {
                                         icon: 'success',
                                     });
                                     jQuery(data_table).DataTable().row(this_row).remove().draw(false);
-                                }, 2000);
+                                });
 
                             } else {
                                 setTimeout(function () {
                                     swal(response.message, {
                                         icon: 'error',
                                     });
-                                }, 2000);
+                                });
                             }
                         },
                         error: function () {

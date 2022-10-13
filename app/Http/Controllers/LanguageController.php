@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Language;
-use Hash,Redirect,Response,DB;
+use Hash,Redirect,Response,DB,Validator;
 use Illuminate\Validation\Rule;
 
 class LanguageController extends Controller {
@@ -36,19 +36,12 @@ class LanguageController extends Controller {
         $draw = !empty($request->get("draw")) ? $request->get("draw") : 1;
 
         $sidx = !empty($request->get("order")[0]['column']) ? $request->get("order")[0]['column'] : 0;
-        $sord = !empty($request->get("order")[0]['dir']) ? $request->get("order")[0]['dir'] : 'ASC';
+        $sord = !empty($request->get("order")[0]['dir']) ? $request->get("order")[0]['dir'] : 'DESC';
 
         $language_name = !empty($request->get("language_name")) ? $request->get("language_name") : '';
         $language_code = !empty($request->get("language_code")) ? $request->get("language_code") : '';
 
-        if ($sidx == 0) {
-            $sidx = 'language_name';
-        } else if ($sidx == 1) {
-            $sidx = 'language_code';
-        } else {
-            $sidx = 'language_id';
-        }
-
+        $sidx = 'language_id';
 
         $list_query = Language::select("*");
    
@@ -104,10 +97,15 @@ class LanguageController extends Controller {
      */
     public function store(Request $request) {
 
-        $request->validate([
+        $validator = Validator::make($request->all(),[
             'language_name' => 'required|max:50',
             'language_code' => 'required',
         ]);
+
+        if($validator->fails())
+        {
+            return Response::json(['errors' => $validator->errors()]);
+        }
 
 
         $add_new_lan = array(
@@ -117,7 +115,7 @@ class LanguageController extends Controller {
 
         $language_id = $request->language_id;
 
-        Language::updateOrCreate(['language_id' => $language_id],['language_name' => $request->language_name, 'language_code' => $request->language_code]);
+        $language = Language::updateOrCreate(['language_id' => $language_id],['language_name' => $request->language_name, 'language_code' => $request->language_code]);
 
 
         if ( empty($language_id) )
@@ -126,15 +124,19 @@ class LanguageController extends Controller {
         } else {
             $msg = 'Language Update Successfully';
         }
-        return redirect()->route('language.index')->with('success',$msg);
 
+        return response()->json(
+            [
+                'success' => true,
+                'message' => $msg
+            ]
+        );
     }
 
     public function edit($id) 
     {
         $language = Language::where('language_id',$id)->first();
         return Response::json($language);
-        // return view($this->route_name.".edit", ['language' => $language]);
     }
 
     /**

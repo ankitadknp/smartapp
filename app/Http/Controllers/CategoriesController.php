@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Category;
+use Redirect,Response,DB,Validator;
 
 class CategoriesController extends Controller {
 
@@ -35,21 +36,21 @@ class CategoriesController extends Controller {
         $draw = !empty($request->get("draw")) ? $request->get("draw") : 1;
 
         $sidx = !empty($request->get("order")[0]['column']) ? $request->get("order")[0]['column'] : 0;
-        $sord = !empty($request->get("order")[0]['dir']) ? $request->get("order")[0]['dir'] : 'ASC';
+        $sord = !empty($request->get("order")[0]['dir']) ? $request->get("order")[0]['dir'] : 'DESC';
 
         $name = !empty($request->get("category_name")) ? $request->get("category_name") : '';
+        $type = !empty($request->get("type")) ? $request->get("type") : '';
         $status = !empty($request->get("status")) ? $request->get("status") : '';
-
-        if ($sidx == 0) {
-            $sidx = 'category_name';
-        } else {
-            $sidx = 'category_id';
-        }
+       
+        $sidx = 'category_id';
 
         $list_query = Category::select("*");
 
         if (!empty($name)) {
             $list_query = $list_query->where('category_name', "LIKE", "%" . $name . "%");
+        }
+        if (!empty($type)) {
+            $list_query = $list_query->where('type', "=" , $type );
         }
         if (!empty($status)) {
             $list_query = $list_query->where("status", "=", $status);
@@ -69,6 +70,9 @@ class CategoriesController extends Controller {
             foreach ($list_of_all_data as $value) {
 
                 $all_records[$index]['category_name'] = $value->category_name;
+                $all_records[$index]['type'] = $value->type;
+
+
                 $checked = '';
                 if ($value->status == 1) {
                     $checked = 'checked="checked"';
@@ -79,7 +83,7 @@ class CategoriesController extends Controller {
                                                                 <span class="custom-switch-indicator"></span>
                                                               </label>';
 
-                $all_records[$index]['edit'] = '<a href="' . route($this->route_name . ".edit", $value->category_id ) . '" class="btn btn-light">Edit</a>';
+                $all_records[$index]['edit'] = '<a href="#" class="btn btn-light edit_category" data-id="'.$value->category_id . '">Edit</a>';
 
                 $all_records[$index]['delete'] = '<button type="button" class="btn btn-danger delete_data_button" data-id="'.$value->category_id . '">Delete</button>';
 
@@ -112,21 +116,40 @@ class CategoriesController extends Controller {
      */
     public function store(Request $request) 
     {
-        $request->validate([
-            "category_name" => "required|unique:category,category_name,NULL,category_id",
+        $validator = Validator::make($request->all(),[
+            "category_name" => "required",
+            'type'=>"required"
         ]);
+
+        if($validator->fails())
+        {
+            return Response::json(['errors' => $validator->errors()]);
+        }
 
         $add_new_category = array(
             "category_name" => $request->get("category_name"),
+            'type'=>$request->get("type"),
             "status" => 1
         );
 
-        $added = Category::create($add_new_category);
+        $category_id  = $request->category_id ;
 
-        return redirect()->route($this->route_name . ".index")->with("success", $this->module_singular_name . " Added Successfully");
+        Category::updateOrCreate(['category_id' => $category_id ],$add_new_category);
+
+        if ( empty($category_id) )
+        {
+            $msg = 'Category Added Successfully.';
+        } else {
+            $msg = 'Category Update Successfully';
+        }
+
+        return response()->json(
+            [
+                'success' => true,
+                'message' => $msg
+            ]
+        );
     }
-
-  
 
     /**
      * Show the form for editing the specified resource.
@@ -134,30 +157,10 @@ class CategoriesController extends Controller {
      * @param  Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category) {
-        return view($this->route_name . ".edit", compact('category'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Category $category) 
+    public function edit($id) 
     {
-
-        $request->validate([
-            "category_name" => "required|unique:category,category_name,$category->category_id ,category_id",
-        ]);
-
-
-        $category->category_name = $request->get("category_name");
-
-        $added_category = $category->update();
-
-        return redirect()->route($this->route_name . ".index")->with("success", $this->module_singular_name . " Update Successfully");
+        $category = Category::where('category_id',$id)->first();
+        return Response::json($category);
     }
 
     public function change_status(Request $request) 

@@ -3,6 +3,7 @@
 var data_table = '#datatable';
 function get_all_data() {
     var category_name = $('#category_name').val();
+    var type = $('#type').val();
     var status = $('#status').val();
     var token = jQuery("#csrf-token").prop("content");
 
@@ -15,10 +16,11 @@ function get_all_data() {
         //scrollX: true,
         scrollCollapse: true,
         searching: false,
-        order: [0, 'ASC'],
+        order: [0, 'DESC'],
         pageLength: 10,
         "columns": [
             {"data": "category_name"},
+            {"data": "type"},
             {"data": "status"},
             {"data": "edit"},
             {"data": "delete"}
@@ -32,7 +34,7 @@ function get_all_data() {
             {
                 targets: [1],
                 searchable: true,
-                sortable: false,
+                sortable: true,
             },
             {
                 targets: [2],
@@ -43,6 +45,11 @@ function get_all_data() {
                 targets: [3],
                 searchable: true,
                 sortable: false,
+            },
+            {
+                targets: [4],
+                searchable: true,
+                sortable: false
             }
         ],
         language: {
@@ -57,7 +64,7 @@ function get_all_data() {
             "url": controller_url + '/list-data',
             "type": "POST",
             "async": false,
-            "data": {'_token': token, 'category_name': category_name, 'status': status},
+            "data": {'_token': token, 'category_name': category_name, 'status': status,'type':type},
         },
         drawCallback: function () {
             jQuery('<li><a onclick="refresh_tab()" style="cursor:pointer" title="Refresh"><i class="ion-refresh" style="font-size:25px"></i></a></li>').prependTo('div.dataTables_paginate ul.pagination');
@@ -169,14 +176,14 @@ jQuery(document).ready(function () {
                                         icon: 'success',
                                     });
                                     jQuery(data_table).DataTable().row(this_row).remove().draw(false);
-                                }, 2000);
+                                });
 
                             } else {
                                 setTimeout(function () {
                                     swal(response.message, {
                                         icon: 'error',
                                     });
-                                }, 2000);
+                                });
                             }
                         },
                         error: function () {
@@ -199,6 +206,7 @@ jQuery(document).ready(function () {
 
     jQuery('.reset_filter').click(function () {
         $('#category_name').val('');
+        $('#type').val('');
         $('#status').val('');
         setTimeout(function () {
             jQuery(data_table).dataTable().fnDestroy();

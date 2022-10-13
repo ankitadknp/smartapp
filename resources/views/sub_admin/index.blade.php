@@ -16,7 +16,7 @@
                 $routeName = explode('.', \Request::route()->getName());
                 @endphp
                 <h1>Sub Admin</h1>
-                <a href="{{route("sub_admin.create")}}" class="float-right btn btn-primary">Add New</a>
+                <a href="#" class="float-right btn btn-primary add_admin">Add New</a>
             </div>
         </div>
         <div class="row">
@@ -86,6 +86,65 @@
         </div>
     </section>
 </div>
+
+<!-- add subadmin -->
+<div class="modal fade" id="add_sub_admin" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add New Sub Admin </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @include('errors.require')
+                <form class="" id="sub_admin_form" novalidate="" action="{{route("sub_admin.store")}}" enctype="multipart/form-data" method="POST">
+                <input type="hidden" name="user_id" id="user_id" >
+                    @csrf
+                    
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <label>First Name</label>
+                            <input type="text" placeholder="FirstName" name="first_name" class="form-control" required="" id="first_name">
+                            <span class="text-danger">
+                                <strong id="first-name-error"></strong>
+                            </span>
+                        </div>
+
+                        <div class="col-sm-12 form-group">
+                            <label>Last Name</label>
+                            <input type="text"  placeholder="LastName" name="last_name" class="form-control" required="" id="last_name">
+                            <span class="text-danger">
+                                <strong id="last-name-error"></strong>
+                            </span>
+                        </div>
+
+                        <div class="col-sm-12 form-group">
+                            <label>Email</label>
+                            <input type="email"  placeholder="Email" name="email" class="form-control" required="" id="mail">
+                            <span class="text-danger">
+                                <strong id="email-error"></strong>
+                            </span>
+                        </div>
+                        <div class="col-sm-12 form-group password">
+                            <label>Password</label>
+                            <input type="password" id="password" placeholder="Password" name="password" class="form-control" required="" >
+                            <span class="text-danger">
+                                <strong id="pwd-error"></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-footer text-right">
+                        <button class="btn btn-primary" id="saveBtn">Save</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+         
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('addjs')
@@ -95,7 +154,73 @@
 <script src="{{asset("public/assets/modules/jquery-ui/jquery-ui.min.js")}}"></script>
 
 <script type="text/javascript">
-    var controller_url = "{{route('sub_admin.index')}}";
+   var controller_url = "{{route('sub_admin.index')}}";
+
+    $(".add_admin").click(function(){
+        $('#user_id').val('');
+        $('.password').show();
+        $('#sub_admin_form').trigger("reset");
+        $('#saveBtn').html("Save");
+        $('#exampleModalLongTitle').html("Add Sub Admin");
+        $('#add_sub_admin').modal('show');
+        return false;
+    });
+
+    $('body').on('click', '.edit_sub_admin', function () {
+        var user_id = $(this).data('id');
+        $( '#email-error' ).html("" );
+        $( '#pwd-error' ).html("");
+        $( '#last-name-error' ).html("");
+        $( '#first-name-error' ).html("");
+
+        $.get('sub_admin/'+user_id+'/edit', function (data) {
+            $('#exampleModalLongTitle').html("Edit Sub Admin");
+            $('#saveBtn').html("Update");
+            $('#add_sub_admin').modal('show');
+            $('.password').hide();
+            $('#user_id').val(data.id);
+            $('#first_name').val(data.first_name);
+            $('#last_name').val(data.last_name);
+            $('#mail').val(data.email);
+        })
+    });
+
+    $('#saveBtn').click(function (e) {
+        e.preventDefault();
+        // $(this).html('Sending..');
+
+        $.ajax({
+          data: $('#sub_admin_form').serialize(),
+          type: "POST",
+          dataType: 'json',
+            success: function (data) 
+            {
+                if(data.success) {
+                    $(this).html('Sending..');
+                    $('#sub_admin_form').trigger("reset");
+                    $('#add_sub_admin').modal('hide');
+                
+                    jQuery(data_table).DataTable().draw();
+
+                    setTimeout(function () {
+                        swal(data.message, {
+                            icon: 'success',
+                        });
+                    });
+                } else {
+                    $( '#email-error' ).html( data.errors.email );
+                    $( '#pwd-error' ).html( data.errors.password );
+                    $( '#last-name-error' ).html( data.errors.last_name );
+                    $( '#first-name-error' ).html( data.errors.first_name);
+                }
+            },
+            error: function (data) {
+                console.log('Error:', data);
+                $('#saveBtn').html('Save Changes');
+            }
+        });
+    });
+    
 </script>
 
 <!-- Page Specific JS File -->

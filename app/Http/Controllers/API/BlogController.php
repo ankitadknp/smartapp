@@ -138,6 +138,7 @@ class BlogController extends Controller
 
     public function blog_list(Request $request)
     {
+        $user_id = Auth::user()->id;
 
         $search = $request->search;
 
@@ -145,10 +146,12 @@ class BlogController extends Controller
         if ($search == '') 
         {
             $blog = Blog::leftJoin('category', function($join) {
-                    $join->on('blog.category_id', '=', 'category.category_id');
+                    $join->on('blog.category_id', '=', 'category.category_id')
+                    ->where('category.type','=','Blog');
                 })
-                ->leftJoin('blog_like', function($join) {
-                    $join->on('blog.blog_id', '=', 'blog_like.blog_id');
+                ->leftJoin('blog_like', function($join) use($user_id){
+                    $join->on('blog.blog_id', '=', 'blog_like.blog_id')
+                    ->where('blog_like.user_id',$user_id);
                 })
                 ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'),DB::raw("ExtractValue(blog.blog_content, '//text()') as blog_content"))
                 ->where('blog.status','=',1)
@@ -158,10 +161,12 @@ class BlogController extends Controller
         } else {
 
             $blog = Blog::leftJoin('category', function($join) {
-                $join->on('blog.category_id', '=', 'category.category_id');
+                $join->on('blog.category_id', '=', 'category.category_id')
+                ->where('category.type','=','Blog');
             })
-            ->leftJoin('blog_like', function($join) {
-                $join->on('blog.blog_id', '=', 'blog_like.blog_id');
+            ->leftJoin('blog_like', function($join) use($user_id){
+                $join->on('blog.blog_id', '=', 'blog_like.blog_id')
+                ->where('blog_like.user_id',$user_id);
             })
             ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'),DB::raw("ExtractValue(blog.blog_content, '//text()') as blog_content"))
             ->where('blog.blog_title', 'LIKE', '%'.$search.'%')
