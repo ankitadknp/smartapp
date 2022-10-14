@@ -1,5 +1,7 @@
 @extends('layouts.layout')
 
+@section('title', 'Change Password')
+
 @section('addcss')
 @endsection
 

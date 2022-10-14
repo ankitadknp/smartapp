@@ -47,7 +47,7 @@ class CategoriesController extends Controller {
         $list_query = Category::select("*");
 
         if (!empty($name)) {
-            $list_query = $list_query->where('category_name', "LIKE", "%" . $name . "%");
+            $list_query = $list_query->where('category_name', "LIKE", "%" . $name . "%")->orWhere('category_name_ab', "LIKE", "%" . $name . "%")->orWhere('category_name_he', "LIKE", "%" . $name . "%");
         }
         if (!empty($type)) {
             $list_query = $list_query->where('type', "=" , $type );
@@ -118,6 +118,8 @@ class CategoriesController extends Controller {
     {
         $validator = Validator::make($request->all(),[
             "category_name" => "required",
+            "category_name_ab" => "required",
+            "category_name_he" => "required",
             'type'=>"required"
         ]);
 
@@ -128,6 +130,8 @@ class CategoriesController extends Controller {
 
         $add_new_category = array(
             "category_name" => $request->get("category_name"),
+            "category_name_ab" => $request->get("category_name_ab"),
+            "category_name_he" => $request->get("category_name_he"),
             'type'=>$request->get("type"),
             "status" => 1
         );

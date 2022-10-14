@@ -2869,3 +2869,7 @@ and (max-width: 1366px)
 .kv-file-zoom.btn.btn-kv.btn-default.btn-outline-secondary, .kv-zoom-actions .btn.btn-outline-secondary{
     padding: .2rem .6rem;
 }
+
+.error{
+  color:red
+}

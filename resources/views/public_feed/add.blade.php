@@ -1,7 +1,7 @@
 @extends('layouts.layout')
-
+@section('title', 'Public Feed')
 @section('addcss')
-<link rel="stylesheet" href="https://richtexteditor.com/richtexteditor/rte_theme_default.css" />
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"> -->
 @endsection
 
 @section('content')
@@ -23,7 +23,6 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        @include('errors.require')
                         <form class="" id="custom_form" novalidate="" action="{{route("public_feed.store")}}" enctype="multipart/form-data" method="POST">
                             @csrf
 
@@ -32,16 +31,45 @@
                                     <div class="col-sm-12 form-group">
                                         <label>Public Feed Name</label>
                                         <input type="text" value="{{old("public_feed_title")}}" placeholder="Public Feed Name" name="public_feed_title" class="form-control" required="">
-                                        <div class="invalid-feedback">
-                                            Please enter public eed name
-                                        </div>
+                                        @if($errors->has('public_feed_title'))
+                                            <div class="error">{{ $errors->first('public_feed_title') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label>Public Feed Name(Arabic)</label>
+                                        <input type="text" value="{{old("public_feed_title_ab")}}" placeholder="Public Feed Name(Arabic)" name="public_feed_title_ab" class="form-control" required="">
+                                        @if($errors->has('public_feed_title_ab'))
+                                            <div class="error">{{ $errors->first('public_feed_title_ab') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label>Public Feed Name(Hebrew)</label>
+                                        <input type="text" value="{{old("public_feed_title_he")}}" placeholder="Public Feed Name(Hebrew)" name="public_feed_title_he" class="form-control" required="">
+                                        @if($errors->has('public_feed_title_he'))
+                                            <div class="error">{{ $errors->first('public_feed_title_he') }}</div>
+                                        @endif
                                     </div>
 
-                                    <input name="content" id="inp_htmlcode" type="hidden" />
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content</label>
-                                        <div id="div_editor1" class="richtexteditor" required>
-			                            </div>
+                                        <textarea class="ckeditor form-control" name="content"></textarea>
+                                        @if($errors->has('content'))
+                                            <div class="error">{{ $errors->first('content') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label class="form-control-label" for="content_heading_text">Public Feed Content(Arabic)</label>
+                                        <textarea class="ckeditor form-control" name="content_ab"></textarea>
+                                        @if($errors->has('content_ab'))
+                                            <div class="error">{{ $errors->first('content_ab') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label class="form-control-label" for="content_heading_text">Public Feed Content(Hebrew)</label>
+                                        <textarea class="ckeditor form-control" name="content_he"></textarea>
+                                        @if($errors->has('content_he'))
+                                            <div class="error">{{ $errors->first('content_he') }}</div>
+                                        @endif
                                     </div>
 
                                     <div class="col-sm-12 form-group">
@@ -49,7 +77,6 @@
                                         <div class="file-loading">
                                             <input id="file-0b" type="file" class="file form-control required" name="images[]" accept="image/*" alt="Image" multiple="">
                                         </div>
-                                        <!-- <p class="mt-2">Upload file </p> -->
                                     </div>
                                 </div>
                             </div>
@@ -74,12 +101,10 @@
 </script>
 
 <!-- Editor Js-->
-<script type="text/javascript" src="{{ asset('public/assets/js') }}/rte.js"></script>
-<script type="text/javascript" src="{{ asset('public/assets/js') }}/plugins/all_plugins.js"></script>
+<script type="text/javascript" src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 <script>
-    var editor1 = new RichTextEditor(document.getElementById("div_editor1"));
-    editor1.attachEvent("change", function () {
-        document.getElementById("inp_htmlcode").value = editor1.getHTMLCode();
+    $(document).ready(function() {
+       $('.ckeditor').ckeditor();
     });
 </script>
 <!-- Editor Js End -->

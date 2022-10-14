@@ -1,7 +1,5 @@
 @extends('layouts.layout')
 
-@section('title', 'Public Feed')
-
 @section('addcss')
 @endsection
 
@@ -36,40 +34,12 @@
                                             <div class="error">{{ $errors->first('public_feed_title') }}</div>
                                         @endif
                                     </div>
-                                    <div class="col-sm-12 form-group">
-                                        <label>Public Feed Name(Arabic)</label>
-                                        <input type="text" value="{{$feed->public_feed_title_ab}}" placeholder="Public Feed Name(Arabic)" name="public_feed_title_ab" class="form-control" required="">
-                                        @if($errors->has('public_feed_title_ab'))
-                                            <div class="error">{{ $errors->first('public_feed_title_ab') }}</div>
-                                        @endif
-                                    </div>
-                                    <div class="col-sm-12 form-group">
-                                        <label>Public Feed Name(Hebrew)</label>
-                                        <input type="text" value="{{$feed->public_feed_title_he}}" placeholder="Public Feed Name(Hebrew)" name="public_feed_title_he" class="form-control" required="">
-                                        @if($errors->has('public_feed_title_he'))
-                                            <div class="error">{{ $errors->first('public_feed_title_he') }}</div>
-                                        @endif
-                                    </div>
                                     
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label">{{ __('Public Feed Content') }}</label>
                                         <textarea class="ckeditor form-control" name="content">{{$feed->content}}</textarea>
                                         @if($errors->has('content'))
                                             <div class="error">{{ $errors->first('content') }}</div>
-                                        @endif
-                                    </div>
-                                    <div class="col-sm-12 form-group">
-                                        <label class="form-control-label" for="content_heading_text">Public Feed Content(Arabic)</label>
-                                        <textarea class="ckeditor form-control" name="content_ab">{{$feed->content_ab}}</textarea>
-                                        @if($errors->has('content_ab'))
-                                            <div class="error">{{ $errors->first('content_ab') }}</div>
-                                        @endif
-                                    </div>
-                                    <div class="col-sm-12 form-group">
-                                        <label class="form-control-label" for="content_heading_text">Public Feed Content(Hebrew)</label>
-                                        <textarea class="ckeditor form-control" name="content_he">{{$feed->content_he}}</textarea>
-                                        @if($errors->has('content_he'))
-                                            <div class="error">{{ $errors->first('content_he') }}</div>
                                         @endif
                                     </div>
 
@@ -108,7 +78,11 @@
     $(document).ready(function() {
        $('.ckeditor').ckeditor();
     });
- 
+
+    // CKEDITOR.replace('content', {
+    //     filebrowserUploadUrl: "{{route('ckeditor.upload', ['_token' => csrf_token() ])}}",
+    //     filebrowserUploadMethod: 'form'
+    // });
 </script>
 <!-- Editor Js End -->
 @endsection

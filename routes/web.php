@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("change_status", "BlogController@change_status")->name("blog.change_status");
         Route::post("delete", "BlogController@destroy")->name("blog.delete");
         Route::post("show", "BlogController@show")->name("blog.show");
+        Route::post("comment", "BlogController@comment")->name("blog.comment");
     });
 
     //Categories Module Routing
@@ -51,7 +52,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("list-data", "PublicFeedController@load_data_in_table")->name("public_feed.load_data_in_table");
         Route::post("change_status", "PublicFeedController@change_status")->name("public_feed.change_status");
         Route::post("show", "PublicFeedController@show")->name("public_feed.show");
+        Route::post("comment", "PublicFeedController@comment")->name("public_feed.comment");
     });
+    // Route::post('ckeditor/upload', 'PublicFeedController@upload')->name('ckeditor.upload');
 
     //Sub Admin Module Routing
     Route::resource("sub_admin", "SubAdminController");
@@ -68,4 +71,5 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("list-data", "LanguageController@load_data_in_table")->name("language.load_data_in_table");
         Route::post("change_status", "LanguageController@change_status")->name("language.change_status");
     });
+    
 });

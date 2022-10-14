@@ -6,8 +6,8 @@
 
         <!-- CSRF Token -->
         <meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ config('app.name') }}</title>
+        
+        <title>@yield('title') &mdash; Smart Citizen App</title>
 
         <link rel="shortcut icon" href="{{asset('public/favicon.ico')}}" type="image/x-icon">
         <link rel="icon" href="{{asset('public/favicon.ico')}}" type="image/x-icon">
@@ -102,7 +102,7 @@
                 <footer class="main-footer">
                     <div class="footer-left">
                         Copyright &copy; {{date("Y")}} 
-                        <div class="bullet"></div> Powered By <a href="{{ url('/') }}">{{ config('app.name') }}</a>
+                        <div class="bullet"></div> Powered By <a href="https://www.knp-tech.com/">KNP Technologies</a>
                     </div>
                     <div class="footer-right">
 

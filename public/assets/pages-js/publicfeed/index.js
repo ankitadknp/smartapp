@@ -14,12 +14,13 @@ function get_all_data() {
         //scrollX: true,
         scrollCollapse: true,
         searching: false,
-        order: [0, 'ASC'],
+        order: [0, 'DESC'],
         pageLength: 10,
         "columns": [
             {"data": "public_feed_title"},
             {"data": "status"},
             {"data": "view"},
+            {"data": "view_comment"},
             {"data": "edit"},
             {"data": "delete"}
         ],
@@ -46,6 +47,11 @@ function get_all_data() {
             },
             {
                 targets: [4],
+                searchable: true,
+                sortable: false,
+            },
+            {
+                targets: [5],
                 searchable: true,
                 sortable: false,
             }
@@ -174,14 +180,14 @@ jQuery(document).ready(function () {
                                         icon: 'success',
                                     });
                                     jQuery(data_table).DataTable().row(this_row).remove().draw(false);
-                                }, 2000);
+                                });
 
                             } else {
                                 setTimeout(function () {
                                     swal(response.message, {
                                         icon: 'error',
                                     });
-                                }, 2000);
+                                });
                             }
                         },
                         error: function () {
@@ -189,7 +195,7 @@ jQuery(document).ready(function () {
                                 swal("Problem in performing your action.", {
                                     icon: 'info',
                                 });
-                            }, 2000);
+                            });
                         }
                     });
                 }
@@ -211,7 +217,7 @@ jQuery(document).ready(function () {
         }, 100);
     });
 
-    //show modal
+    //report modal
 
     jQuery(document).on('click', '.show_modal', function () 
     {
@@ -226,6 +232,24 @@ jQuery(document).ready(function () {
             cache: false,
             success: function (response) {
                 $('#view-reports').html(response);
+            }
+        })
+    });
+
+    //comment modal
+    jQuery(document).on('click', '.show_modal', function () 
+    {
+        var id = jQuery(this).attr('data-id');
+        jQuery.ajax({
+            "url": controller_url + '/show',
+            type: "POST",
+            data: {
+                'id': id,
+            },
+            dataType: 'json',
+            cache: false,
+            success: function (response) {
+                $('#view-comments').html(response);
             }
         })
     });

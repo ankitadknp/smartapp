@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\PublicFeed;
 use App\PublicFeedImage;
 use App\PublicFeedReport;
+use App\PublicFeedComment;
 use App\User;
 use Illuminate\Support\Facades\Config;
 
@@ -37,21 +38,17 @@ class PublicFeedController extends Controller {
         $draw = !empty($request->get("draw")) ? $request->get("draw") : 1;
 
         $sidx = !empty($request->get("order")[0]['column']) ? $request->get("order")[0]['column'] : 0;
-        $sord = !empty($request->get("order")[0]['dir']) ? $request->get("order")[0]['dir'] : 'ASC';
+        $sord = !empty($request->get("order")[0]['dir']) ? $request->get("order")[0]['dir'] : 'DESC';
 
         $name = !empty($request->get("public_feed_title")) ? $request->get("public_feed_title") : '';
         $status = !empty($request->get("status")) ? $request->get("status") : '';
 
-        if ($sidx == 0) {
-            $sidx = 'public_feed_title';
-        } else {
-            $sidx = 'public_feed_id';
-        }
+        $sidx = 'public_feed_id';
 
         $list_query = PublicFeed::select("*");
 
         if (!empty($name)) {
-            $list_query = $list_query->where('public_feed_title', "LIKE", "%" . $name . "%");
+            $list_query = $list_query->where('public_feed_title', "LIKE", "%" . $name . "%")->orWhere('public_feed_title_ab', "LIKE", "%" . $name . "%")->orWhere('public_feed_title_he', "LIKE", "%" . $name . "%");
         }
         if (!empty($status)) {
             $list_query = $list_query->where("status", "=", $status);
@@ -83,6 +80,8 @@ class PublicFeedController extends Controller {
 
                 $all_records[$index]['view'] = '<a href="#" data-toggle="modal" data-target="#myModal" data-id="'.$value->public_feed_id  .'" class="btn btn-light show_modal">View</a>';
 
+                $all_records[$index]['view_comment'] = '<a href="#" data-toggle="modal" data-target="#comment" data-id="'.$value->public_feed_id  .'" class="btn btn-light show_modal">View</a>';
+
                 $all_records[$index]['edit'] = '<a href="' . route($this->route_name . ".edit", $value->public_feed_id  ) . '" class="btn btn-light">Edit</a>';
 
                 $all_records[$index]['delete'] = '<button type="button" class="btn btn-danger delete_data_button" data-id="'.$value->public_feed_id  . '">Delete</button>';
@@ -99,34 +98,34 @@ class PublicFeedController extends Controller {
         return $response;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create() {
         return view($this->route_name . ".add");
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request) 
     {
         $request->validate([
             "public_feed_title" => "required",
+            "public_feed_title_ab" => "required",
+            "public_feed_title_he" => "required",
+            "content_ab" => "required",
+            "content_he" => "required",
             "content" => "required",
         ]);
+
 
         if ($request->hasFile('cover_image')) {
             $request->validate(["cover_image" => "image|mimes:jpeg,png,jpg|max:5098"]);
         }
 
+        $PUBLIC_FEED_IMAGE =  Config::get('constants.PUBLIC_FEED_IMAGE');
+
         $add_new_feed = array(
             "public_feed_title" => $request->get("public_feed_title"),
+            "public_feed_title_he" => $request->get("public_feed_title_he"),
+            "public_feed_title_ab" => $request->get("public_feed_title_ab"),
+            "content_ab" => $request->get("content_ab"),
+            "content_he" => $request->get("content_he"),
             'content' => $request->get("content"),
             "status" => 1
         );
@@ -155,7 +154,7 @@ class PublicFeedController extends Controller {
                         $image->move($destinationPath, $feed_image_name);
                         $new_obj = new PublicFeedImage();
                         $new_obj->public_feed_id = $added_id;
-                        $new_obj->image = $feed_image_name;
+                        $new_obj->image = $PUBLIC_FEED_IMAGE.$added_id.'/'.$feed_image_name;
                         $new_obj->save();
                     }
                 }
@@ -167,14 +166,6 @@ class PublicFeedController extends Controller {
         }
     }
 
-  
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  PublicFeed  $feed
-     * @return \Illuminate\Http\Response
-     */
     public function edit(PublicFeed $feed,$public_feed_id) 
     {
         $feed = PublicFeed::where('public_feed_id',$public_feed_id)->first();
@@ -182,18 +173,13 @@ class PublicFeedController extends Controller {
         return view($this->route_name . ".edit", ['feed' =>$feed,'feed_images'=>$feed_images]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  PublicFeed  $feed
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, PublicFeed $feed,$public_feed_id) 
     {
 
         $request->validate([
             "public_feed_title" => "required",
+            "public_feed_title_ab" => "required",
+            "public_feed_title_he" => "required",
         ]);
 
         $feed = PublicFeed::where('public_feed_id',$public_feed_id)->first();
@@ -204,7 +190,11 @@ class PublicFeedController extends Controller {
 
 
         $feed->public_feed_title = $request->get("public_feed_title");
+        $feed->public_feed_title_ab = $request->get("public_feed_title_ab");
+        $feed->public_feed_title_he = $request->get("public_feed_title_he");
         $feed->content =  $request->get("content") ? $request->get("content") : $feed->content;
+        $feed->content_ab =  $request->get("content_ab") ? $request->get("content_ab") : $feed->content_ab;
+        $feed->content_he =  $request->get("content_he") ? $request->get("content_he") : $feed->content_he;
 
         $added_feed = $feed->update();
 
@@ -268,12 +258,6 @@ class PublicFeedController extends Controller {
         return $response;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Request $request) 
     {
         $id = $request->get("id");
@@ -324,5 +308,57 @@ class PublicFeedController extends Controller {
         return json_encode($feed_report);
 
     }   
+
+    public function comment(Request $request) 
+    {
+        $id = $request->get("id");
+        $feed = PublicFeedComment::where('public_feed_id','=',$id)->get();
+
+        $feed_comment = [];
+        $path = Config::get('constants.USER_ICON');
+
+        if ($feed != '[]' )
+        {
+            $all_comment = '<div class="card-body" id="feed-scroll"><ul class="list-unstyled list-unstyled-border">';
+            foreach ($feed as $val)
+            {
+                $user = User::find($val->user_id);
+                $u_name = $user['first_name']. ' '.$user['last_name'];
+                $date =  date_format($val->created_at,"Y-m-d");
+                $comment = $val->comment;
+
+                $all_comment.= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-square bg-primary" data-width="64%"></div><div class="budget-price-label">'.$comment.'</div></div><div class="budget-price"></div></div></div></li></ul></div>';
+            }
+
+            $all_comment .= '</ul></div>';
+            $feed_comment = $comment;
+
+        } else {
+            $feed_comment = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+        }
+
+        return json_encode($feed_report);
+
+    } 
+
+    public function upload(Request $request)
+    {
+        if($request->hasFile('upload')) {
+            $originName = $request->file('upload')->getClientOriginalName();
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
+            $extension = $request->file('upload')->getClientOriginalExtension();
+            $fileName = $fileName.'_'.time().'.'.$extension;
+        
+            $request->file('upload')->move(public_path('images'), $fileName);
+   
+            $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+            $url = asset('images/'.$fileName); 
+            $msg = 'Image uploaded successfully'; 
+            $response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
+               
+            @header('Content-type: text/html; charset=utf-8'); 
+            echo $response;
+        }
+    }
 
 }

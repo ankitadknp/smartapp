@@ -1,5 +1,7 @@
 @extends('layouts.layout')
 
+@section('title', 'Edit Profile')
+
 @section('addcss')
 @endsection
 

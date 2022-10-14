@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Blog;
 use App\BlogReport;
+use App\BlogComment;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -26,7 +27,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $all_avilable_category = \App\Category::where('status', 1)->select('category_id', 'category_name')->get();
+        $all_avilable_category = \App\Category::where('status', 1)->where('type','=','Blog')->select('category_id', 'category_name')->get();
 
         return view($this->route_name.'.index')->with(['all_avilable_category' => $all_avilable_category]);
     }
@@ -38,20 +39,14 @@ class BlogController extends Controller
         $draw = !empty($request->get('draw')) ? $request->get('draw') : 1;
 
         $sidx = !empty($request->get('order')[0]['column']) ? $request->get('order')[0]['column'] : 0;
-        $sord = !empty($request->get('order')[0]['dir']) ? $request->get('order')[0]['dir'] : 'ASC';
+        $sord = !empty($request->get('order')[0]['dir']) ? $request->get('order')[0]['dir'] : 'DESC';
 
         $category_id = !empty($request->get('category_id')) ? $request->get('category_id') : '';
         $blog_title = !empty($request->get('blog_title')) ? $request->get('blog_title') : '';
         $blog_content = !empty($request->get('blog_content')) ? $request->get('blog_content') : '';
         $status = !empty($request->get('status')) ? $request->get('status') : '';
 
-        if ($sidx == 0) {
-            $sidx = 'category_id';
-        } elseif ($sidx == 1) {
-            $sidx = 'blog_title';
-        } else {
-            $sidx = 'blog_id';
-        }
+        $sidx = 'blog_id';
 
         $list_query = Blog::leftJoin('category', function ($join) {
             $join->on('blog.category_id', '=', 'category.category_id');
@@ -59,7 +54,7 @@ class BlogController extends Controller
         ->select('blog.*', 'category.category_name');
 
         if (!empty($blog_title)) {
-            $list_query = $list_query->where('blog_title', 'LIKE', '%'.$blog_title.'%');
+            $list_query = $list_query->where('blog_title', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_content_ab', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_content_he', 'LIKE', '%'.$blog_title.'%');
         }
 
         if (!empty($status)) {
@@ -92,6 +87,8 @@ class BlogController extends Controller
 
                 $all_records[$index]['view'] = '<a href="#" data-toggle="modal" data-target="#myModal" data-id="'.$value->blog_id.'" class="btn btn-light show_modal">View</a>';
 
+                $all_records[$index]['view_comment'] = '<a href="#" data-toggle="modal" data-target="#comment" data-id="'.$value->blog_id.'" class="btn btn-light comment_modal">View</a>';
+
                 $all_records[$index]['edit'] = '<a href="'.route($this->route_name.'.edit', $value->blog_id).'" class="btn btn-light">Edit</a>';
 
                 $all_records[$index]['delete'] = '<button type="button" class="btn btn-danger delete_data_button" data-id="'.$value->blog_id.'">Delete</button>';
@@ -110,7 +107,7 @@ class BlogController extends Controller
 
     public function create()
     {
-        $all_avilable_category = \App\Category::where('status', 1)->select('category_id', 'category_name')->get();
+        $all_avilable_category = \App\Category::where('status', 1)->where('type','=','Blog')->select('category_id', 'category_name')->get();
 
         return view($this->route_name.'.add')->with(['all_avilable_category' => $all_avilable_category]);
     }
@@ -119,14 +116,22 @@ class BlogController extends Controller
     {
         $request->validate([
             'blog_title' => 'required',
+            'blog_title_ab' => 'required',
+            'blog_title_he' => 'required',
             'category' => 'required',
             'blog_content' => 'required',
+            'blog_content_ab' => 'required',
+            'blog_content_he' => 'required',
         ]);
 
         $add_new_blog = [
             'blog_title' => $request->get('blog_title'),
+            'blog_title_ab' => $request->get('blog_title_ab'),
+            'blog_title_he' => $request->get('blog_title_he'),
             'category_id' => $request->get('category'),
             'blog_content' => $request->get('blog_content'),
+            'blog_content_ab' => $request->get('blog_content_ab'),
+            'blog_content_he' => $request->get('blog_content_he'),
             'status' => 1,
         ];
 
@@ -169,7 +174,7 @@ class BlogController extends Controller
 
     public function edit(Blog $blog)
     {
-        $all_avilable_category = \App\Category::where('status', 1)
+        $all_avilable_category = \App\Category::where('status', 1)->where('type','=','Blog')
         ->select('category_id', 'category_name')
         ->get();
 
@@ -182,12 +187,19 @@ class BlogController extends Controller
     {
         $request->validate([
             'blog_title' => 'required',
+            'blog_title_ab' => 'required',
+            'blog_title_he' => 'required',
             'category' => 'required',
+           
         ]);
 
         $blog->category_id = $request->get('category');
         $blog->blog_title = $request->get('blog_title');
+        $blog->blog_title_ab = $request->get('blog_title_ab');
+        $blog->blog_title_he = $request->get('blog_title_he');
         $blog->blog_content = $request->get('blog_content') ? $request->get('blog_content') : $blog->blog_content;
+        $blog->blog_content_ab = $request->get('blog_content_ab') ? $request->get('blog_content_ab') : $blog->blog_content_ab;
+        $blog->blog_content_he = $request->get('blog_content_he') ? $request->get('blog_content_he') : $blog->blog_content_he;
 
         $added_blog = $blog->update();
 
@@ -244,5 +256,33 @@ class BlogController extends Controller
         }
 
         return json_encode($blog_report);
+    }
+
+    public function comment(Request $request)
+    {
+        $id = $request->get('id');
+        $blog = BlogComment::where('blog_id', '=', $id)->get();
+
+        $blog_comment = [];
+        $path = Config::get('constants.USER_ICON');
+
+        if ($blog != '[]') {
+            $all_comment = '<div class="card-body" id="comment_scroll"><ul class="list-unstyled list-unstyled-border">';
+
+            foreach ($blog as $val) {
+                $user = User::find($val->user_id);
+                $u_name = $user['first_name'].' '.$user['last_name'];
+                $comment = $val->comment;
+                $date = date_format($val->created_at, 'Y-m-d');
+
+                $all_comment .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$comment.'</div></div><div class="budget-price"></div></div></div></li>';
+            }
+            $all_comment .= '</ul></div>';
+            $blog_comment = $all_comment;
+        } else {
+            $blog_comment = '<div class="card-body" ><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+        }
+
+        return json_encode($blog_comment);
     }
 }

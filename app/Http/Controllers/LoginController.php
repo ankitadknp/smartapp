@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 
+
 class LoginController extends Controller {
 
     /**
@@ -35,6 +36,8 @@ class LoginController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
+    
+
         if (\Auth::check()) {
             return redirect('dashboard');
         } else {

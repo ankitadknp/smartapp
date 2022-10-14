@@ -20,8 +20,8 @@ function get_all_data() {
         "columns": [
             {"data": "language_name"},
             {"data": "language_code"},
-            {"data": "edit"},
-            {"data": "delete"}
+            // {"data": "edit"},
+            // {"data": "delete"}
         ],
         columnDefs: [
             {
@@ -34,16 +34,16 @@ function get_all_data() {
                 searchable: true,
                 sortable: true
             },
-            {
-                targets: [2],
-                searchable: true,
-                sortable: false,
-            },
-            {
-                targets: [3],
-                searchable: true,
-                sortable: false,
-            }
+            // {
+            //     targets: [2],
+            //     searchable: true,
+            //     sortable: false,
+            // },
+            // {
+            //     targets: [3],
+            //     searchable: true,
+            //     sortable: false,
+            // }
         ],
         language: {
             emptyTable: "No data available",

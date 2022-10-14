@@ -1,5 +1,7 @@
 @extends('layouts.layout')
 
+@section('title', 'Language')
+
 @section('addcss')
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
@@ -26,7 +28,7 @@
                 $routeName = explode('.', \Request::route()->getName());
                 @endphp
                 <h1>Language</h1>
-                <a href="#" class="float-right btn btn-primary add_language">Add New</a>
+                <!-- <a href="#" class="float-right btn btn-primary add_language">Add New</a> -->
             </div>
         </div>
         <div class="row">
@@ -74,8 +76,8 @@
                                     <tr>
                                         <th>Language Name</th>
                                         <th>Language Code</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
+                                        <!-- <th>Edit</th>
+                                        <th>Delete</th> -->
                                     </tr>
                                 </thead>
                             </table>

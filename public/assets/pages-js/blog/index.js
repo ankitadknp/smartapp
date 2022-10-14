@@ -16,13 +16,14 @@ function get_all_data() {
         //scrollX: true,
         scrollCollapse: true,
         searching: false,
-        order: [0, 'ASC'],
+        order: [0, 'DESC'],
         pageLength: 10,
         "columns": [
             {"data": "category_id"},
             {"data": "blog_title"},
             {"data": "status"},
             {"data": "view"},
+            {"data": "view_comment"},
             {"data": "edit"},
             {"data": "delete"}
         ],
@@ -56,7 +57,12 @@ function get_all_data() {
                 targets: [5],
                 searchable: true,
                 sortable: false,
-            }
+            },
+            {
+                targets: [6],
+                searchable: true,
+                sortable: false,
+            },
         ],
         language: {
             emptyTable: "No data available",
@@ -176,14 +182,14 @@ jQuery(document).ready(function () {
                                         icon: 'success',
                                     });
                                     jQuery(data_table).DataTable().row(this_row).remove().draw(false);
-                                }, 2000);
+                                });
 
                             } else {
                                 setTimeout(function () {
                                     swal(response.message, {
                                         icon: 'error',
                                     });
-                                }, 2000);
+                                });
                             }
                         },
                         error: function () {
@@ -191,7 +197,7 @@ jQuery(document).ready(function () {
                                 swal("Problem in performing your action.", {
                                     icon: 'info',
                                 });
-                            }, 2000);
+                            });
                         }
                     });
                 }
@@ -214,7 +220,28 @@ jQuery(document).ready(function () {
         }, 100);
     });
 
-    //show modal
+    //comment modal
+
+    jQuery(document).on('click', '.comment_modal', function () 
+    {
+        var id;
+
+        id = jQuery(this).attr('data-id');
+        jQuery.ajax({
+            "url": controller_url + '/comment',
+            type: "POST",
+            data: {
+                'id': id,
+            },
+            dataType: 'json',
+            cache: false,
+            success: function (response) {
+                $('#view-comments').html(response);
+            }
+        })
+    });
+
+    //report modal
 
     jQuery(document).on('click', '.show_modal', function () 
     {

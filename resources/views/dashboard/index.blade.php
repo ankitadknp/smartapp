@@ -1,5 +1,7 @@
 @extends('layouts.layout')
 
+@section('title', 'Dashboard')
+
 @section('addcss')
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">

@@ -1,7 +1,8 @@
 @extends('layouts.layout')
 
+@section('title', 'Blog')
+
 @section('addcss')
-<link rel="stylesheet" href="https://richtexteditor.com/richtexteditor/rte_theme_default.css" />
 @endsection
 
 @section('content')
@@ -23,7 +24,6 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        @include('errors.require')
                         <form class="" id="add_user_form" novalidate="" action="{{route("blog.store")}}" enctype="multipart/form-data" method="POST"
                               oninput='c_password.setCustomValidity(c_password.value != password.value ? "Passwords do not match." : "")'
                               >
@@ -39,23 +39,52 @@
                                             <option value="{{$cat->category_id}}" >{{$cat->category_name}}</option>
                                             @endforeach
                                         </select>
-                                        <div class="invalid-feedback">
-                                            Please select category
-                                        </div>
+                                        @if($errors->has('category'))
+                                            <div class="error">{{ $errors->first('category') }}</div>
+                                        @endif
                                     </div>
                                     <div class="col-sm-6 form-group">
                                         <label>Blog Title</label>
                                         <input type="blog_title" value="{{old("blog_title")}}" placeholder="Blog Title" name="blog_title" class="form-control" required="">
-                                        <div class="invalid-feedback">
-                                            Please enter blog title
-                                        </div>
+                                        @if($errors->has('blog_title'))
+                                            <div class="error">{{ $errors->first('blog_title') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label>Blog Title(Arabic)</label>
+                                        <input type="blog_title" value="{{old("blog_title_ab")}}" placeholder="Blog Title(Arabic)" name="blog_title_ab" class="form-control" required="">
+                                        @if($errors->has('blog_title_ab'))
+                                            <div class="error">{{ $errors->first('blog_title_ab') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label>Blog Title(Hebrew)</label>
+                                        <input type="blog_title" value="{{old("blog_title_he")}}" placeholder="Blog Title(Hebrew)" name="blog_title_he" class="form-control" required="">
+                                        @if($errors->has('blog_title_he'))
+                                            <div class="error">{{ $errors->first('blog_title_he') }}</div>
+                                        @endif
                                     </div>
 
-                                    <input name="blog_content" id="inp_htmlcode" type="hidden" />
-                                    <div class="col-sm-6 form-group">
+                                    <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="blog_content_heading_text">Blog Content</label>
-                                        <div id="div_editor1" class="richtexteditor" required>
-			                        </div>
+                                        <textarea class="ckeditor form-control" name="blog_content"></textarea>
+                                        @if($errors->has('blog_content'))
+                                            <div class="error">{{ $errors->first('blog_content') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label class="form-control-label" for="blog_content_heading_text">Blog Content(Arabic)</label>
+                                        <textarea class="ckeditor form-control" name="blog_content_ab"></textarea>
+                                        @if($errors->has('blog_content_ab'))
+                                            <div class="error">{{ $errors->first('blog_content_ab') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label class="form-control-label" for="blog_content_heading_text">Blog Content(Hebrew)</label>
+                                        <textarea class="ckeditor form-control" name="blog_content_he"></textarea>
+                                        @if($errors->has('blog_content_he'))
+                                            <div class="error">{{ $errors->first('blog_content_he') }}</div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -80,12 +109,10 @@
 
 <script src="{{asset("public/assets/pages-js/blog/add_edit.js")}}"></script>
 <!-- Editor Js-->
-<script type="text/javascript" src="{{ asset('public/assets/js') }}/rte.js"></script>
-<script type="text/javascript" src="{{ asset('public/assets/js') }}/plugins/all_plugins.js"></script>
+<script type="text/javascript" src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 <script>
-    var editor1 = new RichTextEditor(document.getElementById("div_editor1"));
-    editor1.attachEvent("change", function () {
-        document.getElementById("inp_htmlcode").value = editor1.getHTMLCode();
+    $(document).ready(function() {
+       $('.ckeditor').ckeditor();
     });
 </script>
 <!-- Editor Js End -->

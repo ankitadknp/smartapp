@@ -153,7 +153,7 @@ class BlogController extends Controller
                     $join->on('blog.blog_id', '=', 'blog_like.blog_id')
                     ->where('blog_like.user_id',$user_id);
                 })
-                ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'),DB::raw("ExtractValue(blog.blog_content, '//text()') as blog_content"))
+                ->select('blog.*','category.category_name','category.category_name_ab','category.category_name_he',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'),DB::raw("ExtractValue(blog.blog_content, '//text()') as blog_content"))
                 ->where('blog.status','=',1)
                 ->orderby('blog.blog_id','DESC')
                 ->get();
@@ -186,7 +186,7 @@ class BlogController extends Controller
 
     public function blog_comment_list(Request $request)
     {
-        
+        $user_id = Auth::user()->id;
         $validator = Validator::make($request->all(), [
             'blog_id' => 'required',
         ]);
@@ -205,8 +205,9 @@ class BlogController extends Controller
         $blog_comment = BlogComment::leftJoin('users', function($join) {
                 $join->on('users.id', '=', 'blog_comment.user_id');
             })
-            ->leftJoin('blog_comment_like', function($join) {
-                $join->on('blog_comment.blog_comment_id', '=', 'blog_comment_like.blog_comment_id');
+            ->leftJoin('blog_comment_like', function($join) use($user_id){
+                $join->on('blog_comment.blog_comment_id', '=', 'blog_comment_like.blog_comment_id')
+                ->where('blog_comment_like.user_id',$user_id);
             })
             ->leftJoin('blog', function($join) {
                 $join->on('blog.blog_id', '=', 'blog_comment.blog_id');

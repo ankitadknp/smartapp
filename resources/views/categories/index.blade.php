@@ -1,5 +1,7 @@
 @extends('layouts.layout')
 
+@section('title', 'Categories')
+
 @section('addcss')
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
@@ -114,10 +116,24 @@
                                 <strong id="name-error"></strong>
                             </span>
                         </div>
+                        <div class="col-sm-12 form-group">
+                            <label>Category Name(Arabic)</label>
+                            <input type="text" id="cat_name_ab" placeholder="Category Name(Arabic)" name="category_name_ab" class="form-control" required="">
+                            <span class="text-danger">
+                                <strong id="name-ab-error"></strong>
+                            </span>
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <label>Category Name(Hebrew)</label>
+                            <input type="text" id="cat_name_he" placeholder="Category Name(Hebrew)" name="category_name_he" class="form-control" required="">
+                            <span class="text-danger">
+                                <strong id="name-he-error"></strong>
+                            </span>
+                        </div>
                         <div class="col-sm-12" class="form-group">
                             <label>Category Type</label>
                             <select name="type"  id="c_type" class="form-control" required="">
-                                <option value="">Select Type</option>
+                                <option value="" >Select Type</option>
                                 <option value="Blog">Blog</option>
                                 <option value="Coupon">Coupon</option>
                             </select>
@@ -154,12 +170,16 @@
         $('#add_category').modal('show');
         $( '#name-error').html( "" );
         $( '#type-error').html( "" );
+        $( '#name-ab-error').html( "" );
+        $( '#name-he-error').html( "" );
     });
 
     $('body').on('click', '.edit_category', function () {
         var category_id = $(this).data('id');
         $( '#name-error').html( "" );
         $( '#type-error').html( "" );
+        $( '#name-ab-error').html( "" );
+        $( '#name-he-error').html( "" );
 
         $.get('categories/'+category_id+'/edit', function (data) {
             $('#exampleModalLongTitle').html("Edit Categories");
@@ -167,6 +187,8 @@
             $('#add_category').modal('show');
             $('#category_id').val(data.category_id);
             $('#cat_name').val(data.category_name);
+            $('#cat_name_ab').val(data.category_name_ab);
+            $('#cat_name_he').val(data.category_name_he);
             $('#c_type').val(data.type);
         })
     });
@@ -194,7 +216,9 @@
                     });
                 } else {
                     $( '#name-error').html( data.errors.category_name );
-                    $( '#type-error').html( data.errors.language_code );
+                    $( '#type-error').html( data.errors.type );
+                    $( '#name-ab-error').html( data.errors.category_name_ab );
+                    $( '#name-he-error').html( data.errors.category_name_he );
                 }
             },
             error: function (data) {

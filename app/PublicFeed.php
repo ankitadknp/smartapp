@@ -12,7 +12,7 @@ class PublicFeed extends Model
     protected $primaryKey = 'public_feed_id';
 
     protected $fillable = [
-        'public_feed_title','content','status'
+        'public_feed_title','content','status','public_feed_title_ab','public_feed_title_he','content_ab','content_he'
     ];
 
     public function images()

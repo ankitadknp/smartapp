@@ -179,7 +179,8 @@ class PublicFeedController extends Controller
 
     public function recent_feed_comment_list(Request $request)
     {
-        
+        $user_id = Auth::user()->id;
+
         $validator = Validator::make($request->all(), [
             'public_feed_id' => 'required',
         ]);
@@ -198,8 +199,9 @@ class PublicFeedController extends Controller
         $feed_comment = PublicFeedComment::leftJoin('users', function($join) {
                 $join->on('users.id', '=', 'public_feed_comment.user_id');
             })
-            ->leftJoin('public_feed_comment_like', function($join) {
-                $join->on('public_feed_comment.public_feed_comment_id', '=', 'public_feed_comment_like.public_feed_comment_id');
+            ->leftJoin('public_feed_comment_like', function($join) use($user_id){
+                $join->on('public_feed_comment.public_feed_comment_id', '=', 'public_feed_comment_like.public_feed_comment_id')
+                ->where('public_feed_comment_like.user_id',$user_id);
             })
             ->leftJoin('public_feed', function($join) {
                 $join->on('public_feed.public_feed_id', '=', 'public_feed_comment.public_feed_id');

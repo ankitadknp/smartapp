@@ -1,23 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\LanguageController;
 use App\Http\Controllers\API\BlogController;
-use App\Http\Controllers\API\PublicFeedController;
 use App\Http\Controllers\API\CouponController;
-use App\Http\Controllers\API\ShareController;
+use App\Http\Controllers\API\LanguageController;
 use App\Http\Controllers\API\NotificationController;
-
+use App\Http\Controllers\API\PublicFeedController;
+use App\Http\Controllers\API\ShareController;
+use App\Http\Controllers\API\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
+Route::get('coupon_category_list', [CouponController::class, 'coupon_category_list']);
 
 
-Route::middleware('auth:api')->group( function () 
-{
-
+Route::middleware('auth:api')->group(function () {
     Route::post('verify_phone_number', [UserController::class, 'verify_phone_number']);
     Route::post('change_password', [UserController::class, 'change_password']);
     Route::get('get_profile', [UserController::class, 'get_profile']);
@@ -43,8 +40,8 @@ Route::middleware('auth:api')->group( function ()
     Route::post('add_coupon', [CouponController::class, 'add_coupon']);
     Route::post('coupon_list', [CouponController::class, 'coupon_list']);
     Route::post('update_coupon', [CouponController::class, 'update_coupon']);
-    Route::post('client_mycoupon', [CouponController::class, 'client_mycoupon']);
-    Route::get('active_inactive_coupon', [CouponController::class, 'active_inactive_coupon']);
+    Route::post('add_mycoupon', [CouponController::class, 'add_mycoupon']);
+    Route::get('client_mycoupon_list', [CouponController::class, 'client_mycoupon_list']);
     Route::post('coupon_statistics', [CouponController::class, 'coupon_statistics']);
     Route::post('save_coupon', [CouponController::class, 'save_coupon']);
 
@@ -53,4 +50,3 @@ Route::middleware('auth:api')->group( function ()
     Route::post('add_notification', [NotificationController::class, 'add_notification']);
     Route::get('notification_list', [NotificationController::class, 'notification_list']);
 });
-

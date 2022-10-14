@@ -5,7 +5,7 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
         <link rel="shortcut icon" href="{{asset('public/favicon.ico')}}" type="image/x-icon">
         <link rel="icon" href="{{asset('public/favicon.ico')}}" type="image/x-icon">
-        <title>Login &mdash; {{ config('app.name') }}</title>
+        <title>Login &mdash; Smart Citizen App</title>
 
         <!-- General CSS Files -->
         <link rel="stylesheet" href="{{asset("public/assets/modules/bootstrap/css/bootstrap.min.css")}}">
@@ -27,7 +27,6 @@
                             <div class="login-brand">
                                 <img src="{{asset("public/assets/images/logo.png")}}" alt="logo" width="150">
                             </div>
-
                             <div class="card card-primary">
                                 <div class="card-header"><h4>Login</h4></div>
                                 @if ($errors->any())
@@ -74,8 +73,12 @@
                                 </div>
                             </div>
                             <div class="simple-footer">
-                                Copyright &copy; {{ config('app.name') }} {{date("Y")}}
+                                Copyright &copy; {{date("Y")}} 
+                                <div class="bullet"></div> Powered By <a href="https://www.knp-tech.com/">KNP Technologies</a>
                             </div>
+                            <!-- <div class="simple-footer">
+                                Copyright &copy; <a href="https://www.knp-tech.com/">KNP Technologies</a> {{date("Y")}}
+                            </div> -->
                         </div>
                     </div>
                 </div>

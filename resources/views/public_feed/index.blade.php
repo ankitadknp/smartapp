@@ -1,5 +1,7 @@
 @extends('layouts.layout')
 
+@section('title', 'Public Feed')
+
 @section('addcss')
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
@@ -9,6 +11,10 @@
       overflow-y: initial !important
 }
 #top-5-scroll{
+  height: 420px;
+  overflow-y: auto;
+}
+#feed-scroll{
   height: 420px;
   overflow-y: auto;
 }
@@ -77,6 +83,7 @@
                                         <th>Title</th>
                                         <th>Status</th>
                                         <th>Report</th>
+                                        <th>Comment</th>
                                         <th>Edit</th>
                                         <th>Delete</th>
                                     </tr>
@@ -90,6 +97,7 @@
     </section>
 </div>
 
+<!-- report modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -101,6 +109,27 @@
       </div>
       <div class="modal-body">
             <div id="view-reports">
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- comment modal -->
+<div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Public Feed Comment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div id="view-comments">
             </div>
       </div>
       <div class="modal-footer">
