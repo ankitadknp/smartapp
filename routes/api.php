@@ -5,6 +5,7 @@ use App\Http\Controllers\API\CouponController;
 use App\Http\Controllers\API\LanguageController;
 use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\PublicFeedController;
+use App\Http\Controllers\API\QrCodeController;
 use App\Http\Controllers\API\ShareController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +13,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
 Route::get('coupon_category_list', [CouponController::class, 'coupon_category_list']);
-
 
 Route::middleware('auth:api')->group(function () {
     Route::post('verify_phone_number', [UserController::class, 'verify_phone_number']);
@@ -46,6 +46,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('save_coupon', [CouponController::class, 'save_coupon']);
 
     Route::post('share', [ShareController::class, 'share']);
+
+    Route::post('get-qr-ode', [QrCodeController::class, 'getQrCode']);
 
     Route::post('add_notification', [NotificationController::class, 'add_notification']);
     Route::get('notification_list', [NotificationController::class, 'notification_list']);
