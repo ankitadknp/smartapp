@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Category;
 use App\ClientMyCoupon;
 use App\Coupon;
+use App\CouponQRcode;
 use App\Http\Controllers\Controller;
 use App\Share;
 use App\UseCoupon;
 use App\User;
-use App\Category;
-use DB,Validator;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use QrCode;
+use URL;
+use Validator;
 
 class CouponController extends Controller
 {
@@ -29,6 +33,7 @@ class CouponController extends Controller
             'coupon_title' => 'required|max:50',
             'coupon_description' => 'required',
             'category_id' => 'required',
+            'qrcode_url' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -43,17 +48,24 @@ class CouponController extends Controller
         $input = $request->all();
         $input['user_id'] = $user_id;
         $couponRes = Coupon::create($input);
-        // $success['coupon_code'] = $coupon->coupon_code;
-        // $success['coupon_title'] = $coupon->coupon_title;
-        // $success['coupon_code'] = $coupon->coupon_code;
-        // $success['coupon_description'] = $coupon->coupon_description;
-        // $success['discount_type'] = $coupon->discount_type;
-        // $success['location'] = $coupon->location;
-        // $success['expiry_date'] = $coupon->expiry_date;
-        // $success['term_condition'] = $coupon->term_condition;
+
+        $publicPath = public_path('qrcodes/'.time().'.svg');
+        $fileName = basename($publicPath);
+        $basePath = URL::to('/public/qrcodes/'.$fileName);
+
+        if ($couponRes->coupon_id) {
+            QrCode::generate($request->qrcode_url, $publicPath);
+            $QrRes = CouponQRcode::create([
+                'coupon_id' => $couponRes->coupon_id,
+                'qrcode_url' => $request->qrcode_url,
+                'qrcode_file' => $basePath,
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $couponRes,
+            'returnPath' => $publicPath,
             'message' => 'Added Coupon Successfully',
             'status' => 200,
         ]);
@@ -74,8 +86,8 @@ class CouponController extends Controller
         if ($user->user_status == 1) {
             if ($search != '') {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                        $join->on('users.id', '=', 'coupon.user_id');
-                    })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                     ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                     ->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
                     ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
@@ -85,8 +97,8 @@ class CouponController extends Controller
                     ->get();
             } elseif ($location != '') {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                         ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                         ->where('coupon.location', 'LIKE', '%'.$location.'%')
                         ->where('coupon.user_id', '=', $user_id)
@@ -94,8 +106,8 @@ class CouponController extends Controller
                         ->get();
             } elseif ($discount_type != '') {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                         ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                         ->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%')
                         ->where('coupon.user_id', '=', $user_id)
@@ -103,8 +115,8 @@ class CouponController extends Controller
                         ->get();
             } elseif ($category_id != '') {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                         ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                         ->where('coupon.category_id', $category_id)
                         ->where('coupon.user_id', '=', $user_id)
@@ -122,8 +134,8 @@ class CouponController extends Controller
         } elseif ($user->user_status == 0) {
             if ($search != '') {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                        $join->on('users.id', '=', 'coupon.user_id');
-                    })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                     ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                     ->where('coupon_code', 'LIKE', '%'.$search.'%')
                     ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
@@ -132,32 +144,32 @@ class CouponController extends Controller
                     ->get();
             } elseif ($location != '') {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                         ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                         ->where('coupon.location', 'LIKE', '%'.$location.'%')
                         ->orderby('coupon.coupon_id', 'DESC')
                         ->get();
             } elseif ($discount_type != '') {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                         ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                         ->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%')
                         ->orderby('coupon.coupon_id', 'DESC')
                         ->get();
             } elseif ($category_id != '') {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                         ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                         ->where('coupon.category_id', $category_id)
                         ->orderby('coupon.coupon_id', 'DESC')
                         ->get();
             } else {
                 $coupon = Coupon::leftJoin('users', function ($join) {
-                        $join->on('users.id', '=', 'coupon.user_id');
-                    })
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
                     ->select('coupon.*', DB::raw('CONCAT("'.$BUSINESS_LOGO_URL.'", users.business_logo) AS business_logo'))
                     ->orderby('coupon.coupon_id', 'DESC')
                     ->get();
@@ -185,7 +197,6 @@ class CouponController extends Controller
             'expiry_date' => 'required',
             'term_condition' => 'required',
             'category_id' => 'required',
-            
         ]);
 
         if ($validator->fails()) {
@@ -382,11 +393,11 @@ class CouponController extends Controller
 
     public function coupon_category_list(Request $request)
     {
-        $coupon_res = Category::where('type','=','Coupon')->get();
+        $coupon_res = Category::where('type', '=', 'Coupon')->get();
 
         return response()->json([
             'success' => true,
-            'data' =>$coupon_res,
+            'data' => $coupon_res,
             'message' => 'Coupon Category List',
             'status' => 200,
         ]);
