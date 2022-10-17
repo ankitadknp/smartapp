@@ -21,6 +21,7 @@ function get_all_data() {
             {"data": "status"},
             {"data": "view"},
             {"data": "view_comment"},
+            {"data": "view_like"},
             {"data": "edit"},
             {"data": "delete"}
         ],
@@ -52,6 +53,11 @@ function get_all_data() {
             },
             {
                 targets: [5],
+                searchable: true,
+                sortable: false,
+            },
+            {
+                targets: [6],
                 searchable: true,
                 sortable: false,
             }
@@ -231,17 +237,18 @@ jQuery(document).ready(function () {
             dataType: 'json',
             cache: false,
             success: function (response) {
-                $('#view-reports').html(response);
+                $('#view-reports').html(response.feed_report);
+                $('#report_title').html('Public Feed Reports ('+response.report_count+')');
             }
         })
     });
 
     //comment modal
-    jQuery(document).on('click', '.show_modal', function () 
+    jQuery(document).on('click', '.comment_modal', function () 
     {
         var id = jQuery(this).attr('data-id');
         jQuery.ajax({
-            "url": controller_url + '/show',
+            "url": controller_url + '/comment',
             type: "POST",
             data: {
                 'id': id,
@@ -249,9 +256,38 @@ jQuery(document).ready(function () {
             dataType: 'json',
             cache: false,
             success: function (response) {
-                $('#view-comments').html(response);
+                $('#view-comments').html(response.feed_comment);
+                $('#comment_title').html('Public Feed Comments ('+response.comment_count+')');
             }
         })
     });
+
+     //like modal
+    jQuery(document).on('click', '.like_modal', function () 
+    {
+        var id = jQuery(this).attr('data-id');
+        jQuery.ajax({
+            "url": controller_url + '/like',
+            type: "POST",
+            data: {
+                'id': id,
+            },
+            dataType: 'json',
+            cache: false,
+            success: function (response) {
+                $('#view-likes').html(response.feed_like);
+                $('#like_title').html('Public Feed Likes ('+response.like_count+')');
+            }
+        })
+    });
+
+    
+    //close modal
+    $('.close').click(function (){
+        $("#view-reports").empty();
+        $("#view-comments").empty();
+        $("#view-like").empty();
+    })
+ 
 
 });

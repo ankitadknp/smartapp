@@ -69,21 +69,21 @@
 
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label">{{ __('Blog Content') }}</label>
-                                        <textarea class="ckeditor form-control" name="content">{{$blog->blog_content}}</textarea>
+                                        <textarea class="form-control" name="blog_content" id="ckeditor">{{$blog->blog_content}}</textarea>
                                         @if($errors->has('blog_content'))
                                             <div class="error">{{ $errors->first('blog_content') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="blog_content_heading_text">Blog Content(Arabic)</label>
-                                        <textarea class="ckeditor form-control" name="blog_content_ab">{{$blog->blog_content_ab}}</textarea>
+                                        <textarea class="form-control" id="ckeditor_ab" name="blog_content_ab">{{$blog->blog_content_ab}}</textarea>
                                         @if($errors->has('blog_content_ab'))
                                             <div class="error">{{ $errors->first('blog_content_ab') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="blog_content_heading_text">Blog Content(Hebrew)</label>
-                                        <textarea class="ckeditor form-control" name="blog_content_he">{{$blog->blog_content_he}}</textarea>
+                                        <textarea class="form-control"  id="ckeditor_he" name="blog_content_he">{{$blog->blog_content_he}}</textarea>
                                         @if($errors->has('blog_content_he'))
                                             <div class="error">{{ $errors->first('blog_content_he') }}</div>
                                         @endif
@@ -113,8 +113,17 @@
 <!-- Editor Js-->
 <script type="text/javascript" src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 <script>
-    $(document).ready(function() {
-       $('.ckeditor').ckeditor();
+   CKEDITOR.replace('ckeditor_he', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
+    });
+    CKEDITOR.replace('ckeditor_ab', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
+    });
+    CKEDITOR.replace('ckeditor', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
     });
 
 </script>

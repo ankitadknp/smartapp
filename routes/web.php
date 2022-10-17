@@ -35,6 +35,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("delete", "BlogController@destroy")->name("blog.delete");
         Route::post("show", "BlogController@show")->name("blog.show");
         Route::post("comment", "BlogController@comment")->name("blog.comment");
+        Route::post("like", "BlogController@like")->name("blog.like");
     });
 
     //Categories Module Routing
@@ -53,8 +54,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("change_status", "PublicFeedController@change_status")->name("public_feed.change_status");
         Route::post("show", "PublicFeedController@show")->name("public_feed.show");
         Route::post("comment", "PublicFeedController@comment")->name("public_feed.comment");
+        Route::post("like", "PublicFeedController@like")->name("public_feed.like");
     });
-    // Route::post('ckeditor/upload', 'PublicFeedController@upload')->name('ckeditor.upload');
+    Route::post('ck/upload','PublicFeedController@uploadImage')->name('ck.upload');
 
     //Sub Admin Module Routing
     Route::resource("sub_admin", "SubAdminController");

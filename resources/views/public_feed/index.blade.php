@@ -18,6 +18,10 @@
   height: 420px;
   overflow-y: auto;
 }
+#like-scroll{
+  height: 420px;
+  overflow-y: auto;
+}
 </style>
 @endsection
 
@@ -84,6 +88,7 @@
                                         <th>Status</th>
                                         <th>Report</th>
                                         <th>Comment</th>
+                                        <th>Like</th>
                                         <th>Edit</th>
                                         <th>Delete</th>
                                     </tr>
@@ -102,7 +107,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Public Feed Report</h5>
+        <h5 class="modal-title" id="report_title">Public Feed Report</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -123,13 +128,34 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Public Feed Comment</h5>
+        <h5 class="modal-title" id="comment_title">Public Feed Comment</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
             <div id="view-comments">
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- like modal -->
+<div class="modal fade" id="like" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="like_title">Public Feed Like</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div id="view-likes">
             </div>
       </div>
       <div class="modal-footer">

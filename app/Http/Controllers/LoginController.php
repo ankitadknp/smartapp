@@ -54,70 +54,13 @@ class LoginController extends Controller {
 
         $email = $request->get("email");
         $password = $request->get("password");
-        // $remember = !empty($request->get("remember")) && $request->get("remember") == "on" ? true : false;
 
         if(Auth::attempt(['email' => $email, 'password' => ($password),'user_status' => (3)]))
         { 
             return redirect('dashboard');
         }
 
-        // $user_data = Auth::guard('admin')->attempt(['a_email' => $email, 'password' => $password, 'a_status' => 1], $remember);
-
-
-        // $is_valid_login = false;
-        // if ($user_data) {
-        //     $is_valid_login = true;
-        // } else {
-        //     $user_data = Auth::guard('admin')->attempt(['a_user_name' => $email, 'password' => $password, 'a_status' => 1], $remember);
-        //     if ($user_data) {
-        //         $is_valid_login = true;
-        //     }
-        // }
-        // if ($is_valid_login) {
-        //     $user_data = Auth::guard('admin')->user();
-        //     $user_id = $user_data->a_id;
-        //     $user_roles_data = $user_data->getUserRole;
-        //     if (!empty($user_roles_data)) {
-        //         $role_permissions = json_decode($user_roles_data->role_permissions, true);
-        //         $role_types_ids = array();
-        //         if (!empty($role_permissions)) {
-        //             foreach ($role_permissions as $key => $value) {
-        //                 $role_types_ids[] = $key;
-        //             }
-        //         }
-
-        //         //GET USER PERMISSION
-
-        //         $get_all_permissions_controller_names = \App\UserRolesTypes::whereIn("urpt_id", $role_types_ids)
-        //                 ->select("urpt_id", "urpt_controller_name")
-        //                 ->where("urpt_status", 1)
-        //                 ->get();
-
-        //           //  print_r($get_all_permissions_controller_names);die;
-        //         $role_permissions_array = array();
-        //         foreach ($get_all_permissions_controller_names as $sinlge_value) {
-        //             $role_permissions_array[$sinlge_value->urpt_controller_name] = $role_permissions[$sinlge_value->urpt_id];
-        //         }
-        //         $request->session()->put("user_access_permission", $role_permissions_array);
-
-        //         //GET USER CHILDS
-        //         $userChilds = $this->adminModel->getChilds($user_id);
-        //         $allowedChildIds = !empty($userChilds) ? $userChilds . "," . $user_id : $user_id;
-
-        //         $request->session()->put("user_child_ids", $allowedChildIds);
-
-        //         //UPDATE USER LAST LOGIN
-        //         $updateuser = \App\Admins::find($user_id);
-        //         $updateuser->a_last_login = now();
-        //         $updateuser->save();
-        //     } else {
-        //         $request->session()->put("user_access_permission", array());
-        //     }
-
-        //     return redirect('dashboard');
-        // }
-
-        return \Redirect::back()->withErrors(["Invalied email or password"]);
+        return \Redirect::back()->withErrors(["Invalid email or password"]);
     }
 
     public function demo() {

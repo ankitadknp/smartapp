@@ -24,6 +24,7 @@ function get_all_data() {
             {"data": "status"},
             {"data": "view"},
             {"data": "view_comment"},
+            {"data": "view_like"},
             {"data": "edit"},
             {"data": "delete"}
         ],
@@ -60,6 +61,11 @@ function get_all_data() {
             },
             {
                 targets: [6],
+                searchable: true,
+                sortable: false,
+            },
+            {
+                targets: [7],
                 searchable: true,
                 sortable: false,
             },
@@ -236,7 +242,8 @@ jQuery(document).ready(function () {
             dataType: 'json',
             cache: false,
             success: function (response) {
-                $('#view-comments').html(response);
+                $('#view-comments').html(response.blog_comment);
+                $('#comment_title').html('Blog Comments ('+response.comment_count+')');
             }
         })
     });
@@ -257,8 +264,39 @@ jQuery(document).ready(function () {
             dataType: 'json',
             cache: false,
             success: function (response) {
-                $('#view-reports').html(response);
+                $('#view-reports').html(response.blog_report);
+                $('#report_title').html('Blog Reports ('+response.report_count+')');
             }
         })
     });
+
+    
+    //like modal
+
+    jQuery(document).on('click', '.like_modal', function () 
+    {
+        var id;
+
+        id = jQuery(this).attr('data-id');
+        jQuery.ajax({
+            "url": controller_url + '/like',
+            type: "POST",
+            data: {
+                'id': id,
+            },
+            dataType: 'json',
+            cache: false,
+            success: function (response) {
+                $('#view-like').html(response.blog_like);
+                $('#like_title').html('Blog Likes ('+response.like_count+')');
+            }
+        })
+    });
+
+    //close modal
+    $('.close').click(function (){
+        $("#view-reports").empty();
+        $("#view-comments").empty();
+        $("#view-like").empty();
+    })
 });

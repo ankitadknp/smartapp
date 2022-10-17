@@ -53,31 +53,45 @@
                                     
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label">{{ __('Public Feed Content') }}</label>
-                                        <textarea class="ckeditor form-control" name="content">{{$feed->content}}</textarea>
+                                        <textarea class="form-control" name="content" id="ckeditor">{{$feed->content}}</textarea>
                                         @if($errors->has('content'))
                                             <div class="error">{{ $errors->first('content') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content(Arabic)</label>
-                                        <textarea class="ckeditor form-control" name="content_ab">{{$feed->content_ab}}</textarea>
+                                        <textarea class="form-control" name="ckeditor_ab" id="content_ab">{{$feed->content_ab}}</textarea>
                                         @if($errors->has('content_ab'))
                                             <div class="error">{{ $errors->first('content_ab') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content(Hebrew)</label>
-                                        <textarea class="ckeditor form-control" name="content_he">{{$feed->content_he}}</textarea>
+                                        <textarea class="form-control" name="content_he" id="ckeditor_he">{{$feed->content_he}}</textarea>
                                         @if($errors->has('content_he'))
                                             <div class="error">{{ $errors->first('content_he') }}</div>
                                         @endif
                                     </div>
 
-                                    <div class="col-sm-12 form-group">
+                                    <!-- <div class="col-sm-12 form-group">
                                         <label for="customFileGallery">Public Feed Images</label>
                                         <div class="file-loading">
                                             <input id="file-0b" type="file" class="file form-control required" name="images[]" accept="image/*" alt="Image" multiple="">
                                         </div>
+                                    </div> -->
+
+                                    <div class="row pb-2 gallery_section_card">
+                                        @if(!empty($feed_images))
+                                        @foreach($feed_images as $gallery)
+                                        <div class="col-6 col-sm-3 col-lg-3 mb-4 mb-md-0" style="padding: 15px;">
+                                            <div class="avatar-item mb-0">
+                                                <img alt="image" src="" class="img-fluid" data-toggle="tooltip" title=""  style="width: 100px;height: 100px;">
+                                                <div class="avatar-badge delete_data_button" data-id="{{$gallery->public_feed_id }}" data-name="{{$gallery->image}}" title="" data-toggle="tooltip" data-original-title="Remove" style="cursor: pointer"><i class="fas fa-trash text-danger"></i></div>
+                                          
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                        @endif
                                     </div>
 
                                 </div>
@@ -105,8 +119,17 @@
 <!-- Editor Js-->
 <script type="text/javascript" src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 <script>
-    $(document).ready(function() {
-       $('.ckeditor').ckeditor();
+    CKEDITOR.replace('ckeditor_he', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
+    });
+    CKEDITOR.replace('ckeditor_ab', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
+    });
+    CKEDITOR.replace('ckeditor', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
     });
  
 </script>

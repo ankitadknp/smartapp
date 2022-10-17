@@ -7,6 +7,7 @@ use App\PublicFeed;
 use App\PublicFeedImage;
 use App\PublicFeedReport;
 use App\PublicFeedComment;
+use App\PublicFeedLike;
 use App\User;
 use Illuminate\Support\Facades\Config;
 
@@ -67,6 +68,10 @@ class PublicFeedController extends Controller {
 
             foreach ($list_of_all_data as $value) {
 
+                $report_count = PublicFeedReport::where('public_feed_id',$value->public_feed_id)->count();
+                $comment_count = PublicFeedComment::where('public_feed_id',$value->public_feed_id)->count();
+                $like_count = PublicFeedLike::where('public_feed_id',$value->public_feed_id)->count();
+
                 $all_records[$index]['public_feed_title'] = $value->public_feed_title;
                 $checked = '';
                 if ($value->status == 1) {
@@ -78,9 +83,11 @@ class PublicFeedController extends Controller {
                                                                 <span class="custom-switch-indicator"></span>
                                                               </label>';
 
-                $all_records[$index]['view'] = '<a href="#" data-toggle="modal" data-target="#myModal" data-id="'.$value->public_feed_id  .'" class="btn btn-light show_modal">View</a>';
+                $all_records[$index]['view'] = '<a href="#" data-toggle="modal" data-target="#myModal" data-id="'.$value->public_feed_id  .'" class="btn btn-light show_modal"><i class="fa fa-file" aria-hidden="true"></i> ('.$report_count.')</a>';
 
-                $all_records[$index]['view_comment'] = '<a href="#" data-toggle="modal" data-target="#comment" data-id="'.$value->public_feed_id  .'" class="btn btn-light show_modal">View</a>';
+                $all_records[$index]['view_comment'] = '<a href="#" data-toggle="modal" data-target="#comment" data-id="'.$value->public_feed_id  .'" class="btn btn-light comment_modal"><i class="far fa-comment"></i> ('.$comment_count.')</a>';
+
+                $all_records[$index]['view_like'] = '<a href="#" data-toggle="modal" data-target="#like" data-id="'.$value->public_feed_id  .'" class="btn btn-light like_modal"><i class="fa fa-thumbs-up" aria-hidden="true"></i> ('.$like_count.')</a>';
 
                 $all_records[$index]['edit'] = '<a href="' . route($this->route_name . ".edit", $value->public_feed_id  ) . '" class="btn btn-light">Edit</a>';
 
@@ -280,6 +287,8 @@ class PublicFeedController extends Controller {
     {
         $id = $request->get("id");
         $feed = PublicFeedReport::where('public_feed_id','=',$id)->get();
+        $report_count = PublicFeedReport::where('public_feed_id',$id)->count();
+
 
         $feed_report = [];
         $path = Config::get('constants.USER_ICON');
@@ -295,17 +304,17 @@ class PublicFeedController extends Controller {
                 $date =  date_format($val->created_at,"Y-m-d");
                 $report = $val->report;
 
-                $all_report .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-square bg-primary" data-width="64%"></div><div class="budget-price-label">'.$report.'</div></div><div class="budget-price"></div></div></div></li></ul></div>';
+                $all_report .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$report.'</div></div><div class="budget-price"></div></div></div></li></ul></div>';
             }
 
             $all_report .= '</ul></div>';
             $feed_report = $all_report;
 
         } else {
-            $feed_report = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+            $feed_report = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li>';
         }
 
-        return json_encode($feed_report);
+        return json_encode(['feed_report'=>$feed_report,'report_count'=>$report_count]);
 
     }   
 
@@ -313,6 +322,8 @@ class PublicFeedController extends Controller {
     {
         $id = $request->get("id");
         $feed = PublicFeedComment::where('public_feed_id','=',$id)->get();
+        
+        $comment_count = PublicFeedComment::where('public_feed_id',$id)->count();
 
         $feed_comment = [];
         $path = Config::get('constants.USER_ICON');
@@ -327,38 +338,74 @@ class PublicFeedController extends Controller {
                 $date =  date_format($val->created_at,"Y-m-d");
                 $comment = $val->comment;
 
-                $all_comment.= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-square bg-primary" data-width="64%"></div><div class="budget-price-label">'.$comment.'</div></div><div class="budget-price"></div></div></div></li></ul></div>';
+                $all_comment .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$comment.'</div></div><div class="budget-price"></div></div></div></li>';
             }
 
             $all_comment .= '</ul></div>';
-            $feed_comment = $comment;
+            $feed_comment = $all_comment;
 
         } else {
-            $feed_comment = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+            $feed_comment = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Comments Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
         }
 
-        return json_encode($feed_report);
+        return json_encode(['feed_comment'=>$feed_comment,'comment_count'=>$comment_count]);
 
     } 
 
-    public function upload(Request $request)
+    public function like(Request $request) 
     {
-        if($request->hasFile('upload')) {
-            $originName = $request->file('upload')->getClientOriginalName();
-            $fileName = pathinfo($originName, PATHINFO_FILENAME);
-            $extension = $request->file('upload')->getClientOriginalExtension();
-            $fileName = $fileName.'_'.time().'.'.$extension;
-        
-            $request->file('upload')->move(public_path('images'), $fileName);
-   
-            $CKEditorFuncNum = $request->input('CKEditorFuncNum');
-            $url = asset('images/'.$fileName); 
-            $msg = 'Image uploaded successfully'; 
-            $response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
-               
-            @header('Content-type: text/html; charset=utf-8'); 
-            echo $response;
-        }
-    }
+        $id = $request->get("id");
+        $feed = PublicFeedLike::where('public_feed_id','=',$id)->get();
+        $like_count = PublicFeedLike::where('public_feed_id',$id)->count();
 
+
+        $feed_like = [];
+        $path = Config::get('constants.USER_ICON');
+
+        if ($feed != '[]' )
+        {
+            $all_like = '<div class="card-body" id="like-scroll"><ul class="list-unstyled list-unstyled-border">';
+            foreach ($feed as $val)
+            {
+                $user = User::find($val->user_id);
+                $u_name = $user['first_name']. ' '.$user['last_name'];
+                $date =  date_format($val->created_at,"Y-m-d");
+                if ($val->is_like == 0) {
+                    $like = '<i class="fa fa-thumbs-down"></i>';
+                } else {
+                    $like = '<i class="fa fa-thumbs-up"></i>';
+                }
+
+                $all_like .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$like.'</div></div><div class="budget-price"></div></div></div></li>';
+            }
+
+            $all_like .= '</ul></div>';
+            $feed_like = $all_like;
+
+        } else {
+            $feed_like = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Likes Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+        }
+
+        return json_encode(['feed_like'=>$feed_like,'like_count'=>$like_count]);
+
+    } 
+
+    public function uploadImage(Request $request)
+    {  
+
+        $file = $request->upload;
+        $fileName = $file->getClientOriginalName();
+        $new_name = time().$fileName;
+        $dir = public_path("/uploads/content_img/");
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $file->move(public_path('uploads/blog/'), $new_name);
+        $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+        $msg = 'Image uploaded successfully';
+        $url = asset('public/uploads/blog/'.$new_name); 
+        $response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
+        echo  $response;
+    }
+   
 }

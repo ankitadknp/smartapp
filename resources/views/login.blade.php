@@ -17,6 +17,21 @@
         <!-- Template CSS -->
         <link rel="stylesheet" href="{{asset("public/assets/css/style.css")}}">
         <link rel="stylesheet" href="{{asset("public/assets/css/components.css")}}">
+        <style>
+            .card-header{
+                margin-left: 206px;
+            }
+            div#show_hide_password.input-group>.form-control:not(:last-child) {
+                border-radius: 0.25rem;
+            }
+            .password_eye {
+            position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                right: 12px;
+                z-index: 999;
+            }
+        </style>
     </head>
     <body>
         <div id="app">
@@ -28,7 +43,7 @@
                                 <img src="{{asset("public/assets/images/logo.png")}}" alt="logo" width="150">
                             </div>
                             <div class="card card-primary">
-                                <div class="card-header"><h4>Login</h4></div>
+                                <div class="card-header title"><h3>Login</h3></div>
                                 @if ($errors->any())
                                 <div class="alert alert-danger">
                                     <ul style="margin-bottom: 0px">
@@ -52,13 +67,14 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <div class="d-block">
                                                 <label for="password" class="control-label">Password</label>
-                                                <div class="float-right">
-                                                    
+                                            <div class="input-group" id="show_hide_password">
+                                                <input class="form-control" type="password" name="password" id="password" value="" autocomplete="off" required>
+                                                <div class="input-group-addon password_eye">
+                                                    <a href=""><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
                                                 </div>
                                             </div>
-                                            <input id="password" type="password" class="form-control" name="password" tabindex="2" value="" autocomplete="off" required>
+                                          
                                             <div class="invalid-feedback">
                                                 please fill in your password
                                             </div>
@@ -76,9 +92,6 @@
                                 Copyright &copy; {{date("Y")}} 
                                 <div class="bullet"></div> Powered By <a href="https://www.knp-tech.com/">KNP Technologies</a>
                             </div>
-                            <!-- <div class="simple-footer">
-                                Copyright &copy; <a href="https://www.knp-tech.com/">KNP Technologies</a> {{date("Y")}}
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -103,7 +116,7 @@
         <script src="{{asset("public/assets/js/custom.js")}}"></script>
 
         
-        <script type="text/javascript">
+    <script type="text/javascript">
         jQuery(document).ready(function () {
             setTimeout(function () {
                 $('input').attr('autocomplete', 'off');
@@ -112,7 +125,21 @@
                 jQuery(".login_password").val("");
             }, 100);
         });
-        </script>
+
+
+        $("#show_hide_password a").on('click', function(event) {
+            event.preventDefault();
+            if($('#show_hide_password input').attr("type") == "text"){
+                $('#show_hide_password input').attr('type', 'password');
+                $('#show_hide_password i').addClass( "fa-eye-slash" );
+                $('#show_hide_password i').removeClass( "fa-eye" );
+            }else if($('#show_hide_password input').attr("type") == "password"){
+                $('#show_hide_password input').attr('type', 'text');
+                $('#show_hide_password i').removeClass( "fa-eye-slash" );
+                $('#show_hide_password i').addClass( "fa-eye" );
+            }
+        });
+    </script>
         
     </body>
 </html>

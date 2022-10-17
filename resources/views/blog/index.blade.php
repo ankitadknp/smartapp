@@ -18,6 +18,10 @@
   height: 420px;
   overflow-y: auto;
 }
+#like_scroll{
+  height: 420px;
+  overflow-y: auto;
+}
 </style>
 @endsection
 
@@ -95,6 +99,7 @@
                                         <th>Status</th>
                                         <th>Report</th>
                                         <th>Comment</th>
+                                        <th>Like</th>
                                         <th>Edit</th>
                                         <th>Delete</th>
                                     </tr>
@@ -113,7 +118,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Blog Report </h5>
+                <h5 class="modal-title" id="report_title"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -134,13 +139,35 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Blog Comment </h5>
+                <h5 class="modal-title" id="comment_title"> </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div id="view-comments">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- like modal -->
+<div class="modal fade" id="like" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="like_title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="view-like">
                 </div>
             </div>
             <div class="modal-footer">
@@ -160,6 +187,7 @@
 <script type="text/javascript">
 var controller_url = "{{route('blog.index')}}";
 </script>
+
 
 <!-- Page Specific JS File -->
 <script src="{{asset("public/assets/pages-js/blog/index.js?v1")}}"></script>

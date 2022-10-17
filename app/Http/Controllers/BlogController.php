@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blog;
 use App\BlogReport;
 use App\BlogComment;
+use App\BlogLike;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -76,6 +77,10 @@ class BlogController extends Controller
                 $all_records[$index]['blog_title'] = $value->blog_title;
                 $checked = '';
 
+                $report_count = BlogReport::where('blog_id',$value->blog_id)->count();
+                $comment_count = BlogComment::where('blog_id',$value->blog_id)->count();
+                $like_count = BlogLike::where('blog_id',$value->blog_id)->count();
+
                 if ($value->status == 1) {
                     $checked = 'checked="checked"';
                 }
@@ -85,9 +90,11 @@ class BlogController extends Controller
                                                                 <span class="custom-switch-indicator"></span>
                                                               </label>';
 
-                $all_records[$index]['view'] = '<a href="#" data-toggle="modal" data-target="#myModal" data-id="'.$value->blog_id.'" class="btn btn-light show_modal">View</a>';
+                $all_records[$index]['view'] = '<a href="#" data-toggle="modal" data-target="#myModal" data-id="'.$value->blog_id.'" class="btn btn-light show_modal"><i class="fa fa-file" aria-hidden="true"></i> ('.$report_count.')</a>';
 
-                $all_records[$index]['view_comment'] = '<a href="#" data-toggle="modal" data-target="#comment" data-id="'.$value->blog_id.'" class="btn btn-light comment_modal">View</a>';
+                $all_records[$index]['view_comment'] = '<a href="#" data-toggle="modal" data-target="#comment" data-id="'.$value->blog_id.'" class="btn btn-light comment_modal"><i class="far fa-comment"></i> ('.$comment_count.')</a>';
+
+                $all_records[$index]['view_like'] = '<a href="#" data-toggle="modal" data-target="#like" data-id="'.$value->blog_id.'" class="btn btn-light like_modal"><i class="fa fa-thumbs-up" aria-hidden="true"></i> ('.$like_count.')</a>';
 
                 $all_records[$index]['edit'] = '<a href="'.route($this->route_name.'.edit', $value->blog_id).'" class="btn btn-light">Edit</a>';
 
@@ -192,7 +199,6 @@ class BlogController extends Controller
             'category' => 'required',
            
         ]);
-
         $blog->category_id = $request->get('category');
         $blog->blog_title = $request->get('blog_title');
         $blog->blog_title_ab = $request->get('blog_title_ab');
@@ -234,6 +240,7 @@ class BlogController extends Controller
     {
         $id = $request->get('id');
         $blog = BlogReport::where('blog_id', '=', $id)->get();
+        $report_count = BlogReport::where('blog_id',$id)->count();
 
         $blog_report = [];
         $path = Config::get('constants.USER_ICON');
@@ -255,13 +262,14 @@ class BlogController extends Controller
             $blog_report = '<div class="card-body" ><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
         }
 
-        return json_encode($blog_report);
+        return json_encode(['blog_report'=>$blog_report,'report_count'=>$report_count]);
     }
 
     public function comment(Request $request)
     {
         $id = $request->get('id');
         $blog = BlogComment::where('blog_id', '=', $id)->get();
+        $comment_count = BlogComment::where('blog_id',$id)->count();
 
         $blog_comment = [];
         $path = Config::get('constants.USER_ICON');
@@ -280,9 +288,43 @@ class BlogController extends Controller
             $all_comment .= '</ul></div>';
             $blog_comment = $all_comment;
         } else {
-            $blog_comment = '<div class="card-body" ><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+            $blog_comment = '<div class="card-body" ><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Comments Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
         }
 
-        return json_encode($blog_comment);
+        return json_encode(['blog_comment'=>$blog_comment,'comment_count'=>$comment_count]);
+    }
+
+    public function like(Request $request)
+    {
+        $id = $request->get('id');
+        $blog = BlogLike::where('blog_id', '=', $id)->get();
+        $like_count = BlogLike::where('blog_id',$id)->count();
+
+
+        $blog_like = [];
+        $path = Config::get('constants.USER_ICON');
+
+        if ($blog != '[]') {
+            $all_like = '<div class="card-body" id="like_scroll"><ul class="list-unstyled list-unstyled-border">';
+
+            foreach ($blog as $val) {
+                $user = User::find($val->user_id);
+                $u_name = $user['first_name'].' '.$user['last_name'];
+                $date = date_format($val->created_at, 'Y-m-d');
+                if ($val->is_like == 0) {
+                    $like = '<i class="fa fa-thumbs-down"></i>';
+                } else {
+                    $like = '<i class="fa fa-thumbs-up"></i>';
+                }
+
+                $all_like .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$like.'</div></div><div class="budget-price"></div></div></div></li>';
+            }
+            $all_like .= '</ul></div>';
+            $blog_like = $all_like;
+        } else {
+            $blog_like = '<div class="card-body" ><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Likes Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+        }
+
+        return json_encode(['blog_like'=>$blog_like,'like_count'=>$like_count]);
     }
 }

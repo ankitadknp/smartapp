@@ -52,21 +52,21 @@
 
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content</label>
-                                        <textarea class="ckeditor form-control" name="content"></textarea>
+                                        <textarea class="form-control" name="content" id="ckeditor"></textarea>
                                         @if($errors->has('content'))
                                             <div class="error">{{ $errors->first('content') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content(Arabic)</label>
-                                        <textarea class="ckeditor form-control" name="content_ab"></textarea>
+                                        <textarea class="form-control" name="content_ab" id="ckeditor_ab"></textarea>
                                         @if($errors->has('content_ab'))
                                             <div class="error">{{ $errors->first('content_ab') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content(Hebrew)</label>
-                                        <textarea class="ckeditor form-control" name="content_he"></textarea>
+                                        <textarea class="form-control" name="ckeditor_he" id="ckeditor_he"></textarea>
                                         @if($errors->has('content_he'))
                                             <div class="error">{{ $errors->first('content_he') }}</div>
                                         @endif
@@ -103,8 +103,17 @@
 <!-- Editor Js-->
 <script type="text/javascript" src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 <script>
-    $(document).ready(function() {
-       $('.ckeditor').ckeditor();
+    CKEDITOR.replace('ckeditor_he', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
+    });
+    CKEDITOR.replace('ckeditor_ab', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
+    });
+    CKEDITOR.replace('ckeditor', {
+        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
     });
 </script>
 <!-- Editor Js End -->

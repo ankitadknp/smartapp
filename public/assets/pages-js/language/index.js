@@ -122,7 +122,7 @@ jQuery(document).ready(function () {
                                     swal(response.message, {
                                         icon: 'error',
                                     });
-                                }, 2000);
+                                });
                             }
                         },
                         error: function () {
@@ -130,7 +130,7 @@ jQuery(document).ready(function () {
                                 swal("Problem in performing your action.", {
                                     icon: 'info',
                                 });
-                            }, 2000);
+                            });
                         }
                     });
                 }
