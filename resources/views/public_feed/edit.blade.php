@@ -145,6 +145,7 @@
             }
         })
     });
+<<<<<<< HEAD
 
     //delete image
     jQuery(document).on('click', '.delete_data_button', function () 
@@ -180,6 +181,8 @@
             })
         }
     });
+=======
+>>>>>>> fc7360c5d0df8e4a863575e72ab635c4b5fc7d32
  
 </script>
 <!-- Editor Js End -->
