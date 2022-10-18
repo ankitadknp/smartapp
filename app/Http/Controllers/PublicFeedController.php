@@ -298,7 +298,7 @@ class PublicFeedController extends Controller {
                         unlink($image_path);
                     }
                 }
-                $folder_path =  "D:/xampp/htdocs/smartapp/public/uploads/public_feed/" . $id;
+                $folder_path =  public_path("/uploads/" . $this->route_name . "/" . $id);
                 if (File::exists($folder_path)) {
                     rmdir($folder_path);
                 }
