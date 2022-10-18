@@ -66,7 +66,7 @@
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content(Hebrew)</label>
-                                        <textarea class="form-control" name="content_he" id="ckeditor_he">{{old("content_he")}}</textarea>
+                                        <textarea class="form-control" name="content_he" id="ckeditor_he">{{old("ckeditor_he")}}</textarea>
                                         @if($errors->has('content_he'))
                                             <div class="error">{{ $errors->first('content_he') }}</div>
                                         @endif
@@ -114,19 +114,6 @@
     CKEDITOR.replace('ckeditor', {
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
         filebrowserUploadMethod: 'form'
-    });
-
-    CKEDITOR.on("instanceReady", function(event) {
-        event.editor.on("beforeCommandExec", function(event) {
-            // Show the paste dialog for the paste buttons and right-click paste
-            if (event.data.name == "paste") {
-                event.editor._.forcePasteDialog = true;
-            }
-            // Don't show the paste dialog for Ctrl+Shift+V
-            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
-                event.cancel();
-            }
-        })
     });
 
     CKEDITOR.on("instanceReady", function(event) {

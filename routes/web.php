@@ -55,6 +55,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("show", "PublicFeedController@show")->name("public_feed.show");
         Route::post("comment", "PublicFeedController@comment")->name("public_feed.comment");
         Route::post("like", "PublicFeedController@like")->name("public_feed.like");
+        Route::post("image_delete", "PublicFeedController@image_delete")->name("public_feed.image_delete");
     });
     Route::post('ck/upload','PublicFeedController@uploadImage')->name('ck.upload');
 

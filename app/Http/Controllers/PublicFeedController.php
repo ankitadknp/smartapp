@@ -8,7 +8,9 @@ use App\PublicFeedImage;
 use App\PublicFeedReport;
 use App\PublicFeedComment;
 use App\PublicFeedLike;
+use App\PublicFeedCommentLike;
 use App\User;
+use File;
 use Illuminate\Support\Facades\Config;
 
 class PublicFeedController extends Controller {
@@ -183,6 +185,8 @@ class PublicFeedController extends Controller {
     public function update(Request $request, PublicFeed $feed,$public_feed_id) 
     {
 
+        $PUBLIC_FEED_IMAGE =  Config::get('constants.PUBLIC_FEED_IMAGE');
+
         $request->validate([
             "public_feed_title" => "required",
             "public_feed_title_ab" => "required",
@@ -225,7 +229,7 @@ class PublicFeedController extends Controller {
                         $image->move($destinationPath, $gallery_image_name);
                         $new_obj = new PublicFeedImage();
                         $new_obj->public_feed_id = $added_id;
-                        $new_obj->image = $gallery_image_name;
+                        $new_obj->image = $PUBLIC_FEED_IMAGE.$added_id.'/'.$gallery_image_name;
                         $new_obj->save();
                     }
                 }
@@ -269,13 +273,57 @@ class PublicFeedController extends Controller {
     {
         $id = $request->get("id");
         $find_record = PublicFeed::find($id);
+        $feed_image = PublicFeedImage::where('public_feed_id',$id)->get();
+        $feed_like = PublicFeedLike::where('public_feed_id',$id)->get();
+        $feed_report = PublicFeedReport::where('public_feed_id',$id)->get();
+        $feed_comment = PublicFeedComment::where('public_feed_id',$id)->get();
+        $feed_comment_like = PublicFeedCommentLike::where('public_feed_id',$id)->get();
 
         $response = array("success" => false, "message" => "Problem while deleting this record");
 
         if ($find_record) {
 
-            $find_record->delete();
 
+            if ($feed_image != '[]')
+            {
+
+                foreach ($feed_image as $img_val) 
+                {
+                    $destinationPath = public_path("/uploads/");
+                    $new_path = substr($img_val->image, strpos($img_val->image, "public_feed/") );  
+                    $image_path = $destinationPath.$new_path;
+                    
+        
+                    if (File::exists($image_path)) {
+                        unlink($image_path);
+                    }
+                }
+                $folder_path =  "D:/xampp/htdocs/smartapp/public/uploads/public_feed/" . $id;
+                if (File::exists($folder_path)) {
+                    rmdir($folder_path);
+                }
+          
+                PublicFeedImage::where('public_feed_id',$id)->delete();
+            }
+
+            if ($feed_like != '[]') 
+            {
+                PublicFeedLike::where('public_feed_id',$id)->delete();
+            }
+            if ($feed_report != '[]') 
+            {
+                PublicFeedReport::where('public_feed_id',$id)->delete();
+            }
+            if ($feed_comment != '[]') 
+            {
+                PublicFeedComment::where('public_feed_id',$id)->delete();
+            }
+            if ($feed_comment_like != '[]') 
+            {
+                PublicFeedCommentLike::where('public_feed_id',$id)->delete();
+            }
+
+            $find_record->delete();
             $response['success'] = true;
             $response['message'] = $this->module_singular_name . " deleted successfully";
         }
@@ -406,6 +454,34 @@ class PublicFeedController extends Controller {
         $url = asset('public/uploads/blog/'.$new_name); 
         $response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
         echo  $response;
+    }
+
+    public function image_delete(Request $request) 
+    {
+        $id = $request->get("id");
+
+        $find_record = PublicFeedImage::find($id);
+
+        $response = array("success" => false, "message" => "Problem while deleting this record");
+
+        if ($find_record) {
+            $destinationPath = public_path("/uploads/");
+            $new_path = substr($find_record->image, strpos($find_record->image, "public_feed/") );  
+            $image_path = $destinationPath.$new_path;
+
+            if (File::exists($image_path)) {
+                // File::delete($destinationPath);
+                unlink($image_path);
+            }
+
+            $find_record->delete();
+
+            $response['success'] = true;
+            $response['message'] = "image deleted successfully";
+        }
+
+        return $response;
+
     }
    
 }

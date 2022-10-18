@@ -3,6 +3,11 @@
 @section('title', 'Public Feed')
 
 @section('addcss')
+<style>
+    .avatar-item {
+        margin-left: 5px
+    }
+</style>
 @endsection
 
 @section('content')
@@ -73,27 +78,23 @@
                                         @endif
                                     </div>
 
-                                    <!-- <div class="col-sm-12 form-group">
+                                    <div class="col-sm-12 form-group">
                                         <label for="customFileGallery">Public Feed Images</label>
                                         <div class="file-loading">
                                             <input id="file-0b" type="file" class="file form-control required" name="images[]" accept="image/*" alt="Image" multiple="">
                                         </div>
-                                    </div> -->
+                                    </div>
 
-                                    <div class="row pb-2 gallery_section_card">
+                                    <div class="row pb-2 gallery_section_card col-sm-12 form-group">
                                         @if(!empty($feed_images))
                                         @foreach($feed_images as $gallery)
-                                        <div class="col-6 col-sm-3 col-lg-3 mb-4 mb-md-0" style="padding: 15px;">
                                             <div class="avatar-item mb-0">
-                                                <img alt="image" src="" class="img-fluid" data-toggle="tooltip" title=""  style="width: 100px;height: 100px;">
-                                                <div class="avatar-badge delete_data_button" data-id="{{$gallery->public_feed_id }}" data-name="{{$gallery->image}}" title="" data-toggle="tooltip" data-original-title="Remove" style="cursor: pointer"><i class="fas fa-trash text-danger"></i></div>
-                                          
+                                                <img alt="image" src="{{$gallery->image}}" class="img-fluid" data-toggle="tooltip" title=""  style="width: 100px;height: 100px;">
+                                                <div class="avatar-badge delete_data_button" data-id="{{$gallery->public_feed_image_id }}" data-name="{{$gallery->image}}" title="" data-toggle="tooltip" data-original-title="Remove" style="cursor: pointer"><i class="fas fa-trash text-danger"></i></div>
                                             </div>
-                                        </div>
                                         @endforeach
                                         @endif
                                     </div>
-
                                 </div>
                             </div>
 
@@ -117,7 +118,7 @@
 
 
 <!-- Editor Js-->
-<script type="text/javascript" src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
+<script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
 <script>
     CKEDITOR.replace('ckeditor_he', {
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
@@ -130,6 +131,54 @@
     CKEDITOR.replace('ckeditor', {
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
         filebrowserUploadMethod: 'form'
+    });
+
+    CKEDITOR.on("instanceReady", function(event) {
+        event.editor.on("beforeCommandExec", function(event) {
+            // Show the paste dialog for the paste buttons and right-click paste
+            if (event.data.name == "paste") {
+                event.editor._.forcePasteDialog = true;
+            }
+            // Don't show the paste dialog for Ctrl+Shift+V
+            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
+                event.cancel();
+            }
+        })
+    });
+
+    //delete image
+    jQuery(document).on('click', '.delete_data_button', function () 
+    {
+        var result = confirm("Are you sure you want to remove this Image ?");
+        if (result) {
+            var id = jQuery(this).attr('data-id');
+            jQuery.ajax({
+                "url": controller_url + '/image_delete',
+                type: "POST",
+                data: {
+                    'id': id,
+                },
+                dataType: 'json',
+                cache: false,
+                success: function (response) {
+                    if (response.success == true) {
+                        // iziToast.success({
+                        //         message: response.message,
+                        //         position: 'topRight'
+                        //     });
+                        location.reload();
+
+                    } else {
+                        setTimeout(function () {
+                            iziToast.error({
+                                message: response.message,
+                                position: 'topRight'
+                            });
+                        });
+                    }
+                }
+            })
+        }
     });
  
 </script>

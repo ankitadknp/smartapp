@@ -64,24 +64,45 @@
                                             <div class="error">{{ $errors->first('blog_title_he') }}</div>
                                         @endif
                                     </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label class="form-control-label" for="blog_content_heading_text">Blog Short Content</label>
+                                        <textarea class="form-control" placeholder="Blog Short Content" name="short_content">{{old("short_content")}}</textarea>
+                                        @if($errors->has('short_content'))
+                                            <div class="error">{{ $errors->first('short_content') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label class="form-control-label" for="blog_content_heading_text">Blog Short Content(Arabic)</label>
+                                        <textarea class="form-control" placeholder="Blog Short Content(Arabic)" name="short_content_ab">{{old("short_content_ab")}}</textarea>
+                                        @if($errors->has('short_content_ab'))
+                                            <div class="error">{{ $errors->first('short_content_ab') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label class="form-control-label" for="blog_content_heading_text">Blog Short Content(Hebrew)</label>
+                                        <textarea class="form-control" placeholder="Blog Short Content(Hebrew)" name="short_content_he">{{old("short_content_he")}}</textarea>
+                                        @if($errors->has('short_content_he'))
+                                            <div class="error">{{ $errors->first('short_content_he') }}</div>
+                                        @endif
+                                    </div>
 
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="blog_content_heading_text">Blog Content</label>
-                                        <textarea class="form-control" name="blog_content"  id="ckeditor" ></textarea>
+                                        <textarea class="form-control" name="blog_content"  id="ckeditor" >{{old("blog_content")}}</textarea>
                                         @if($errors->has('blog_content'))
                                             <div class="error">{{ $errors->first('blog_content') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="blog_content_heading_text">Blog Content(Arabic)</label>
-                                        <textarea class="form-control" name="blog_content_ab"  id="ckeditor_ab" ></textarea>
+                                        <textarea class="form-control" name="blog_content_ab"  id="ckeditor_ab" >{{old("blog_title_ab")}}</textarea>
                                         @if($errors->has('blog_content_ab'))
                                             <div class="error">{{ $errors->first('blog_content_ab') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="blog_content_heading_text">Blog Content(Hebrew)</label>
-                                        <textarea class="form-control"  id="ckeditor_he" name="blog_content_he"></textarea>
+                                        <textarea class="form-control"  id="ckeditor_he" name="blog_content_he">{{old("blog_content_he")}}</textarea>
                                         @if($errors->has('blog_content_he'))
                                             <div class="error">{{ $errors->first('blog_content_he') }}</div>
                                         @endif
@@ -109,7 +130,7 @@
 
 <script src="{{asset("public/assets/pages-js/blog/add_edit.js")}}"></script>
 <!-- Editor Js-->
-<script type="text/javascript" src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
+<script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
 <script>
     CKEDITOR.replace('ckeditor_he', {
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
@@ -123,6 +144,20 @@
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
         filebrowserUploadMethod: 'form'
     });
+
+    CKEDITOR.on("instanceReady", function(event) {
+        event.editor.on("beforeCommandExec", function(event) {
+            // Show the paste dialog for the paste buttons and right-click paste
+            if (event.data.name == "paste") {
+                event.editor._.forcePasteDialog = true;
+            }
+            // Don't show the paste dialog for Ctrl+Shift+V
+            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
+                event.cancel();
+            }
+        })
+    });
+
 </script>
 <!-- Editor Js End -->
 

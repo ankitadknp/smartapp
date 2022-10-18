@@ -7,6 +7,7 @@ use App\BlogReport;
 use App\BlogComment;
 use App\BlogLike;
 use App\User;
+use App\BlogCommentLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 
@@ -129,6 +130,9 @@ class BlogController extends Controller
             'blog_content' => 'required',
             'blog_content_ab' => 'required',
             'blog_content_he' => 'required',
+            'short_content' => 'required',
+            'short_content_ab' => 'required',
+            'short_content_he' => 'required',
         ]);
 
         $add_new_blog = [
@@ -139,6 +143,9 @@ class BlogController extends Controller
             'blog_content' => $request->get('blog_content'),
             'blog_content_ab' => $request->get('blog_content_ab'),
             'blog_content_he' => $request->get('blog_content_he'),
+            'short_content' => $request->get('short_content'),
+            'short_content_ab' => $request->get('short_content_ab'),
+            'short_content_he' => $request->get('short_content_he'),
             'status' => 1,
         ];
 
@@ -197,12 +204,18 @@ class BlogController extends Controller
             'blog_title_ab' => 'required',
             'blog_title_he' => 'required',
             'category' => 'required',
+            'short_content' => 'required',
+            'short_content_ab' => 'required',
+            'short_content_he' => 'required',
            
         ]);
         $blog->category_id = $request->get('category');
         $blog->blog_title = $request->get('blog_title');
         $blog->blog_title_ab = $request->get('blog_title_ab');
         $blog->blog_title_he = $request->get('blog_title_he');
+        $blog->short_content = $request->get('short_content');
+        $blog->short_content_ab = $request->get('short_content_ab');
+        $blog->short_content_he = $request->get('short_content_he');
         $blog->blog_content = $request->get('blog_content') ? $request->get('blog_content') : $blog->blog_content;
         $blog->blog_content_ab = $request->get('blog_content_ab') ? $request->get('blog_content_ab') : $blog->blog_content_ab;
         $blog->blog_content_he = $request->get('blog_content_he') ? $request->get('blog_content_he') : $blog->blog_content_he;
@@ -223,12 +236,33 @@ class BlogController extends Controller
         $id = $request->get('id');
 
         $find_record = Blog::find($id);
+        $blog_like = BlogLike::where('blog_id',$id)->get();
+        $blog_report = BlogReport::where('blog_id',$id)->get();
+        $blog_comment = BlogComment::where('blog_id',$id)->get();
+        $blog_comment_like = BlogCommentLike::where('blog_id',$id)->get();
 
         $response = ['success' => false, 'message' => 'Problem while deleting this record'];
 
-        if ($find_record) {
-            $find_record->delete();
+        if ($find_record) 
+        {
+            if ($blog_like != '[]') 
+            {
+                BlogLike::where('blog_id',$id)->delete();
+            }
+            if ($blog_report != '[]') 
+            {
+                BlogReport::where('blog_id',$id)->delete();
+            }
+            if ($blog_comment != '[]') 
+            {
+                BlogComment::where('blog_id',$id)->delete();
+            }
+            if ($blog_comment_like != '[]') 
+            {
+                BlogCommentLike::where('blog_id',$id)->delete();
+            }
 
+            $find_record->delete();
             $response['success'] = true;
             $response['message'] = $this->module_singular_name.' deleted successfully';
         }
