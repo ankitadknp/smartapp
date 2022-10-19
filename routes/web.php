@@ -73,5 +73,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("list-data", "LanguageController@load_data_in_table")->name("language.load_data_in_table");
         Route::post("change_status", "LanguageController@change_status")->name("language.change_status");
     });
+
+    //Coupons QR Module Routing
+    Route::resource("coupons-qr", "CouponQrController");
+    Route::prefix('couponsqr')->group(function () {
+        Route::post("list-data", "CouponQrController@load_data_in_table")->name("couponsqr.load_data_in_table");
+    });
     
 });
