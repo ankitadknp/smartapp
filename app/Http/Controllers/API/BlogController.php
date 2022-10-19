@@ -129,9 +129,17 @@ class BlogController extends Controller
         $user_id = Auth::user()->id;
 
         $search = $request->search;
+        $category_id = $request->category_id;
 
+<<<<<<< HEAD
+
+        if ($search != '') 
+        {
+            $blog = Blog::leftJoin('category', function($join) {
+=======
         if ($search == '') {
             $blog = Blog::leftJoin('category', function ($join) {
+>>>>>>> fc7360c5d0df8e4a863575e72ab635c4b5fc7d32
                 $join->on('blog.category_id', '=', 'category.category_id')
                     ->where('category.type', '=', 'Blog');
             })
@@ -152,12 +160,47 @@ class BlogController extends Controller
                 $join->on('blog.blog_id', '=', 'blog_like.blog_id')
                 ->where('blog_like.user_id', $user_id);
             })
+<<<<<<< HEAD
+            ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'))
+=======
             ->select('blog.*', 'category.category_name', DB::raw('IFNULL( blog_like.is_like, 0) as is_like'), DB::raw("ExtractValue(blog.blog_content, '//text()') as blog_content"))
+>>>>>>> fc7360c5d0df8e4a863575e72ab635c4b5fc7d32
             ->where('blog.blog_title', 'LIKE', '%'.$search.'%')
             ->orWhere('blog.blog_content', 'LIKE', '%'.$search.'%')
             ->where('blog.status', '=', 1)
             ->orderby('blog.blog_id', 'DESC')
             ->get();
+   
+
+        }  elseif ($category_id != '') {
+            $blog = Blog::leftJoin('category', function($join) {
+                $join->on('blog.category_id', '=', 'category.category_id')
+                ->where('category.type','=','Blog');
+            })
+            ->leftJoin('blog_like', function($join) use($user_id){
+                $join->on('blog.blog_id', '=', 'blog_like.blog_id')
+                ->where('blog_like.user_id',$user_id);
+            })
+            ->select('blog.*','category.category_name','category.category_name_ab','category.category_name_he',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'))
+            ->where('blog.status','=',1)
+            ->where('blog.category_id', $category_id)
+            ->orderby('blog.blog_id','DESC')
+            ->get();
+
+        } else {
+            $blog = Blog::leftJoin('category', function($join) {
+                $join->on('blog.category_id', '=', 'category.category_id')
+                ->where('category.type','=','Blog');
+            })
+            ->leftJoin('blog_like', function($join) use($user_id){
+                $join->on('blog.blog_id', '=', 'blog_like.blog_id')
+                ->where('blog_like.user_id',$user_id);
+            })
+            ->select('blog.*','category.category_name','category.category_name_ab','category.category_name_he',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'))
+            ->where('blog.status','=',1)
+            ->orderby('blog.blog_id','DESC')
+            ->get();
+       
         }
 
         return response()->json([

@@ -230,20 +230,24 @@ jQuery(document).ready(function () {
 
     jQuery(document).on('click', '.comment_modal', function () 
     {
-        var id;
-
-        id = jQuery(this).attr('data-id');
+        var id = jQuery(this).attr('data-id');
+        var token = jQuery("#csrf-token").prop("content");
         jQuery.ajax({
             "url": controller_url + '/comment',
             type: "POST",
             data: {
                 'id': id,
+                '_token': token,
             },
             dataType: 'json',
             cache: false,
+            beforeSend: function() {
+                $("body").addClass("loading");    
+            },
             success: function (response) {
                 $('#view-comments').html(response.blog_comment);
                 $('#comment_title').html('Blog Comments ('+response.comment_count+')');
+                $("body").removeClass("loading");
             }
         })
     });
@@ -252,20 +256,24 @@ jQuery(document).ready(function () {
 
     jQuery(document).on('click', '.show_modal', function () 
     {
-        var id;
-
-        id = jQuery(this).attr('data-id');
+        var id = jQuery(this).attr('data-id');
+        var token = jQuery("#csrf-token").prop("content");
         jQuery.ajax({
             "url": controller_url + '/show',
             type: "POST",
             data: {
                 'id': id,
+                '_token': token,
             },
             dataType: 'json',
             cache: false,
+            beforeSend: function() {
+                $("body").addClass("loading");    
+            },
             success: function (response) {
                 $('#view-reports').html(response.blog_report);
                 $('#report_title').html('Blog Reports ('+response.report_count+')');
+                $("body").removeClass("loading");
             }
         })
     });
@@ -275,20 +283,24 @@ jQuery(document).ready(function () {
 
     jQuery(document).on('click', '.like_modal', function () 
     {
-        var id;
-
-        id = jQuery(this).attr('data-id');
+        var id = jQuery(this).attr('data-id');
+        var token = jQuery("#csrf-token").prop("content");
         jQuery.ajax({
             "url": controller_url + '/like',
             type: "POST",
             data: {
                 'id': id,
+                '_token': token,
             },
             dataType: 'json',
             cache: false,
+            beforeSend: function() {
+                $("body").addClass("loading");    
+            },
             success: function (response) {
                 $('#view-like').html(response.blog_like);
                 $('#like_title').html('Blog Likes ('+response.like_count+')');
+                $("body").removeClass("loading");
             }
         })
     });

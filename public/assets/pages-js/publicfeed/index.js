@@ -227,18 +227,24 @@ jQuery(document).ready(function () {
 
     jQuery(document).on('click', '.show_modal', function () 
     {
+        var token = jQuery("#csrf-token").prop("content");
         var id = jQuery(this).attr('data-id');
         jQuery.ajax({
             "url": controller_url + '/show',
             type: "POST",
             data: {
                 'id': id,
+                '_token': token,
             },
             dataType: 'json',
             cache: false,
+            beforeSend: function() {
+                $("body").addClass("loading");    
+            },
             success: function (response) {
                 $('#view-reports').html(response.feed_report);
                 $('#report_title').html('Public Feed Reports ('+response.report_count+')');
+                $("body").removeClass("loading");
             }
         })
     });
@@ -247,17 +253,23 @@ jQuery(document).ready(function () {
     jQuery(document).on('click', '.comment_modal', function () 
     {
         var id = jQuery(this).attr('data-id');
+        var token = jQuery("#csrf-token").prop("content");
         jQuery.ajax({
             "url": controller_url + '/comment',
             type: "POST",
             data: {
                 'id': id,
+                '_token': token,
             },
             dataType: 'json',
             cache: false,
+            beforeSend: function() {
+                $("body").addClass("loading");    
+            },
             success: function (response) {
                 $('#view-comments').html(response.feed_comment);
                 $('#comment_title').html('Public Feed Comments ('+response.comment_count+')');
+                $("body").removeClass("loading");
             }
         })
     });
@@ -266,17 +278,23 @@ jQuery(document).ready(function () {
     jQuery(document).on('click', '.like_modal', function () 
     {
         var id = jQuery(this).attr('data-id');
+        var token = jQuery("#csrf-token").prop("content");
         jQuery.ajax({
             "url": controller_url + '/like',
             type: "POST",
             data: {
                 'id': id,
+                '_token': token,
             },
             dataType: 'json',
             cache: false,
+            beforeSend: function() {
+                $("body").addClass("loading");    
+            },
             success: function (response) {
                 $('#view-likes').html(response.feed_like);
                 $('#like_title').html('Public Feed Likes ('+response.like_count+')');
+                $("body").removeClass("loading");
             }
         })
     });
@@ -288,6 +306,6 @@ jQuery(document).ready(function () {
         $("#view-comments").empty();
         $("#view-like").empty();
     })
- 
+
 
 });

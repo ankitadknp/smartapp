@@ -65,7 +65,7 @@
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content(Arabic)</label>
-                                        <textarea class="form-control" name="ckeditor_ab" id="content_ab">{{$feed->content_ab}}</textarea>
+                                        <textarea class="form-control" id="ckeditor_ab" name="content_ab">{{$feed->content_ab}}</textarea>
                                         @if($errors->has('content_ab'))
                                             <div class="error">{{ $errors->first('content_ab') }}</div>
                                         @endif
@@ -118,7 +118,7 @@
 
 
 <!-- Editor Js-->
-<script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
+<script type="text/javascript" src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 <script>
     CKEDITOR.replace('ckeditor_he', {
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
@@ -132,23 +132,8 @@
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
         filebrowserUploadMethod: 'form'
     });
-
-    CKEDITOR.on("instanceReady", function(event) {
-        event.editor.on("beforeCommandExec", function(event) {
-            // Show the paste dialog for the paste buttons and right-click paste
-            if (event.data.name == "paste") {
-                event.editor._.forcePasteDialog = true;
-            }
-            // Don't show the paste dialog for Ctrl+Shift+V
-            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
-                event.cancel();
-            }
-        })
-    });
-<<<<<<< HEAD
-
-    //delete image
-    jQuery(document).on('click', '.delete_data_button', function () 
+     //delete image
+     jQuery(document).on('click', '.delete_data_button', function () 
     {
         var result = confirm("Are you sure you want to remove this Image ?");
         if (result) {
@@ -181,8 +166,7 @@
             })
         }
     });
-=======
->>>>>>> fc7360c5d0df8e4a863575e72ab635c4b5fc7d32
+   
  
 </script>
 <!-- Editor Js End -->

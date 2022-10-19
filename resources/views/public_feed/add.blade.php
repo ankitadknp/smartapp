@@ -52,21 +52,21 @@
 
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content</label>
-                                        <textarea class="form-control" name="content" id="ckeditor"></textarea>
+                                        <textarea class="form-control" name="content" id="ckeditor">{{old("content")}}</textarea>
                                         @if($errors->has('content'))
                                             <div class="error">{{ $errors->first('content') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content(Arabic)</label>
-                                        <textarea class="form-control" name="content_ab" id="ckeditor_ab"></textarea>
+                                        <textarea class="form-control" name="content_ab" id="ckeditor_ab">{{old("content_ab")}}</textarea>
                                         @if($errors->has('content_ab'))
                                             <div class="error">{{ $errors->first('content_ab') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label" for="content_heading_text">Public Feed Content(Hebrew)</label>
-                                        <textarea class="form-control" name="ckeditor_he" id="ckeditor_he"></textarea>
+                                        <textarea class="form-control" name="content_he" id="ckeditor_he">{{old("content_he")}}</textarea>
                                         @if($errors->has('content_he'))
                                             <div class="error">{{ $errors->first('content_he') }}</div>
                                         @endif
