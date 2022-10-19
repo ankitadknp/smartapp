@@ -120,6 +120,9 @@ class PublicFeedController extends Controller {
             "content_ab" => "required",
             "content_he" => "required",
             "content" => "required",
+            "short_content" => "required",
+            "short_content_ab" => "required",
+            "short_content_he" => "required",
         ]);
 
 
@@ -133,6 +136,9 @@ class PublicFeedController extends Controller {
             "public_feed_title" => $request->get("public_feed_title"),
             "public_feed_title_he" => $request->get("public_feed_title_he"),
             "public_feed_title_ab" => $request->get("public_feed_title_ab"),
+            "short_content" => $request->get("short_content"),
+            "short_content_ab" => $request->get("short_content_ab"),
+            "short_content_he" => $request->get("short_content_he"),
             "content_ab" => $request->get("content_ab"),
             "content_he" => $request->get("content_he"),
             'content' => $request->get("content"),
@@ -191,6 +197,9 @@ class PublicFeedController extends Controller {
             "public_feed_title" => "required",
             "public_feed_title_ab" => "required",
             "public_feed_title_he" => "required",
+            "short_content" => "required",
+            "short_content_ab" => "required",
+            "short_content_he" => "required",
         ]);
 
         $feed = PublicFeed::where('public_feed_id',$public_feed_id)->first();
@@ -203,6 +212,9 @@ class PublicFeedController extends Controller {
         $feed->public_feed_title = $request->get("public_feed_title");
         $feed->public_feed_title_ab = $request->get("public_feed_title_ab");
         $feed->public_feed_title_he = $request->get("public_feed_title_he");
+        $feed->short_content = $request->get("short_content");
+        $feed->short_content_ab = $request->get("short_content_ab");
+        $feed->short_content_he = $request->get("short_content_he");
         $feed->content =  $request->get("content") ? $request->get("content") : $feed->content;
         $feed->content_ab =  $request->get("content_ab") ? $request->get("content_ab") : $feed->content_ab;
         $feed->content_he =  $request->get("content_he") ? $request->get("content_he") : $feed->content_he;

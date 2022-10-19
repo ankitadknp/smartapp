@@ -28,25 +28,46 @@
 
                             <div class="col-sm-12">
                                 <div class="row">
-                                    <div class="col-sm-12 form-group">
+                                    <div class="col-sm-6 form-group">
                                         <label>Public Feed Name</label>
                                         <input type="text" value="{{old("public_feed_title")}}" placeholder="Public Feed Name" name="public_feed_title" class="form-control" required="">
                                         @if($errors->has('public_feed_title'))
                                             <div class="error">{{ $errors->first('public_feed_title') }}</div>
                                         @endif
                                     </div>
-                                    <div class="col-sm-12 form-group">
+                                    <div class="col-sm-6 form-group">
                                         <label>Public Feed Name(Arabic)</label>
                                         <input type="text" value="{{old("public_feed_title_ab")}}" placeholder="Public Feed Name(Arabic)" name="public_feed_title_ab" class="form-control" required="">
                                         @if($errors->has('public_feed_title_ab'))
                                             <div class="error">{{ $errors->first('public_feed_title_ab') }}</div>
                                         @endif
                                     </div>
-                                    <div class="col-sm-12 form-group">
+                                    <div class="col-sm-6 form-group">
                                         <label>Public Feed Name(Hebrew)</label>
                                         <input type="text" value="{{old("public_feed_title_he")}}" placeholder="Public Feed Name(Hebrew)" name="public_feed_title_he" class="form-control" required="">
                                         @if($errors->has('public_feed_title_he'))
                                             <div class="error">{{ $errors->first('public_feed_title_he') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label class="form-control-label" for="content_heading_text">Public Feed Short Content</label>
+                                        <textarea class="form-control" name="short_content" placeholder="Public Feed Short Content">{{old("short_content")}}</textarea>
+                                        @if($errors->has('short_content'))
+                                            <div class="error">{{ $errors->first('short_content') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label class="form-control-label" for="content_heading_text">Public Feed Short Content(Arabic)</label>
+                                        <textarea class="form-control" name="short_content_ab" placeholder="Public Feed Short Content(Arabic)">{{old("short_content_ab")}}</textarea>
+                                        @if($errors->has('short_content_ab'))
+                                            <div class="error">{{ $errors->first('short_content_ab') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label class="form-control-label" for="content_heading_text">Public Feed Short Content(Hebrew)</label>
+                                        <textarea class="form-control" name="short_content_he" placeholder="Public Feed Short Content(Hebrew)">{{old("short_content_he")}}</textarea>
+                                        @if($errors->has('short_content_he'))
+                                            <div class="error">{{ $errors->first('short_content_he') }}</div>
                                         @endif
                                     </div>
 

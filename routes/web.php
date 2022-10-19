@@ -55,7 +55,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("show", "PublicFeedController@show")->name("public_feed.show");
         Route::post("comment", "PublicFeedController@comment")->name("public_feed.comment");
         Route::post("like", "PublicFeedController@like")->name("public_feed.like");
-        Route::post("image_delete", "PublicFeedController@image_delete")->name("public_feed.image_delete");
     });
     Route::post('ck/upload','PublicFeedController@uploadImage')->name('ck.upload');
 
@@ -77,8 +76,25 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Coupons QR Module Routing
     Route::resource("coupons-qr", "CouponQrController");
-    Route::prefix('couponsqr')->group(function () {
-        Route::post("list-data", "CouponQrController@load_data_in_table")->name("couponsqr.load_data_in_table");
+    Route::prefix('coupons-qr')->group(function () {
+        Route::post("list-data", "CouponQrController@load_data_in_table")->name("coupons-qr.load_data_in_table");
+        Route::post("delete", "CouponQrController@destroy")->name("coupons-qr.delete");
+    });
+
+    //Merchant Module Routing
+    Route::resource("merchant", "MerchantController");
+    Route::prefix('merchant')->group(function () {
+        Route::post("delete", "MerchantController@destroy")->name("merchant.delete");
+        Route::post("list-data", "MerchantController@load_data_in_table")->name("merchant.load_data_in_table");
+        Route::post("change_status", "MerchantController@change_status")->name("merchant.change_status");
+    });
+
+    //Client Module Routing
+    Route::resource("client", "ClientController");
+    Route::prefix('client')->group(function () {
+        Route::post("delete", "ClientController@destroy")->name("client.delete");
+        Route::post("list-data", "ClientController@load_data_in_table")->name("client.load_data_in_table");
+        Route::post("change_status", "ClientController@change_status")->name("client.change_status");
     });
     
 });

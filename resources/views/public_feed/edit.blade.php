@@ -34,28 +34,48 @@
                             <input type="hidden" name="_method" value="PUT">
                             <div class="col-sm-12">
                                 <div class="row">
-                                    <div class="col-sm-12 form-group">
+                                    <div class="col-sm-6 form-group">
                                         <label>Public Feed Title</label>
                                         <input type="text" value="{{$feed->public_feed_title}}" placeholder="Public Feed Title" name="public_feed_title" class="form-control" required="">
                                         @if($errors->has('public_feed_title'))
                                             <div class="error">{{ $errors->first('public_feed_title') }}</div>
                                         @endif
                                     </div>
-                                    <div class="col-sm-12 form-group">
+                                    <div class="col-sm-6 form-group">
                                         <label>Public Feed Name(Arabic)</label>
                                         <input type="text" value="{{$feed->public_feed_title_ab}}" placeholder="Public Feed Name(Arabic)" name="public_feed_title_ab" class="form-control" required="">
                                         @if($errors->has('public_feed_title_ab'))
                                             <div class="error">{{ $errors->first('public_feed_title_ab') }}</div>
                                         @endif
                                     </div>
-                                    <div class="col-sm-12 form-group">
+                                    <div class="col-sm-6 form-group">
                                         <label>Public Feed Name(Hebrew)</label>
                                         <input type="text" value="{{$feed->public_feed_title_he}}" placeholder="Public Feed Name(Hebrew)" name="public_feed_title_he" class="form-control" required="">
                                         @if($errors->has('public_feed_title_he'))
                                             <div class="error">{{ $errors->first('public_feed_title_he') }}</div>
                                         @endif
                                     </div>
-                                    
+                                    <div class="col-sm-6 form-group">
+                                        <label class="form-control-label">{{ __('Public Feed Short Content') }}</label>
+                                        <textarea class="form-control" name="short_content" placeholder="Public Feed Short Content">{{$feed->short_content}}</textarea>
+                                        @if($errors->has('short_content'))
+                                            <div class="error">{{ $errors->first('short_content') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label class="form-control-label" for="content_heading_text">Public Feed Short Content(Arabic)</label>
+                                        <textarea class="form-control" name="short_content_ab" placeholder="Public Feed Short Content(Arabic)">{{$feed->short_content_ab}}</textarea>
+                                        @if($errors->has('short_content_ab'))
+                                            <div class="error">{{ $errors->first('short_content_ab') }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <label class="form-control-label" for="content_heading_text">Public Feed Short Content(Hebrew)</label>
+                                        <textarea class="form-control" name="short_content_he" placeholder="Public Feed Short Content(Hebrew)">{{$feed->short_content_he}}</textarea>
+                                        @if($errors->has('short_content_he'))
+                                            <div class="error">{{ $errors->first('short_content_he') }}</div>
+                                        @endif
+                                    </div>
                                     <div class="col-sm-12 form-group">
                                         <label class="form-control-label">{{ __('Public Feed Content') }}</label>
                                         <textarea class="form-control" name="content" id="ckeditor">{{$feed->content}}</textarea>
@@ -145,7 +165,6 @@
             }
         })
     });
-<<<<<<< HEAD
 
     //delete image
     jQuery(document).on('click', '.delete_data_button', function () 
@@ -181,8 +200,6 @@
             })
         }
     });
-=======
->>>>>>> fc7360c5d0df8e4a863575e72ab635c4b5fc7d32
  
 </script>
 <!-- Editor Js End -->

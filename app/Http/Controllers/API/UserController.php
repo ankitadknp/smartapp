@@ -115,6 +115,7 @@ class UserController extends Controller
         $input['is_verified_mobile_no'] = 0;
         $input['status'] = 1;
 
+        $STORE_IMGAE_URL =  Config::get('constants.BUSINESS_LOGO_URL');
 
         if ($request->hasFile('business_logo')) {
             
@@ -129,17 +130,15 @@ class UserController extends Controller
             }
            
             $image->move($destinationPath, $cover_image_name);
-
-            $input['business_logo'] = $cover_image_name;
+            $pic = $STORE_IMGAE_URL.$cover_image_name;
+            $input['business_logo'] = $pic;
         }
    
        
         $input['password'] = Hash::make($input['password']);
         $user = User::create($input);
 
-        $STORE_IMGAE_URL =  Config::get('constants.BUSINESS_LOGO_URL');
 
-        $pic = $STORE_IMGAE_URL.$user->business_logo;
 
         $success['token'] =  $user->createToken('SmartApp')->accessToken;
         $success['user_id'] =  $user->id;
@@ -158,7 +157,7 @@ class UserController extends Controller
         $success['business_activity'] =  ($user->business_activity != null)?$user->business_activity:'';
         $success['business_sector'] =  ($user->business_sector != null)?$user->business_sector:'';
         $success['establishment_year'] =  ($user->establishment_year != null)?$user->establishment_year:'';
-        $success['business_logo'] =  ($user->business_logo != null)?$pic:'';
+        $success['business_logo'] =  ($user->user_status == 1)?$user->business_logo:'';
         $success['business_hours'] =  ($user->business_hours != null)?$user->business_hours:'';
         $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
         $success['street_address_name'] =  ($user->street_address_name != null)?$user->street_address_name:'';
@@ -203,8 +202,6 @@ class UserController extends Controller
 
             $user = Auth::user(); 
                 
-            $pic = $BUSINESS_LOGO_URL.$user->business_logo;
-
             $success['token'] =  $user->createToken('SmartApp')->accessToken;
             $success['user_id'] =  $user->id;
             $success['email'] =  $user->email;
@@ -222,7 +219,7 @@ class UserController extends Controller
             $success['business_activity'] =  ($user->business_activity != null)?$user->business_activity:'';
             $success['business_sector'] =  ($user->business_sector != null)?$user->business_sector:'';
             $success['establishment_year'] =  ($user->establishment_year != null)?$user->establishment_year:'';
-            $success['business_logo'] =  ($user->business_logo != null)?$pic:'';
+            $success['business_logo'] =  ($user->user_status == 1)?$user->business_logo:'';
             $success['business_hours'] =  ($user->business_hours != null)?$user->business_hours:'';
             $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
             $success['street_address_name'] =  ($user->street_address_name != null)?$user->street_address_name:'';
@@ -412,8 +409,6 @@ class UserController extends Controller
         if ($user != null) 
         {
 
-            $pic = $STORE_IMGAE_URL.$user->business_logo;
-			
             $success['user_id'] =  $user->id;
             $success['email'] =  $user->email;
             $success['first_name'] =  ($user->first_name != null)?$user->first_name:'';
@@ -430,7 +425,7 @@ class UserController extends Controller
             $success['business_activity'] =  ($user->business_activity != null)?$user->business_activity:'';
             $success['business_sector'] =  ($user->business_sector != null)?$user->business_sector:'';
             $success['establishment_year'] =  ($user->establishment_year != null)?$user->establishment_year:'';
-            $success['business_logo'] =  ($user->business_logo != null)?$pic:'';
+            $success['business_logo'] =  ($user->user_status == 1)?$user->business_logo:'';
             $success['business_hours'] =  ($user->business_hours != null)?$user->business_hours:'';
             $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
             $success['street_address_name'] =  ($user->street_address_name != null)?$user->street_address_name:'';
@@ -549,16 +544,11 @@ class UserController extends Controller
                 $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
                 $destinationPath = public_path().'/uploads/business_logo';
                 $image->move($destinationPath, $cover_image_name);
-                $input['business_logo']   = $cover_image_name;
-                $pic = $STORE_IMGAE_URL.$input['business_logo'];
+                $pic = $STORE_IMGAE_URL.$cover_image_name;
+                $input['business_logo']   = $pic;
             }
-
-        } else {
-            $pic ='';
         }
-
     
-
         $user = User::find($id);
         $user->update($input);
 
@@ -578,7 +568,7 @@ class UserController extends Controller
         $success['business_activity'] =  ($user->business_activity != null)?$user->business_activity:'';
         $success['business_sector'] =  ($user->business_sector != null)?$user->business_sector:'';
         $success['establishment_year'] =  ($user->establishment_year != null)?$user->establishment_year:'';
-        $success['business_logo'] =  ($user->business_logo != null)?$pic:'';
+        $success['business_logo'] =  ($user->user_status == 1)?$user->business_logo:'';
         $success['business_hours'] =  ($user->business_hours != null)?$user->business_hours:'';
         $success['street_address_name'] =  ($user->street_address_name != null)?$user->street_address_name:'';
         $success['street_number'] =  ($user->street_number != null)?$user->street_number:'';

@@ -42,6 +42,24 @@
                 </a>
             </li>
 
+            <li class="{{ request()->is('merchant') || request()->is('merchant/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('merchant.index')}}">
+                    <i class="fas fa-users"></i><span>Merchant</span>
+                </a>
+            </li>
+
+            <li class="{{ request()->is('client') || request()->is('client/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('client.index')}}">
+                    <i class="fas fa-users"></i><span>Client</span>
+                </a>
+            </li>
+
+            <li class="{{ request()->is('coupons-qr') || request()->is('coupons-qr/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('coupons-qr.index')}}">
+                    <i class="fas fa-qrcode"></i><span>Coupons QR Code</span>
+                </a>
+            </li>
+
             <li class="{{ request()->is('language') || request()->is('language/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('language.index')}}">
                     <i class="fa fa-language"></i><span>Language</span>
