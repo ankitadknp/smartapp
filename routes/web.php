@@ -81,6 +81,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("delete", "CouponQrController@destroy")->name("coupons-qr.delete");
     });
 
+    //Smart Debit Card Module Routing
+    Route::resource("smart-debit-card", "SmartDebitCardController");
+    Route::prefix('smart-debit-card')->group(function () {
+        Route::post("list-data", "SmartDebitCardController@load_data_in_table")->name("smart-debit-card.load_data_in_table");
+        Route::post("delete", "SmartDebitCardController@destroy")->name("smart-debit-card.delete");
+    });
+
     //Merchant Module Routing
     Route::resource("merchant", "MerchantController");
     Route::prefix('merchant')->group(function () {

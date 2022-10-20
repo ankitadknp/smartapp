@@ -36,6 +36,7 @@
         </div>
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <a href="{{route('merchant.index')}}">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-danger">
                         <i class="fas fa-users"></i>
@@ -49,6 +50,7 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                 <div class="card card-statistic-1">
@@ -66,6 +68,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <a href="{{route('sub_admin.index')}}">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-success">
                         <i class="fas fa-users"></i>
@@ -79,8 +82,10 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <a href="{{route('categories.index')}}">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-primary">
                         <i class="fas fa fa-list-alt"></i>
@@ -94,8 +99,10 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <a href="{{route('blog.index')}}">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-danger">
                         <i class="fab fa-blogger-b"></i>
@@ -109,8 +116,10 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <a href="{{route('public_feed.index')}}">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-warning">
                         <i class="fas fa-rss"></i>
@@ -124,8 +133,10 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <a href="{{route('language.index')}}">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-success">
                         <i class="fas fa fa-language"></i>
@@ -139,6 +150,7 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
         </div>
     </section>

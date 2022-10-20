@@ -33,16 +33,10 @@
                                     <div class="row">
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                             <div class="form-group">
-                                            <input type="text" placeholder="First Name" name="first_name" id="first_name" class="form-control">
+                                            <input type="text" placeholder="Name" name="name" id="name" class="form-control">
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                            <div class="form-group">
-                                            <input type="text" placeholder="Last Name" name="last_name" id="last_name" class="form-control">
-                                            </div>
-                                        </div>
-                                        
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                             <div class="form-group">
                                                 <input type="text" placeholder="Phone Number" name="phone_number" id="phone_number" class="form-control">
@@ -84,8 +78,7 @@
                             <table class="table table-striped" id="datatable">
                                 <thead>
                                     <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
+                                        <th>Client Name</th>
                                         <th>Email</th>
                                         <th>Phone Number</th>
                                         <th>Status</th>
@@ -102,7 +95,7 @@
     </section>
 </div>
 
-<!-- add category -->
+<!-- add client -->
 <div class="modal fade" id="add_client" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -160,7 +153,7 @@
 
                         <div class="col-sm-6 form-group">
                             <label>Phone Number</label>
-                            <input type="text" id="phone" placeholder="Phone Number" name="phone_number" class="form-control" required="">
+                            <input type="text" id="phone" placeholder="Phone Number" name="phone_number" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
                             <span class="text-danger">
                                 <strong id="phone_error"></strong>
                             </span>
@@ -206,15 +199,15 @@
 
                         <div class="col-sm-6 form-group">
                             <label>Number Of Children</label>
-                            <input type="text" id="no_of_child" placeholder="Number Of Children" name="no_of_child" class="form-control" required="">
+                            <input type="text" id="no_of_child" placeholder="Number Of Children" name="no_of_child" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
                             <span class="text-danger">
                                 <strong id="no_of_child_error"></strong>
                             </span>
                         </div>
 
                         <div class="col-sm-6 form-group">
-                            <label>Business Hours</label>
-                            <input type="text" id="occupation" placeholder="Business Hours" name="occupation" class="form-control" required="">
+                            <label>Occupation</label>
+                            <input type="text" id="occupation" placeholder="Occupation" name="occupation" class="form-control" required="">
                             <span class="text-danger">
                                 <strong id="occupation_error"></strong>
                             </span>
@@ -230,7 +223,7 @@
 
                         <div class="col-sm-6 form-group">
                             <label>Street Number</label>
-                            <input type="text" id="street_number" placeholder="Street Number" name="street_number" class="form-control" required="">
+                            <input type="text" id="street_number" placeholder="Street Number" name="street_number" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
                             <span class="text-danger">
                                 <strong id="street_number_error"></strong>
                             </span>
@@ -238,7 +231,7 @@
 
                         <div class="col-sm-6 form-group">
                             <label>House Number</label>
-                            <input type="text" id="house_number" placeholder="House Number" name="house_number" class="form-control" required="">
+                            <input type="text" id="house_number" placeholder="House Number" name="house_number" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
                             <span class="text-danger">
                                 <strong id="house_number_error"></strong>
                             </span>
@@ -339,8 +332,8 @@
             $('#saveBtn').html("Update");
             $('#add_client').modal('show');
             $('#user_id').val(data.id);
-            $('#bus_name').val(data.first_name);
-            $('#last_name').val(data.last_name);
+            $('#f_name').val(data.first_name);
+            $('#l_name').val(data.last_name);
             $('#email_id').val(data.email);
             $('#phone').val(data.phone_number);
             $('#id_number').val(data.id_number);
@@ -353,7 +346,7 @@
             $('#street_number').val(data.street_number);
             $('#district').val(data.district);
             $('#house_number').val(data.house_number);
-            $('#city_error').val(data.city);
+            $('#city').val(data.city);
         })
     });
 

@@ -147,7 +147,7 @@ class PublicFeedController extends Controller
         if ($search == '') 
         {
             $feed = PublicFeed::with('images')
-                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'),DB::raw("ExtractValue(public_feed.content, '//text()') as content"))
+                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
                 ->leftJoin('public_feed_like', function($join) use($user_id){
                         $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
                         ->where('public_feed_like.user_id',$user_id);
@@ -158,7 +158,7 @@ class PublicFeedController extends Controller
         } else {
 
             $feed = PublicFeed::with('images')
-                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'),DB::raw("ExtractValue(public_feed.content, '//text()') as content"))
+                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
                 ->leftJoin('public_feed_like', function($join) use($user_id) {
                         $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
                         ->where('public_feed_like.user_id',$user_id);
@@ -206,7 +206,11 @@ class PublicFeedController extends Controller
             ->leftJoin('public_feed', function($join) {
                 $join->on('public_feed.public_feed_id', '=', 'public_feed_comment.public_feed_id');
             })
-            ->select('public_feed_comment.*','users.first_name','users.last_name',DB::raw('IFNULL( public_feed_comment_like.is_like, 0) as is_like'))
+            ->select ('public_feed_comment.*',DB::raw('(CASE 
+            WHEN users.user_status = "0" THEN CONCAT(last_name, " ", first_name) 
+            WHEN users.status = "1" THEN users.business_name 
+            END) AS name'),DB::raw('IFNULL( public_feed_comment_like.is_like, 0) as is_like')
+            )
             ->where('public_feed_comment.public_feed_id',$request->public_feed_id)
             ->where('public_feed.status','=',1)
             ->orderby('public_feed_comment.public_feed_id','DESC')

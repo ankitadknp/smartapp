@@ -60,6 +60,12 @@
                 </a>
             </li>
 
+            <li class="{{ request()->is('smart-debit-card') || request()->is('smart-debit-card/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('smart-debit-card.index')}}">
+                <i class="fa fa-credit-card"></i><span>Smart Debit Card</span>
+                </a>
+            </li> 
+
             <li class="{{ request()->is('language') || request()->is('language/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('language.index')}}">
                     <i class="fa fa-language"></i><span>Language</span>

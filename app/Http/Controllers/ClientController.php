@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-use Redirect,Response,DB,Validator;
+use Redirect,Response,DB,Validator,Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Config;
 
@@ -38,8 +38,7 @@ class ClientController extends Controller
         $sidx = !empty($request->get('order')[0]['column']) ? $request->get('order')[0]['column'] : 0;
         $sord = !empty($request->get('order')[0]['dir']) ? $request->get('order')[0]['dir'] : 'DESC';
 
-        $first_name = !empty($request->get('first_name')) ? $request->get('first_name') : '';
-        $last_name = !empty($request->get('last_name')) ? $request->get('last_name') : '';
+        $name = !empty($request->get("name")) ? $request->get("name") : '';
         $email = !empty($request->get('email')) ? $request->get('email') : '';
         $phone_number = !empty($request->get('phone_number')) ? $request->get('phone_number') : '';
         $status = !empty($request->get('status')) ? $request->get('status') : '';
@@ -48,11 +47,8 @@ class ClientController extends Controller
 
         $list_query = User::select("*")->where('user_status','=',0);
 
-        if (!empty($first_name)) {
-            $list_query = $list_query->where('first_name', 'LIKE', '%'.$first_name.'%');
-        }
-        if (!empty($last_name)) {
-            $list_query = $list_query->where('last_name', 'LIKE', '%'.$last_name.'%');
+        if (!empty($name)) {
+            $list_query = $list_query->where('first_name', 'LIKE', '%'.$name.'%')->orWhere("last_name", "LIKE", "%" . $name . "%");
         }
         if (!empty($email)) {
             $list_query = $list_query->where('email', 'LIKE', '%'.$email.'%');
@@ -76,8 +72,7 @@ class ClientController extends Controller
             $index = 0;
 
             foreach ($list_of_all_data as $value) {
-                $all_records[$index]['first_name'] = $value->first_name;
-                $all_records[$index]['last_name'] = $value->last_name;
+                $all_records[$index]['name'] = $value->first_name.' '.$value->last_name;
                 $all_records[$index]['email'] = $value->email;
                 $all_records[$index]['phone_number'] = $value->phone_number;
                 
@@ -145,6 +140,7 @@ class ClientController extends Controller
                 'city' => 'required|max:50',
                 'district' => 'required|max:50',
             ]);
+            $pwd = Hash::make($request->get('password'));
             $msg = 'Client Added Successfully.';
         } else 
         {
@@ -153,7 +149,7 @@ class ClientController extends Controller
                     'required',
                     'email',
                     'max:50',
-                    Rule::unique('users')->ignore($id)
+                    Rule::unique('users')->ignore($user_id)
                         ->where('user_status', 0)
                 ],
                 'first_name' => 'required|string|max:50',
@@ -170,6 +166,10 @@ class ClientController extends Controller
                 'city' => 'required|max:50',
                 'district' => 'required|max:50',
             ]);
+
+            $user_data = User::where('id',$user_id)->first();
+
+            $pwd = $user_data->password;
 
             $msg = 'Client Update Successfully';
         }
@@ -225,9 +225,9 @@ class ClientController extends Controller
             $find_record->save();
 
             if ($status == 1) {
-                $message = 'Blog has been unblocked';
+                $message = 'Client has been unblocked';
             } else {
-                $message = 'Blog has been blocked';
+                $message = 'Client has been blocked';
             }
 
             $response['success'] = true;

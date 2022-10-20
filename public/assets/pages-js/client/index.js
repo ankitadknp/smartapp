@@ -1,9 +1,9 @@
 "use strict";
 
 var data_table = '#datatable';
-function get_all_data() {
-    var first_name = $('#first_name').val();
-    var last_name = $('#last_name').val();
+function get_all_data() 
+{
+    var name = $('#name').val();
     var email = $('#email').val();
     var phone_number = $('#phone_number').val();
     var status = $('#status').val();
@@ -19,8 +19,7 @@ function get_all_data() {
         order: [0, 'DESC'],
         pageLength: 10,
         "columns": [
-            {"data": "first_name"},
-            {"data": "last_name"},
+            {"data": "name"},
             {"data": "email"},
             {"data": "phone_number"},
             {"data": "status"},
@@ -58,16 +57,7 @@ function get_all_data() {
                 searchable: true,
                 sortable: false,
             },
-            {
-                targets: [6],
-                searchable: true,
-                sortable: false,
-            },
-            {
-                targets: [7],
-                searchable: true,
-                sortable: false,
-            },
+        
         ],
         language: {
             emptyTable: "No data available",
@@ -81,7 +71,7 @@ function get_all_data() {
             "url": controller_url + '/list-data',
             "type": "POST",
             "async": false,
-            "data": {'_token': token, 'first_name': first_name, 'last_name': last_name, 'email': email,'phone_number': phone_number, 'status': status},
+            "data": {'_token': token, 'name': name, 'email': email,'phone_number': phone_number, 'status': status},
         },
         drawCallback: function () {
             jQuery('<li><a onclick="refresh_tab()" style="cursor:pointer" title="Refresh"><i class="ion-refresh" style="font-size:25px"></i></a></li>').prependTo('div.dataTables_paginate ul.pagination');
@@ -117,7 +107,7 @@ jQuery(document).ready(function () {
         if (jQuery(this).is(':checked')) {
             status = 1;
         } else {
-            status = 0;
+            status = 2;
         }
         id = jQuery(this).attr('data-id');
         if (!isNaN(id)) {
@@ -216,8 +206,7 @@ jQuery(document).ready(function () {
     });
 
     jQuery('.reset_filter').click(function () {
-        $('#first_name').val('');
-        $('#last_name').val('');
+        $('#name').val('');
         $('#phone_number').val('');
         $('#email').val('');
         $('#status').val('');

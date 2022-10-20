@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-use Redirect,Response,DB,Validator;
+use Redirect,Response,DB,Validator,Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Config;
 
@@ -109,6 +109,8 @@ class MerchantController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
+        // dd($request->file('business_logo'));
         
         $user_id  = $request->user_id ;
         $STORE_IMGAE_URL =  Config::get('constants.BUSINESS_LOGO_URL');
@@ -139,10 +141,8 @@ class MerchantController extends Controller
                 'district' => 'required|max:50',
                 'marital_status'=>'required'
             ]);
-
             
             if ($request->hasFile('business_logo')) {
-                
                 $image = $request->file('business_logo');
                 $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
                 $destinationPath = public_path().'/uploads/business_logo';
@@ -155,6 +155,8 @@ class MerchantController extends Controller
                 $business_logo = $STORE_IMGAE_URL.$cover_image_name;
             }
             $business_logo = '';
+
+            $pwd = Hash::make($request->get('password'));
 
             $msg = 'Merchant Added Successfully.';
         } else 
@@ -191,6 +193,10 @@ class MerchantController extends Controller
             }
             $business_logo = '';
 
+            $user_data = User::where('id',$user_id)->first();
+
+            $pwd = $user_data->password;
+
             $msg = 'Merchant Update Successfully';
         }
 
@@ -203,7 +209,7 @@ class MerchantController extends Controller
             'business_name' => $request->get('business_name'),
             'registration_number' => $request->get('registration_number'),
             'email' => $request->get('email'),
-            'password' => $request->get('password'),
+            'password' =>$pwd ,
             'phone_number' => $request->get('phone_number'),
             'website' => $request->get('website'),
             'marital_status' => $request->get('marital_status'),

@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\API\BlogController;
+use App\Http\Controllers\API\CategoriesController;
 use App\Http\Controllers\API\CouponController;
 use App\Http\Controllers\API\LanguageController;
 use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\PublicFeedController;
 use App\Http\Controllers\API\QrCodeController;
 use App\Http\Controllers\API\ShareController;
+use App\Http\Controllers\API\SmartCardController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,7 +49,12 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('share', [ShareController::class, 'share']);
 
-    Route::post('get-qr-ode', [QrCodeController::class, 'getQrCode']);
+    Route::get('get-qr-ode', [QrCodeController::class, 'getQrCode']);
+
+    Route::get('get-categories', [CategoriesController::class, 'getCategories']);
+
+    Route::post('varify-card', [SmartCardController::class, 'varifyCard']);
+    Route::post('cancelled-card', [SmartCardController::class, 'cancelledCard']);
 
     Route::post('add_notification', [NotificationController::class, 'add_notification']);
     Route::get('notification_list', [NotificationController::class, 'notification_list']);

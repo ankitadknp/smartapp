@@ -107,8 +107,8 @@
             </div>
             <div class="modal-body">
                 @include('errors.require')
-                <form class="" id="merchant_form" novalidate="" action="{{route("merchant.store")}}" enctype="multipart/form-data" method="POST">
-                <input type="hidden" name="user_id" id="user_id" >
+                <form class="" id="merchant_form" enctype='multipart/form-data' action="{{route("merchant.store")}}" method="POST">
+                    <input type="hidden" name="user_id" id="user_id" >
                     @csrf
                     <div class="row">
                         <div class="col-sm-6 form-group">
@@ -153,7 +153,7 @@
 
                         <div class="col-sm-6 form-group">
                             <label>Phone Number</label>
-                            <input type="text" id="phone" placeholder="Phone Number" name="phone_number" class="form-control" required="">
+                            <input type="text" id="phone" placeholder="Phone Number" name="phone_number" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
                             <span class="text-danger">
                                 <strong id="phone_error"></strong>
                             </span>
@@ -215,7 +215,7 @@
 
                         <div class="col-sm-6 form-group">
                             <label>Establishment Year</label>
-                            <input type="year" id="establishment_year" placeholder="Establishment Year" name="establishment_year" class="form-control" required="">
+                            <input type="year" id="establishment_year" placeholder="Establishment Year" name="establishment_year" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
                             <span class="text-danger">
                                 <strong id="establishment_year_error"></strong>
                             </span>
@@ -223,7 +223,7 @@
 
                         <div class="col-sm-6 form-group">
                             <label>Business Hours</label>
-                            <input type="text" id="business_hours" placeholder="Business Hours" name="business_hours" class="form-control" required="">
+                            <input type="text" id="business_hours" placeholder="Business Hours" name="business_hours" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
                             <span class="text-danger">
                                 <strong id="business_hours_error"></strong>
                             </span>
@@ -239,7 +239,7 @@
 
                         <div class="col-sm-6 form-group">
                             <label>Street Number</label>
-                            <input type="text" id="street_number" placeholder="Street Number" name="street_number" class="form-control" required="">
+                            <input type="text" id="street_number" placeholder="Street Number" name="street_number" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)'>
                             <span class="text-danger">
                                 <strong id="street_number_error"></strong>
                             </span>
@@ -255,7 +255,7 @@
 
                         <div class="col-sm-6 form-group">
                             <label>Business Logo</label>
-                            <input type="file" id="business_logo" placeholder="Business Logo" name="business_logo" class="form-control" required="">
+                            <input type="file" id="blogo" name="business_logo" class="form-control" required="" accept="image/*">
                             <span class="text-danger">
                                 <strong id="business_logo_error"></strong>
                             </span>
@@ -282,7 +282,7 @@
 <script type="text/javascript">
     var controller_url = "{{route('merchant.index')}}";
 
-    $(".add_merchant").click(function(){
+    $(".add_merchant").click(function() {
         $('#user_id').val('');
         $('#merchant_form').trigger("reset");
         $('#saveBtn').html("Save");
@@ -355,6 +355,8 @@
         })
     });
 
+
+
     $('#saveBtn').click(function (e) {
         e.preventDefault();
 
@@ -362,11 +364,11 @@
           data: $('#merchant_form').serialize(),
           type: "POST",
           dataType: 'json',
-      
+          processData: true,
             success: function (data) 
             {
-                if(data.success){
-
+                if(data.success)
+                {
                     $('#merchant_form').trigger("reset");
                     $('#add_merchant').modal('hide');
                     jQuery(data_table).DataTable().draw();
@@ -404,6 +406,5 @@
 </script>
 
 
-<!-- Page Specific JS File -->
 <script src="{{asset("public/assets/pages-js/merchant/index.js?v1")}}"></script>
 @endsection
