@@ -22,7 +22,10 @@ function get_all_data() {
             {"data": "email"},
             {"data": "phone"},
             {"data": "status"},
+<<<<<<< HEAD
             {"data": "edit"},
+=======
+>>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
             {"data": "delete"}
         ],
         columnDefs: [
