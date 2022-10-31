@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
+Route::post('forgot_password', [UserController::class, 'forgot_password']);
 Route::get('coupon_category_list', [CouponController::class, 'coupon_category_list']);
 
 Route::middleware('auth:api')->group(function () {

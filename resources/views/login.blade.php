@@ -53,6 +53,11 @@
                                     </ul>
                                 </div>
                                 @endif
+                                @if(session()->has('message'))
+                                    <div class="alert alert-success">
+                                        {{ session()->get('message') }}
+                                    </div>
+                                @endif
                                 <div class="card-body">
                                     <form method="POST" action="{{route('login')}}" class="needs-validation" novalidate="" autocomplete="off">
                                         @csrf

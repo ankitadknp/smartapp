@@ -18,6 +18,12 @@ Route::get('/', "LoginController@index");
 Route::get("login", "LoginController@index")->name("login");
 Route::post("login", "LoginController@login")->name("login");
 
+Route::get('password/reset', 'ForgotPasswordController@showLinkRequestForm')->name('password.request');
+Route::post('password/email', 'ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset');
+Route::post('password/reset', 'ResetPasswordController@resetPassword')->name('password.update');
+Route::get('/password/success', 'ResetPasswordController@showResetSuccessForm')->name('password.success');
+
 Route::group(['middleware' => 'auth'], function () {
     
     Route::get("logout","DashboardController@logout")->name("logout");

@@ -3,16 +3,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Validator;
 use App\User;
-use Hash;
-use File;
+use Hash,File,DB,Validator,Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Response;
-use DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -201,41 +199,50 @@ class UserController extends Controller
         if(Auth::attempt(['email' => $request->email, 'password' => ($request->password),'user_status' => ($request->user_status)])){ 
 
             $user = Auth::user(); 
+            if ( $user->status == 1) 
+            {
+                    
+                $success['token'] =  $user->createToken('SmartApp')->accessToken;
+                $success['user_id'] =  $user->id;
+                $success['email'] =  $user->email;
+                $success['first_name'] =  ($user->first_name != null)?$user->first_name:'';
+                $success['last_name'] =  ($user->last_name != null)?$user->last_name:'';
+                $success['phone_number'] = ($user->phone_number != null)?$user->phone_number:'';
+                $success['id_number'] =($user->id_number != null)?$user->id_number:'';
+                $success['marital_status'] =  ($user->marital_status != null)?$user->marital_status:'';
+                $success['no_of_child'] =  $user->no_of_child;
+                $success['occupation'] =  ($user->occupation != null || $user->occupation == 0)?$user->occupation:'';
+                $success['education_level'] =  ($user->education_level != null)?$user->education_level:'';
+                $success['business_name'] =  ($user->business_name != null)?$user->business_name:'';
+                $success['registration_number'] =  ($user->registration_number != null)?$user->registration_number:'';
+                $success['website'] =  ($user->website != null)?$user->website:'';
+                $success['business_activity'] =  ($user->business_activity != null)?$user->business_activity:'';
+                $success['business_sector'] =  ($user->business_sector != null)?$user->business_sector:'';
+                $success['establishment_year'] =  ($user->establishment_year != null)?$user->establishment_year:'';
+                $success['business_logo'] =  ($user->user_status == 1)?$user->business_logo:'';
+                $success['business_hours'] =  ($user->business_hours != null)?$user->business_hours:'';
+                $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
+                $success['street_address_name'] =  ($user->street_address_name != null)?$user->street_address_name:'';
+                $success['street_number'] =  ($user->street_number != null)?$user->street_number:'';
+                $success['house_number'] =  ($user->house_number != null)?$user->house_number:'';
+                $success['city'] =  ($user->city != null)?$user->city:'';
+                $success['district'] =  ($user->district != null)?$user->district:'';
+                $success['user_status'] =  $user->user_status;
                 
-            $success['token'] =  $user->createToken('SmartApp')->accessToken;
-            $success['user_id'] =  $user->id;
-            $success['email'] =  $user->email;
-            $success['first_name'] =  ($user->first_name != null)?$user->first_name:'';
-            $success['last_name'] =  ($user->last_name != null)?$user->last_name:'';
-            $success['phone_number'] = ($user->phone_number != null)?$user->phone_number:'';
-            $success['id_number'] =($user->id_number != null)?$user->id_number:'';
-            $success['marital_status'] =  ($user->marital_status != null)?$user->marital_status:'';
-            $success['no_of_child'] =  $user->no_of_child;
-            $success['occupation'] =  ($user->occupation != null || $user->occupation == 0)?$user->occupation:'';
-            $success['education_level'] =  ($user->education_level != null)?$user->education_level:'';
-            $success['business_name'] =  ($user->business_name != null)?$user->business_name:'';
-            $success['registration_number'] =  ($user->registration_number != null)?$user->registration_number:'';
-            $success['website'] =  ($user->website != null)?$user->website:'';
-            $success['business_activity'] =  ($user->business_activity != null)?$user->business_activity:'';
-            $success['business_sector'] =  ($user->business_sector != null)?$user->business_sector:'';
-            $success['establishment_year'] =  ($user->establishment_year != null)?$user->establishment_year:'';
-            $success['business_logo'] =  ($user->user_status == 1)?$user->business_logo:'';
-            $success['business_hours'] =  ($user->business_hours != null)?$user->business_hours:'';
-            $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
-            $success['street_address_name'] =  ($user->street_address_name != null)?$user->street_address_name:'';
-            $success['street_number'] =  ($user->street_number != null)?$user->street_number:'';
-            $success['house_number'] =  ($user->house_number != null)?$user->house_number:'';
-            $success['city'] =  ($user->city != null)?$user->city:'';
-            $success['district'] =  ($user->district != null)?$user->district:'';
-            $success['user_status'] =  $user->user_status;
-            
 
-            return response()->json([
-                'success' => true,
-                'data'    => $success,
-                'message' => 'Login Successfuly',
-                'status' => 200
-            ]);
+                return response()->json([
+                    'success' => true,
+                    'data'    => $success,
+                    'message' => 'Login Successfuly',
+                    'status' => 200
+                ]);
+            }else {
+                return response()->json([
+                    'success' => false,
+                    'message' =>'User is blocked',
+                    'status' => 401
+                ]);
+            }
 
         } else{ 
             return response()->json([
@@ -587,5 +594,73 @@ class UserController extends Controller
 
         return response()->json($response, 200); 
 		
+    }
+
+    public function forgot_password(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'user_status' =>'required',
+        ]);
+
+        if($validator->fails()){
+
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400
+            ];
+    
+            return response()->json($response, 400);
+        }
+
+        $check_email = User::where('email',$request->email)->first();
+
+        if ($check_email == null) {
+			
+            return response()->json([
+                'success' => false,
+                'message' => "User isn't found",
+                'status' => 400
+                ]);
+        } else {
+			
+            $check_email_deleted = User::where('email',$request->email)->where('status','=',1)
+            ->where('user_status',$request->user_status)->first();
+
+            if ($check_email_deleted == null) {
+				
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User Account is blocked',
+                    'status' => 400
+                    ]);
+					
+            } else {
+				
+                $token = Str::random(6);
+
+                $data=[	'email' =>$request->email,
+						'token' =>$token,
+						'created_at' =>date('Y-m-d H:i:s') ];
+        
+                DB::table('password_resets')->insert($data);
+
+                $newdata = array('token' => $token, 'name'=>$check_email_deleted->name);
+            
+                Mail::send('emails.forgotpassword', $newdata, function($message) use ($request) {
+                    $message->to($request->email)
+                        ->from('test.knptech@gmail.com')
+                        ->subject("Password Reset");
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'message' =>'We have e-mailed your password reset link!',
+                    'status'=>200
+                ]);
+            }
+        }
+       
     }
 }
