@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-use Redirect,Response,DB,Validator,Hash;
+use Redirect,Response,DB,Validator,Hash,File;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Config;
 
@@ -86,7 +86,7 @@ class MerchantController extends Controller
                                                                 <span class="custom-switch-indicator"></span>
                                                               </label>';
 
-                $all_records[$index]['edit'] = '<a href="#" class="btn btn-light edit_merchant" data-id="'.$value->id.'">Edit</a>';
+                $all_records[$index]['edit'] = '<a href="'.route($this->route_name.'.edit', $value->id).'" class="btn btn-light edit_merchant" data-id="'.$value->id.'">Edit</a>';
 
                 $all_records[$index]['delete'] = '<button type="button" class="btn btn-danger delete_data_button" data-id="'.$value->id.'">Delete</button>';
 
@@ -109,15 +109,12 @@ class MerchantController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        // dd($request->file('business_logo'));
-        
         $user_id  = $request->user_id ;
         $STORE_IMGAE_URL =  Config::get('constants.BUSINESS_LOGO_URL');
 
         if ( empty($user_id) )
         {
-            $validator = Validator::make($request->all(),[
+            $request->validate([
                 'business_name' => 'required|max:50',
                 'registration_number' => 'required|max:30',
                 'email' => [
@@ -134,7 +131,7 @@ class MerchantController extends Controller
                 'business_activity' => 'required',
                 'business_sector' => 'required',
                 'establishment_year' => 'required',
-                // 'business_logo' => 'required',
+                'business_logo' => 'required',
                 'business_hours' => 'required',
                 'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
@@ -143,7 +140,7 @@ class MerchantController extends Controller
             ]);
             
             if ($request->hasFile('business_logo')) {
-                $image = $request->file('business_logo');
+                 $image = $request->file('business_logo');
                 $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
                 $destinationPath = public_path().'/uploads/business_logo';
 
@@ -153,15 +150,15 @@ class MerchantController extends Controller
             
                 $image->move($destinationPath, $cover_image_name);
                 $business_logo = $STORE_IMGAE_URL.$cover_image_name;
+                
             }
-            $business_logo = '';
 
             $pwd = Hash::make($request->get('password'));
 
             $msg = 'Merchant Added Successfully.';
         } else 
         {
-            $validator = Validator::make($request->all(),[
+            $request->validate([
                 'business_name' => 'required|max:50',
                 'registration_number' => 'required|max:30',
                 'email' => [
@@ -176,7 +173,6 @@ class MerchantController extends Controller
                 'business_activity' => 'required',
                 'business_sector' => 'required',
                 'establishment_year' => 'required',
-                // 'business_logo' => 'required',
                 'business_hours' => 'required',
                 'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
@@ -184,25 +180,22 @@ class MerchantController extends Controller
                 'marital_status'=>'required'
             ]);
 
+            $user_data = User::where('id',$user_id)->first();
+
             if ($request->hasFile('business_logo')) {
                 $image = $request->file('business_logo');
                 $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
                 $destinationPath = public_path().'/uploads/business_logo';
                 $image->move($destinationPath, $cover_image_name);
                 $business_logo = $STORE_IMGAE_URL.$cover_image_name;
+            } else {
+                $business_logo = $user_data->business_logo;
             }
-            $business_logo = '';
 
-            $user_data = User::where('id',$user_id)->first();
 
             $pwd = $user_data->password;
 
             $msg = 'Merchant Update Successfully';
-        }
-
-        if($validator->fails())
-        {
-            return Response::json(['errors' => $validator->errors()]);
         }
 
         $add_new = [
@@ -228,12 +221,14 @@ class MerchantController extends Controller
         
         User::updateOrCreate(['id' => $user_id ],$add_new);
 
-        return response()->json(
-            [
-                'success' => true,
-                'message' => $msg
-            ]
-        );
+        // return response()->json(
+        //     [
+        //         'success' => true,
+        //         'message' => $msg
+        //     ]
+        // );
+
+        return redirect()->route($this->route_name.'.index')->with('success', $msg);
 
     }
 
@@ -266,7 +261,8 @@ class MerchantController extends Controller
     public function edit($id)
     {
         $user = User::where('id',$id)->first();
-        return Response::json($user);
+        return view($this->route_name.'.edit')->with(['user' => $user]);
+        // return Response::json($user);
     }
 
     public function destroy(Request $request)

@@ -14,6 +14,11 @@
   <!-- Template CSS -->
   <link rel="stylesheet" href="{{asset("public/assets/css/style.css")}}">
   <link rel="stylesheet" href="{{asset("public/assets/css/components.css")}}">
+  <style>
+    .card-header{
+        margin-left: 206px;
+    }
+  </style>
 </head>
 
 <body>
@@ -48,7 +53,15 @@
                 @csrf
                   <div class="form-group">
                     <label for="email">Email</label>
-                    <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus>
+                    <input id="email" type="email" class="form-control" name="email" tabindex="1" required autofocus placeholder="Email">
+
+                    <div class="d-block">
+                        <div class="float-right">
+                            <a href="{{route('login')}}" class="text-small">
+                                Login
+                            </a>
+                        </div>
+                    </div>
                   </div>
 
                   <div class="form-group">

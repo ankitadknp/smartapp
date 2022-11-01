@@ -60,19 +60,17 @@
                 </a>
             </li>
 
-<<<<<<< HEAD
             <li class="{{ request()->is('smart-debit-card') || request()->is('smart-debit-card/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('smart-debit-card.index')}}">
                 <i class="fa fa-credit-card"></i><span>Smart Debit Card</span>
                 </a>
             </li> 
-=======
-            {{-- <li class="{{ request()->is('smart-debit-card') || request()->is('smart-debit-card/*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{route('smart-debit-card.index')}}">
-                    <i class="fas fa-qrcode"></i><span>Smart Debit Card</span>
+
+            <li class="{{ request()->is('cms_pages') || request()->is('cms_pages/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('cms_pages.index')}}">
+                <i class="fa fa-file"></i><span>CMS Pages</span>
                 </a>
-            </li> --}}
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
+            </li>
 
             <li class="{{ request()->is('language') || request()->is('language/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('language.index')}}">

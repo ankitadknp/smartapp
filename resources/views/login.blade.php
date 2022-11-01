@@ -53,11 +53,6 @@
                                     </ul>
                                 </div>
                                 @endif
-                                @if(session()->has('message'))
-                                    <div class="alert alert-success">
-                                        {{ session()->get('message') }}
-                                    </div>
-                                @endif
                                 <div class="card-body">
                                     <form method="POST" action="{{route('login')}}" class="needs-validation" novalidate="" autocomplete="off">
                                         @csrf
@@ -65,18 +60,26 @@
                                         <input type="password" name="password" style="display:none">
                                         <div class="form-group">
                                             <label for="email">Email</label>
-                                            <input id="email" type="text" class="form-control" name="email" value="" tabindex="1" required autocomplete="off" autofocus>
+                                            <input id="email" type="text" class="form-control" name="email" value="" tabindex="1" required autocomplete="off" autofocus placeholder="Email">
                                             <div class="invalid-feedback">
                                                 Please fill in your email
                                             </div>
                                         </div>
 
                                         <div class="form-group">
-                                                <label for="password" class="control-label">Password</label>
+                                            <label for="password" class="control-label">Password</label>
                                             <div class="input-group" id="show_hide_password">
-                                                <input class="form-control" type="password" name="password" id="password" value="" autocomplete="off" required>
+                                                <input class="form-control" type="password" name="password" id="password" value="" autocomplete="off" required placeholder="Password">
                                                 <div class="input-group-addon password_eye">
                                                     <a href=""><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-block">
+                                                <div class="float-right">
+                                                    <a href="{{route('password.request')}}" class="text-small">
+                                                        Forgot Password?
+                                                    </a>
                                                 </div>
                                             </div>
                                           
