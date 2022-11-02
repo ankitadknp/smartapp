@@ -2,8 +2,7 @@
 
 var data_table = '#datatable';
 function get_all_data() {
-    var category_name = $('#category_name').val();
-    var type = $('#type').val();
+    var title = $('#title').val();
     var status = $('#status').val();
     var token = jQuery("#csrf-token").prop("content");
 
@@ -13,17 +12,15 @@ function get_all_data() {
         serverSide: true,
         pagingType: "full_numbers",
         scrollY: '50vh',
-        //scrollX: true,
         scrollCollapse: true,
         searching: false,
         order: [0, 'DESC'],
         pageLength: 10,
         "columns": [
-            {"data": "category_name"},
-            {"data": "type"},
+            {"data": "title"},
             {"data": "status"},
             {"data": "edit"},
-            {"data": "delete"}
+            // {"data": "delete"}
         ],
         columnDefs: [
             {
@@ -34,23 +31,14 @@ function get_all_data() {
             {
                 targets: [1],
                 searchable: true,
-                sortable: true,
+                sortable: false,
             },
             {
                 targets: [2],
                 searchable: true,
                 sortable: false,
-            },
-            {
-                targets: [3],
-                searchable: true,
-                sortable: false,
-            },
-            {
-                targets: [4],
-                searchable: true,
-                sortable: false
             }
+            
         ],
         language: {
             emptyTable: "No data available",
@@ -64,7 +52,7 @@ function get_all_data() {
             "url": controller_url + '/list-data',
             "type": "POST",
             "async": false,
-            "data": {'_token': token, 'category_name': category_name, 'status': status,'type':type},
+            "data": {'_token': token, 'title': title, 'status': status},
         },
         drawCallback: function () {
             jQuery('<li><a onclick="refresh_tab()" style="cursor:pointer" title="Refresh"><i class="ion-refresh" style="font-size:25px"></i></a></li>').prependTo('div.dataTables_paginate ul.pagination');
@@ -205,8 +193,7 @@ jQuery(document).ready(function () {
     });
 
     jQuery('.reset_filter').click(function () {
-        $('#category_name').val('');
-        $('#type').val('');
+        $('#title').val('');
         $('#status').val('');
         setTimeout(function () {
             jQuery(data_table).dataTable().fnDestroy();

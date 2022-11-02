@@ -88,6 +88,8 @@ class ClientController extends Controller
 
                 $all_records[$index]['edit'] = '<a href="#" class="btn btn-light edit_client" data-id="'.$value->id.'">Edit</a>';
 
+                $all_records[$index]['view'] = '<a href="'.route($this->route_name.'.show', $value->id).'" class="btn btn-light view_client" data-id="'.$value->id.'">View</a>';
+
                 $all_records[$index]['delete'] = '<button type="button" class="btn btn-danger delete_data_button" data-id="'.$value->id.'">Delete</button>';
 
                 ++$index;
@@ -183,7 +185,7 @@ class ClientController extends Controller
             'first_name' => $request->get('first_name'),
             'last_name' => $request->get('last_name'),
             'email' => $request->get('email'),
-            'password' => $request->get('password'),
+            'password' => $pwd,
             'phone_number' => $request->get('phone_number'),
             'id_number' => $request->get('id_number'),
             'marital_status' => $request->get('marital_status'),
@@ -235,6 +237,12 @@ class ClientController extends Controller
         }
 
         return $response;
+    }
+
+    public function show($id)
+    {
+        $user = User::where('id',$id)->first();
+        return view($this->route_name.'.show')->with(['user' => $user]);
     }
 
     public function edit($id)

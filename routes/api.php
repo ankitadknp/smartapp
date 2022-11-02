@@ -10,12 +10,14 @@ use App\Http\Controllers\API\QrCodeController;
 use App\Http\Controllers\API\ShareController;
 use App\Http\Controllers\API\SmartCardController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\CMSPagesController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
 Route::post('forgot_password', [UserController::class, 'forgot_password']);
 Route::get('coupon_category_list', [CouponController::class, 'coupon_category_list']);
+Route::get('cms_pages_list', [CMSPagesController::class, 'cms_pages_list']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('verify_phone_number', [UserController::class, 'verify_phone_number']);
@@ -47,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('client_mycoupon_list', [CouponController::class, 'client_mycoupon_list']);
     Route::post('coupon_statistics', [CouponController::class, 'coupon_statistics']);
     Route::post('save_coupon', [CouponController::class, 'save_coupon']);
+    Route::post('delete_coupon', [CouponController::class, 'delete_coupon']);
 
     Route::post('share', [ShareController::class, 'share']);
 
@@ -59,4 +62,5 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('add_notification', [NotificationController::class, 'add_notification']);
     Route::get('notification_list', [NotificationController::class, 'notification_list']);
+    
 });

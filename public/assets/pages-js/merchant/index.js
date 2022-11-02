@@ -22,7 +22,8 @@ function get_all_data() {
             {"data": "email"},
             {"data": "phone_number"},
             {"data": "status"},
-            {"data": "edit"},
+            // {"data": "edit"},
+            {"data": "view"},
             {"data": "delete"}
         ],
         columnDefs: [

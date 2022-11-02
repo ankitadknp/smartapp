@@ -251,6 +251,19 @@ class CouponController extends Controller
 
         $coupon = Coupon::find($request->coupon_id);
 
+        if ($request->qrcode_url != '') {
+
+            $publicPath = public_path('qrcodes/'.time().'.svg');
+            $fileName = basename($publicPath);
+            $basePath = URL::to('/public/qrcodes/'.$fileName);
+
+            QrCode::generate($request->qrcode_url, $publicPath);
+            $QrRes = CouponQRcode::where('coupon_id',$request->coupon_id)->update([
+                'qrcode_url' => $request->qrcode_url,
+                'qrcode_file' => $basePath,
+            ]);
+        } 
+
         $coupon->update($input);
 
         $success['coupon_id'] = $coupon->coupon_id;
@@ -263,7 +276,6 @@ class CouponController extends Controller
         $success['category_id'] = $coupon->category_id;
         $success['coupon_title_ab'] = $coupon->coupon_title_ab;
         $success['coupon_title_he'] = $coupon->coupon_title_he;
-        $success['qrcode_url'] = $coupon->qrcode_url;
 
         return response()->json([
             'success' => true,
@@ -442,5 +454,65 @@ class CouponController extends Controller
             'message' => 'Coupon Category List',
             'status' => 200,
         ]);
+    }
+
+    public function delete_coupon(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        
+        $validator = Validator::make($request->all(), [
+            'coupon_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400,
+            ];
+
+            return response()->json($response, 400);
+        }
+
+        $mycoupon = ClientMyCoupon::where('coupon_id',$request->coupon_id)->get();
+        $qrcode = CouponQRcode::where('coupon_id',$request->coupon_id)->get();
+        $usecoupon = UseCoupon::where('coupon_id',$request->coupon_id)->get();
+        $share = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->get();
+
+        Coupon::where('user_id',$user_id)->where('coupon_id',$request->coupon_id)->delete();
+
+        if ($mycoupon != '[]') 
+        {
+            ClientMyCoupon::where('coupon_id',$request->coupon_id)->delete();
+        }
+        if ($qrcode != '[]') 
+        {
+            foreach ($qrcode as $img_val) 
+            {
+                $destinationPath = public_path("/");
+                $new_path = substr($img_val->qrcode_file, strpos($img_val->qrcode_file, "qrcodes/") );  
+                $image_path = $destinationPath.$new_path;
+        
+                if (File::exists($image_path)) {
+                    unlink($image_path);
+                }
+            }
+            CouponQRcode::where('coupon_id',$request->coupon_id)->delete();
+        }
+        if ($usecoupon != '[]') 
+        {
+            UseCoupon::where('coupon_id',$request->coupon_id)->delete();
+        }
+        if ($share != '[]') 
+        {
+            Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon Delete Successfully',
+            'status' => 200,
+        ]);
+
     }
 }

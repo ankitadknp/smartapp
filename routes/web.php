@@ -109,5 +109,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("list-data", "ClientController@load_data_in_table")->name("client.load_data_in_table");
         Route::post("change_status", "ClientController@change_status")->name("client.change_status");
     });
+
+    //CMSPages Module Routing
+    Route::resource("cms_pages", "CMSPagesController");
+    Route::prefix('cms_pages')->group(function () {
+        Route::post("delete", "CMSPagesController@destroy")->name("cms_pages.delete");
+        Route::post("list-data", "CMSPagesController@load_data_in_table")->name("cms_pages.load_data_in_table");
+        Route::post("change_status", "CMSPagesController@change_status")->name("cms_pages.change_status");
+    });
     
 });

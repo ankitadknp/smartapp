@@ -111,18 +111,15 @@ class CMSPagesController extends Controller {
     public function store(Request $request) 
     {
         $cms_id  = $request->id ;
-        if ( empty($cms_id) )
-        {
-
-            $validator = Validator::make($request->all(),[
-                "title" => "required",
-                "title_ab" => "required",
-                "title_he" => "required",
-                'cms_content'=>"required",
-                // 'content_ab'=>"required",
-                // 'content_he'=>"required",
-            ]);
-        }
+   
+        $validator = Validator::make($request->all(),[
+            "title" => "required",
+            "title_ab" => "required",
+            "title_he" => "required",
+            'content'=>"required",
+            'content_ab'=>"required",
+            'content_he'=>"required",
+        ]);
 
         if($validator->fails())
         {
@@ -133,13 +130,11 @@ class CMSPagesController extends Controller {
             "title" => $request->get("title"),
             "title_ab" => $request->get("title_ab"),
             "title_he" => $request->get("title_he"),
-            'cms_content'=>$request->get("cms_content"),
-            // 'content_ab'=>$request->get("content_ab"),
-            // 'content_he'=>$request->get("content_he"),
+            'content'=>$request->get("content"),
+            'content_ab'=>$request->get("content_ab"),
+            'content_he'=>$request->get("content_he"),
             "status" => 1
         );
-
-        
 
         CMSPages::updateOrCreate(['id' => $cms_id ],$add_new_cms);
 
@@ -180,9 +175,9 @@ class CMSPagesController extends Controller {
             $find_record->save();
 
             if ($status == 1) {
-                $message = "CMS Pages has been unblocked";
+                $message = "CMS Pages has been actived";
             } else {
-                $message = "CMS Pages has been blocked";
+                $message = "CMS Pages has been inactived";
             }
 
             $response['success'] = true;

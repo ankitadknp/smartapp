@@ -83,7 +83,8 @@
                                         <th>Email</th>
                                         <th>Phone Number</th>
                                         <th>Status</th>
-                                        <th>Edit</th>
+                                        <!-- <th>Edit</th> -->
+                                        <th>View</th>
                                         <th>Delete</th>
                                     </tr>
                                 </thead>

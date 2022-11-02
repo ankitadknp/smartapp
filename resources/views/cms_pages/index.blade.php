@@ -18,7 +18,7 @@
                 $routeName = explode('.', \Request::route()->getName());
                 @endphp
                 <h1>CMS Pages</h1>
-                <a href="#" class="float-right btn btn-primary add_cms">Add New</a>
+                <!-- <a href="#" class="float-right btn btn-primary add_cms">Add New</a> -->
             </div>
         </div>
         <div class="row">
@@ -70,7 +70,7 @@
                                         <th>CMS Pages Title</th>
                                         <th>Status</th>
                                         <th>Edit</th>
-                                        <th>Delete</th>
+                                        <!-- <th>Delete</th> -->
                                     </tr>
                                 </thead>
                             </table>
@@ -93,7 +93,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="" id="cms_form" novalidate="" action="{{route("cms_pages.store")}}" enctype="multipart/form-data" method="POST">
+                <form class="" id="cms_form"  action="" enctype="multipart/form-data" method="POST">
                 <input type="hidden" name="id" id="id" >
                     @csrf
                     <div class="row">
@@ -113,7 +113,7 @@
                         </div>
                         <div class="col-sm-12 form-group">
                             <label>CMS Pages Title(Hebrew)</label>
-                            <input type="text" id="cat_name_he" placeholder="CMS Pages Title(Hebrew)" name="title_he" class="form-control" required="">
+                            <input type="text" id="title_he" placeholder="CMS Pages Title(Hebrew)" name="title_he" class="form-control" required="">
                             <span class="text-danger">
                                 <strong id="title_he_error"></strong>
                             </span>
@@ -127,7 +127,7 @@
                                 <strong id="content_error"></strong>
                             </span>
                         </div>
-                        <!-- <div class="col-sm-12 form-group">
+                        <div class="col-sm-12 form-group">
                             <label class="form-control-label" for="content_ab">CMS Pages Content(Arabic)</label>
                             <textarea class="form-control" name="content_ab"  id="content_ab" >{{old("content_ab")}}</textarea>
                             <span class="text-danger">
@@ -140,11 +140,11 @@
                             <span class="text-danger">
                                 <strong id="content_he_error"></strong>
                             </span>
-                        </div> -->
+                        </div>
                 
                     </div>
                     <div class="modal-footer text-right">
-                        <button type="button" class="btn btn-primary" id="saveBtn" name="btnsave" >Save</button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn" name="btnsave" >Save</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </form>
@@ -163,11 +163,11 @@
 
 <script type="text/javascript">
 
-$.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-});
+// $.ajaxSetup({
+//     headers: {
+//         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+//     }
+// });
     var controller_url = "{{route('cms_pages.index')}}";
 
     $(".add_cms").click(function(){
@@ -193,32 +193,48 @@ $.ajaxSetup({
         $( '#content_ab_error').html( "" );
         $( '#content_he_error').html( "" );
 
-        $.get('categories/'+id+'/edit', function (data) {
+        $.get('cms_pages/'+id+'/edit', function (data) {
             $('#exampleModalLongTitle').html("Edit CMS Pages");
             $('#saveBtn').html("Update");
             $('#add_cms').modal('show');
             $('#id').val(data.id);
-            $('#cat_name').val(data.category_name);
-            $('#cat_name_ab').val(data.category_name_ab);
-            $('#cat_name_he').val(data.category_name_he);
+            $('#c_title').val(data.title);
+            $('#title_ab').val(data.title_ab);
+            $('#title_he').val(data.title_he);
+            CKEDITOR.instances['content'].setData(data.content)
+            CKEDITOR.instances['content_ab'].setData(data.content_ab)
+            CKEDITOR.instances['content_he'].setData(data.content_he)
         })
     });
 
     $('#saveBtn').click(function (e) {
         e.preventDefault();
 
-        var form = $('#cms_form');
-        var formdata=new FormData(form);
-        formdata.content = CKEDITOR.instances['content'].getData();
+        var id = $('#id').val();
+        var title = $('#c_title').val();
+        var title_ab = $('#title_ab').val();
+        var title_he = $('#title_he').val();
+        var content = CKEDITOR.instances['content'].getData();
+        var content_ab = CKEDITOR.instances['content_ab'].getData();
+        var content_he = CKEDITOR.instances['content_he'].getData();
+        
+        var parameters =
+        {
+            id:id,
+            title:title,
+            title_ab:title_ab,
+            title_he:title_he,
+            content:content,
+            content_ab:content_ab,
+            content_he:content_he,
+        } 
 
         $.ajax({
-          data: formdata,
+          url:"{{route("cms_pages.store")}}",
+          data: parameters,
           type: "POST",
           dataType: 'json',
-          processData:false,
-           contentType:false,
-         
-      
+          cache : false,
             success: function (data) 
             {
                 if(data.success){
@@ -254,9 +270,15 @@ $.ajaxSetup({
 <!-- Editor Js-->
 <script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
 <script>
-    // CKEDITOR.replace('content_he');
-    // CKEDITOR.replace('content_ab');
-    CKEDITOR.replace('content');
+    CKEDITOR.replace('content_he', {
+        removeButtons: 'Image'
+    });
+    CKEDITOR.replace('content_ab', {
+        removeButtons: 'Image'
+    });
+    CKEDITOR.replace('content', {
+        removeButtons: 'Image'
+    });
 
 
     CKEDITOR.on("instanceReady", function(event) {
@@ -271,7 +293,7 @@ $.ajaxSetup({
             }
         })
     });
-
 </script>
+
 <!-- Editor Js End -->
 @endsection
