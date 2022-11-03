@@ -196,7 +196,7 @@
         $.get('cms_pages/'+id+'/edit', function (data) {
             $('#exampleModalLongTitle').html("Edit CMS Pages");
             $('#saveBtn').html("Update");
-            $('#add_cms').modal('show');
+            // $('#add_cms').modal('show');
             $('#id').val(data.id);
             $('#c_title').val(data.title);
             $('#title_ab').val(data.title_ab);

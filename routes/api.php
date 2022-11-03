@@ -34,6 +34,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('blog_comment_like', [BlogController::class, 'blog_comment_like']);
     Route::post('blog_comment_list', [BlogController::class, 'blog_comment_list']);
     Route::post('blog_report', [BlogController::class, 'blog_report']);
+    Route::post('blog_details', [BlogController::class, 'blog_details']);
 
     Route::post('public_feed_list', [PublicFeedController::class, 'public_feed_list']);
     Route::post('public_feed_comment', [PublicFeedController::class, 'public_feed_comment']);
@@ -41,6 +42,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('public_feed_comment_like', [PublicFeedController::class, 'public_feed_comment_like']);
     Route::post('recent_feed_comment_list', [PublicFeedController::class, 'recent_feed_comment_list']);
     Route::post('public_feed_report', [PublicFeedController::class, 'public_feed_report']);
+    Route::post('public_feed_details', [PublicFeedController::class, 'public_feed_details']);
 
     Route::post('add_coupon', [CouponController::class, 'add_coupon']);
     Route::post('coupon_list', [CouponController::class, 'coupon_list']);
@@ -57,8 +59,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('get-categories', [CategoriesController::class, 'getCategories']);
 
-    Route::post('varify-card', [SmartCardController::class, 'varifyCard']);
+    Route::post('apply-card', [SmartCardController::class, 'applyCard']);
     Route::post('cancelled-card', [SmartCardController::class, 'cancelledCard']);
+    Route::get('get-card', [SmartCardController::class, 'getCard']);
 
     Route::post('add_notification', [NotificationController::class, 'add_notification']);
     Route::get('notification_list', [NotificationController::class, 'notification_list']);

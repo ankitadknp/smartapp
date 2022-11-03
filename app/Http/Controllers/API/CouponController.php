@@ -94,6 +94,9 @@ class CouponController extends Controller
                     })
                     ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
                     ->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
+                    ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
+                    ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
+                    ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
                     ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
                     ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%')
                     ->where('coupon.user_id', '=', $user_id)
@@ -156,7 +159,10 @@ class CouponController extends Controller
                         $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
                     })
                     ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                    ->where('coupon_code', 'LIKE', '%'.$search.'%')
+                    ->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
+                    ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
+                    ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
+                    ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
                     ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
                     ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%')
                     ->orderby('coupon.coupon_id', 'DESC')
@@ -303,12 +309,13 @@ class CouponController extends Controller
             return response()->json($response, 400);
         }
 
-        $blog_comment_like_data = ClientMyCoupon::where('user_id', $user_id)->where('coupon_id', $request->coupon_id)->first();
+        $added_coupon = ClientMyCoupon::where('user_id', $user_id)->where('coupon_id', $request->coupon_id)->first();
+
 
         $input = $request->all();
         $input['user_id'] = $user_id;
 
-        if ($blog_comment_like_data == '' || !isset($blog_comment_like_data)) {
+        if ($added_coupon == '' || !isset($added_coupon)) {
             ClientMyCoupon::create($input);
             $msg = 'Added Coupon in mycoupon list';
         } else {
@@ -330,25 +337,27 @@ class CouponController extends Controller
         $BUSINESS_LOGO_URL = Config::get('constants.BUSINESS_LOGO_URL');
 
         $active_coupon_list = ClientMyCoupon::leftJoin('coupon', function ($join) {
-            $join->on('coupon.coupon_id', '=', 'client_my_coupon.coupon_id');
-        })
+                        $join->on('coupon.coupon_id', '=', 'client_my_coupon.coupon_id');
+                    })
                     ->leftJoin('users', function ($join) {
-                        $join->on('users.id', '=', 'client_my_coupon.user_id');
+                        $join->on('users.id', '=', 'coupon.user_id');
                     })
                     ->select('coupon.*', 'users.business_logo')
                     ->where('client_my_coupon.user_id', $user_id)
-                    ->whereDate('coupon.expiry_date', '>', $currentDate)
+                    ->whereDate('coupon.expiry_date', '>=', $currentDate)
+                    ->orderby('client_my_coupon.client_my_coupon_id','DESC')
                     ->get();
 
         $inactive_coupon_list = ClientMyCoupon::leftJoin('coupon', function ($join) {
-            $join->on('coupon.coupon_id', '=', 'client_my_coupon.coupon_id');
-        })
+                        $join->on('coupon.coupon_id', '=', 'client_my_coupon.coupon_id');
+                    })
                     ->leftJoin('users', function ($join) {
-                        $join->on('users.id', '=', 'client_my_coupon.user_id');
+                        $join->on('users.id', '=', 'coupon.user_id');
                     })
                     ->select('coupon.*', 'users.business_logo')
                     ->where('client_my_coupon.user_id', $user_id)
                     ->whereDate('coupon.expiry_date', '<', $currentDate)
+                    ->orderby('client_my_coupon.client_my_coupon_id','DESC')
                     ->get();
 
         return response()->json([

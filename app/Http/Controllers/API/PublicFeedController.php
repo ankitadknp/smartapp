@@ -164,7 +164,11 @@ class PublicFeedController extends Controller
                         ->where('public_feed_like.user_id',$user_id);
                     })
                 ->where('public_feed.public_feed_title', 'LIKE', '%'.$search.'%')
+                ->orWhere('public_feed.public_feed_title_ab', 'LIKE', '%'.$search.'%')
+                ->orWhere('public_feed.public_feed_title_he', 'LIKE', '%'.$search.'%')
                 ->orWhere('public_feed.content', 'LIKE', '%'.$search.'%')
+                ->orWhere('public_feed.content_he', 'LIKE', '%'.$search.'%')
+                ->orWhere('public_feed.content_ab', 'LIKE', '%'.$search.'%')
                 ->where('public_feed.status','=',1)
                 ->get();
         }
@@ -255,5 +259,42 @@ class PublicFeedController extends Controller
             'message' => 'Added Public Feed Report Successfully',
             'status' => 200
         ]);
+    }
+
+    public function public_feed_details(Request $request)
+    {
+        $user_id = Auth::user()->id;
+
+        $validator = Validator::make($request->all(), [
+            'public_feed_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400,
+            ];
+
+            return response()->json($response, 400);
+        }
+
+        $feed = PublicFeed::with('images')
+            ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
+            ->leftJoin('public_feed_like', function($join) use($user_id){
+                    $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
+                    ->where('public_feed_like.user_id',$user_id);
+                })
+            ->where('public_feed.public_feed_id',$request->public_feed_id)
+            ->where('public_feed.status','=',1)
+            ->first();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $feed,
+            'message' => 'Public Feed List',
+            'status' => 200
+        ]);
+    
     }
 }

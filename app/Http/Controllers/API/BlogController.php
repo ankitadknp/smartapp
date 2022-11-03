@@ -157,6 +157,11 @@ class BlogController extends Controller
             })
             ->select('blog.*','category.category_name',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'))
             ->where('blog.blog_title', 'LIKE', '%'.$search.'%')
+            ->orWhere('blog.blog_title_ab', 'LIKE', '%'.$search.'%')
+            ->orWhere('blog.blog_title_he', 'LIKE', '%'.$search.'%')
+            ->orWhere('blog.blog_content', 'LIKE', '%'.$search.'%')
+            ->orWhere('blog.blog_content_ab', 'LIKE', '%'.$search.'%')
+            ->orWhere('blog.blog_content_he', 'LIKE', '%'.$search.'%')
             ->orWhere('blog.blog_content', 'LIKE', '%'.$search.'%')
             ->where('blog.status','=',1)
             ->orderby('blog.blog_id','DESC')
@@ -283,5 +288,45 @@ class BlogController extends Controller
             'message' => 'Added Blog Report Successfully',
             'status' => 200
         ]);
+    }
+
+    public function blog_details(Request $request)
+    {
+        $user_id = Auth::user()->id;
+
+        $validator = Validator::make($request->all(), [
+            'blog_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400,
+            ];
+
+            return response()->json($response, 400);
+        }
+
+        $blog = Blog::leftJoin('category', function($join) {
+            $join->on('blog.category_id', '=', 'category.category_id')
+            ->where('category.type','=','Blog');
+        })
+        ->leftJoin('blog_like', function($join) use($user_id){
+            $join->on('blog.blog_id', '=', 'blog_like.blog_id')
+            ->where('blog_like.user_id',$user_id);
+        })
+        ->select('blog.*','category.category_name','category.category_name_ab','category.category_name_he',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'))
+        ->where('blog.status','=',1)
+        ->where('blog.blog_id',$request->blog_id)
+        ->first();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $blog,
+            'message' => 'Blog List',
+            'status' => 200
+        ]);
+
     }
 }

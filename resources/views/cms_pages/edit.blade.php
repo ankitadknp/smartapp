@@ -1,26 +1,21 @@
 @extends('layouts.layout')
 
-@section('title', 'Merchant')
+@section('title', 'CMS Pages')
 
 @section('addcss')
-<style>
-    .avatar-item {
-        margin-left: 5px
-    }
-</style>
 @endsection
 
 @section('content')
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h1>Edit Merchant</h1>
+            <h1>Edit CMS Pages</h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active">
                     <a href="{{route("dashboard")}}">Dashboard</a>
                 </div>
                 <div class="breadcrumb-item">
-                    <a href="{{route("merchant.index")}}">Merchant</a>
+                    <a href="{{route("cms_pages.index")}}">CMS Pages</a>
                 </div>
                 <div class="breadcrumb-item">Edit</div>
             </div>
@@ -29,152 +24,56 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <form class="" id="edit_user_form" novalidate="" action="{{route("merchant.store")}}" enctype="multipart/form-data" method="POST">
+                        <form class="" id="edit_cms_form" novalidate="" action="{{route("cms_pages.store")}}" enctype="multipart/form-data" method="POST">
                             @csrf
-                            <input type="hidden" name="user_id" id="user_id" value="{{$user->id}}">
+                            <input type="hidden" name="id" id="id" value="{{$cms->id}}">
                             <div class="row">
-                                <div class="col-sm-6 form-group">
-                                    <label>Business Name</label>
-                                    <input type="text" id="bus_name" placeholder="Business Name" name="business_name" class="form-control" required="" value="{{$user->business_name}}">
-                                    @if($errors->has('business_name'))
-                                        <div class="error">{{ $errors->first('business_name') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group">
-                                    <label>Registration Number</label>
-                                    <input type="text" id="registration_number" placeholder="Registration Number" name="registration_number" class="form-control" required="" value="{{$user->registration_number}}">
-                                    @if($errors->has('registration_number'))
-                                        <div class="error">{{ $errors->first('registration_number') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group">
-                                    <label>Email</label>
-                                    <input type="text" id="email_id" placeholder="Email" name="email" class="form-control" required="" value="{{$user->email}}">
-                                    @if($errors->has('email'))
-                                        <div class="error">{{ $errors->first('email') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group">
-                                    <label>Phone Number</label>
-                                    <input type="text" id="phone" placeholder="Phone Number" name="phone_number" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)' value="{{$user->phone_number}}">
-                                    @if($errors->has('phone_number'))
-                                        <div class="error">{{ $errors->first('phone_number') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group">
-                                    <label>Website</label>
-                                    <input type="url" id="website" placeholder="Website" name="website" class="form-control" required="" value="{{$user->website}}">
-                                    @if($errors->has('website'))
-                                        <div class="error">{{ $errors->first('website') }}</div>
-                                    @endif
-                                </div>
-                        
-                                <div class="col-sm-6 form-group" >
-                                    <label>Marital Status</label>
-                                    <select name="marital_status"  id="marital_status" class="form-control" required="">
-                                        <option value="" >Select Marital Status</option>
-                                        <option value="Single" {{ $user->marital_status == 'Single' ? 'selected':'' }}>Single</option>
-                                        <option value="Married" {{ $user->marital_status == 'Married' ? 'selected':'' }}>Married</option>
-                                        <option value="Widowed" {{ $user->marital_status == 'Widowed' ? 'selected':'' }}>Widowed</option>
-                                        <option value="Separated" {{ $user->marital_status == 'Separated' ? 'selected':'' }}>Separated</option>
-                                        <option value="Divorced" {{ $user->marital_status == 'Divorced' ? 'selected':'' }}>Divorced</option>
-                                    </select>
-                                    @if($errors->has('marital_status'))
-                                        <div class="error">{{ $errors->first('marital_status') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group" >
-                                    <label>Business Activity</label>
-                                    <select name="business_activity"  id="business_activity" class="form-control" required="">
-                                        <option value="" >Select Business Activity</option>
-                                        <option value="Construction" {{ $user->business_activity == 'Construction' ? 'selected':'' }}>Construction</option>
-                                        <option value="Education" {{ $user->business_activity == 'Education' ? 'selected':'' }}>Education</option>
-                                        <option value="FinancialInsurance" {{ $user->business_activity == 'FinancialInsurance' ? 'selected':'' }}>FinancialInsurance</option>
-                                        <option value="Accommodation" {{ $user->business_activity == 'Accommodation' ? 'selected':'' }}>Accommodation</option>
-                                        <option value="MedicalCare" {{ $user->business_activity == 'MedicalCare' ? 'selected':'' }}>MedicalCare</option>
-                                        <option value="Trade" {{ $user->business_activity == 'Trade' ? 'selected':'' }}>Trade</option>
-                                    </select>
-                                    @if($errors->has('business_activity'))
-                                        <div class="error">{{ $errors->first('business_activity') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group" >
-                                    <label>Business Sector</label>
-                                    <select name="business_sector"  id="business_sector" class="form-control" required="">
-                                        <option value="" >Select Business Sector</option>
-                                        <option value="Construction" {{ $user->business_sector == 'Construction' ? 'selected':'' }}>Construction</option>
-                                        <option value="Education" {{ $user->business_sector == 'Education' ? 'selected':'' }}>Education</option>
-                                        <option value="Chemical" {{ $user->business_sector == 'Chemical' ? 'selected':'' }}>Chemical</option>
-                                        <option value="Commerce" {{ $user->business_sector == 'Commerce' ? 'selected':'' }}>Commerce</option>
-                                        <option value="Health" {{ $user->business_sector == 'Health' ? 'selected':'' }}>Health</option>
-                                    </select>
-                                    @if($errors->has('business_sector'))
-                                        <div class="error">{{ $errors->first('business_sector') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group">
-                                    <label>Establishment Year</label>
-                                    <input type="year" id="establishment_year" placeholder="Establishment Year" name="establishment_year" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)' value="{{$user->establishment_year}}">
-                                    @if($errors->has('establishment_year'))
-                                        <div class="error">{{ $errors->first('establishment_year') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group">
-                                    <label>Business Hours</label>
-                                    <input type="text" id="business_hours" placeholder="Business Hours" name="business_hours" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)' value="{{$user->business_hours}}">
-                                    @if($errors->has('business_hours'))
-                                        <div class="error">{{ $errors->first('business_hours') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group">
-                                    <label>Street Address Name</label>
-                                    <input type="text" id="street_address_name" placeholder="Street Address Name" name="street_address_name" class="form-control" required="" value="{{$user->street_address_name}}">
-                                    @if($errors->has('street_address_name'))
-                                        <div class="error">{{ $errors->first('street_address_name') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group">
-                                    <label>Street Number</label>
-                                    <input type="text" id="street_number" placeholder="Street Number" name="street_number" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)' value="{{$user->street_number}}">
-                                    @if($errors->has('street_number'))
-                                        <div class="error">{{ $errors->first('street_number') }}</div>
-                                    @endif
-                                </div>
-
                                 <div class="col-sm-12 form-group">
-                                    <label>District</label>
-                                    <input type="text" id="district" placeholder="District" name="district" class="form-control" required="" value="{{$user->district}}">
-                                    @if($errors->has('district'))
-                                        <div class="error">{{ $errors->first('district') }}</div>
+                                    <label>CMS Pages Title</label>
+                                    <input type="text" id="c_title" placeholder="CMS Pages Title" name="title" class="form-control" required="" value="{{$cms->title}}">
+                                    @if($errors->has('title'))
+                                        <div class="error">{{ $errors->first('title') }}</div>
                                     @endif
                                 </div>
-
                                 <div class="col-sm-12 form-group">
-                                    <label>Business Logo</label>
-                                    <input type="file" id="blogo" name="business_logo" class="form-control"  accept="image/*">
-                                    @if($errors->has('business_logo'))
-                                        <div class="error">{{ $errors->first('business_logo') }}</div>
+                                    <label>CMS Pages Title(Arabic)</label>
+                                    <input type="text" id="title_ab" placeholder="CMS Pages Title(Arabic)" name="title_ab" class="form-control" required="" value="{{$cms->title_ab}}">
+                                    @if($errors->has('title_ab'))
+                                        <div class="error">{{ $errors->first('title_ab') }}</div>
                                     @endif
                                 </div>
-                                <div class="row pb-2 gallery_section_card col-sm-12 form-group">
-                                    <div class="avatar-item mb-0">
-                                        <img alt="image" src="{{$user->business_logo}}" class="img-fluid" data-toggle="tooltip" title=""  style="width: 100px;height: 100px;">
-                                    </div>
+                                <div class="col-sm-12 form-group">
+                                    <label>CMS Pages Title(Hebrew)</label>
+                                    <input type="text" id="title_he" placeholder="CMS Pages Title(Hebrew)" name="title_he" class="form-control" required="" value="{{$cms->title_he}}">
+                                    @if($errors->has('title_he'))
+                                        <div class="error">{{ $errors->first('title_he') }}</div>
+                                    @endif
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="form-control-label" for="content">CMS Pages Content</label>
+                                    <textarea class="form-control" name="content"  id="content">{{$cms->content}}</textarea>
+                                    @if($errors->has('content'))
+                                        <div class="error">{{ $errors->first('content') }}</div>
+                                    @endif
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="form-control-label" for="content_ab">CMS Pages Content(Arabic)</label>
+                                    <textarea class="form-control" name="content_ab"  id="content_ab" >{{$cms->content_ab}}</textarea>
+                                    @if($errors->has('content_ab'))
+                                        <div class="error">{{ $errors->first('content_ab') }}</div>
+                                    @endif
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="form-control-label" for="content_he">CMS Pages Content(Hebrew)</label>
+                                    <textarea class="form-control"  id="content_he" name="content_he">{{$cms->content_he}}</textarea>
+                                    @if($errors->has('content_he'))
+                                        <div class="error">{{ $errors->first('content_he') }}</div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="card-footer text-right">
                                 <button class="btn btn-primary">Submit</button>
-                                <a href="{{route("blog.index")}}" class="btn btn-light">Cancel</a>
+                                <a href="{{route("cms_pages.index")}}" class="btn btn-light">Cancel</a>
                             </div>
                         </form>
                     </div>
@@ -186,4 +85,31 @@
 @endsection
 
 @section('addjs')
+<!-- Editor Js-->
+<script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
+<script>
+    CKEDITOR.replace('content_he', {
+        removeButtons: 'Image'
+    });
+    CKEDITOR.replace('content_ab', {
+        removeButtons: 'Image'
+    });
+    CKEDITOR.replace('content', {
+        removeButtons: 'Image'
+    });
+
+
+    CKEDITOR.on("instanceReady", function(event) {
+        event.editor.on("beforeCommandExec", function(event) {
+            // Show the paste dialog for the paste buttons and right-click paste
+            if (event.data.name == "paste") {
+                event.editor._.forcePasteDialog = true;
+            }
+            // Don't show the paste dialog for Ctrl+Shift+V
+            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
+                event.cancel();
+            }
+        })
+    });
+</script>
 @endsection
