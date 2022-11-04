@@ -56,7 +56,11 @@ class BlogController extends Controller
         ->select('blog.*', 'category.category_name');
 
         if (!empty($blog_title)) {
-            $list_query = $list_query->where('blog_title', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_content_ab', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_content_he', 'LIKE', '%'.$blog_title.'%');
+            $list_query = $list_query->where('blog_title', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_title_ab', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_title_he', 'LIKE', '%'.$blog_title.'%');
+        }
+
+        if (!empty($category_id)) {
+            $list_query = $list_query->where('blog.category_id', 'LIKE', '%'.$category_id.'%');
         }
 
         if (!empty($status)) {

@@ -49,7 +49,7 @@ class SubAdminController extends Controller {
         name"))->where('user_status','=',4);
    
         if (!empty($name) ) {
-            $list_query = $list_query->where("first_name", "LIKE", "%" . $name . "%");
+            $list_query = $list_query->where(DB::raw("CONCAT(first_name,' ',last_name)"), "LIKE", "%" . $name . "%");
         }
         if (!empty($email)) {
             $list_query = $list_query->where("email", "LIKE", "%" . $email . "%");

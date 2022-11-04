@@ -1,10 +1,6 @@
 @extends('layouts.layout')
 
-<<<<<<< HEAD
 @section('title', 'Smart Debit Card')
-=======
-@section('title', 'Language')
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
 
 @section('addcss')
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
@@ -31,11 +27,7 @@
                 @php
                 $routeName = explode('.', \Request::route()->getName());
                 @endphp
-<<<<<<< HEAD
                 <h1>Smart Debit Card</h1>
-=======
-                <h1>Coupons QR Management</h1>
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
             </div>
         </div>
         <div class="row">
@@ -51,21 +43,13 @@
                                     <div class="row">
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                             <div class="form-group">
-<<<<<<< HEAD
                                                 <input type="text" placeholder="Name" name="name" id="name" class="form-control">
-=======
-                                                <input type="text" placeholder="Coupon Code" name="coupon_code" id="coupon_code" class="form-control">
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
                                             </div>
                                         </div>
                                         
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                             <div class="form-group">
-<<<<<<< HEAD
                                                 <input type="text" placeholder="Email" name="email" id="email" class="form-control">
-=======
-                                                <input type="text" placeholder="Coupon Title" name="coupon_title" id="coupon_title" class="form-control">
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
                                             </div>
                                         </div>
 
@@ -89,18 +73,11 @@
                             <table class="table table-striped" id="datatable">
                                 <thead>
                                     <tr>
-<<<<<<< HEAD
                                         <th>User Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
                                         <th>Status</th>
                                         <th>Edit</th>
-=======
-                                        <th>Coupon Code</th>
-                                        <th>Coupon Title</th>
-                                        <th>Qrcode Url</th>
-                                        <th>Qrcode</th>
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
                                         <th>Delete</th>
                                     </tr>
                                 </thead>
@@ -113,7 +90,6 @@
     </section>
 </div>
 
-<<<<<<< HEAD
 <!-- edit status -->
 <div class="modal fade" id="edit_status" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -133,7 +109,7 @@
                             <label>Status</label>
                             <select name="status"  id="s_status" class="form-control" required="">
                                 <option value="" >Select Status</option>
-                                <option value="Pending">Pending</option>
+                                <option value="Applied">Applied</option>
                                 <option value="Verified">Verified</option>
                                 <option value="Cancelled">Cancelled</option>
                             </select>
@@ -151,8 +127,6 @@
         </div>
     </div>
 </div>
-=======
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
 @endsection
 
 @section('addjs')
@@ -162,7 +136,6 @@
 <script src="{{asset("public/assets/modules/jquery-ui/jquery-ui.min.js")}}"></script>
 
 <script type="text/javascript">
-<<<<<<< HEAD
     var controller_url = "{{route('smart-debit-card.index')}}";
 
     
@@ -188,7 +161,6 @@
             success: function (data) 
             {
                 if(data.success){
-
                     $('#smart_form').trigger("reset");
                     $('#edit_status').modal('hide');
                     jQuery(data_table).DataTable().draw();
@@ -208,16 +180,9 @@
             }
         });
     });
-=======
-    var controller_url = "{{route('coupons-qr.index')}}";
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
 </script>
 
 
 <!-- Page Specific JS File -->
-<<<<<<< HEAD
 <script src="{{asset("public/assets/pages-js/smart_debit_card/index.js?v=1.1")}}"></script>
-=======
-<script src="{{asset("public/assets/pages-js/coupon_qrcode/index.js")}}"></script>
->>>>>>> ad409a9f89911670dcd7251ff5812c40d9696ea8
 @endsection

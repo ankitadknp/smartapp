@@ -90,7 +90,7 @@ jQuery(document).ready(function () {
         if (jQuery(this).is(':checked')) {
             status = 1;
         } else {
-            status = 0;
+            status = 2;
         }
 
         id = jQuery(this).attr('data-id');

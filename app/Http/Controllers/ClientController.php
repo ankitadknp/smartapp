@@ -48,7 +48,7 @@ class ClientController extends Controller
         $list_query = User::select("*")->where('user_status','=',0);
 
         if (!empty($name)) {
-            $list_query = $list_query->where('first_name', 'LIKE', '%'.$name.'%')->orWhere("last_name", "LIKE", "%" . $name . "%");
+            $list_query = $list_query->where(DB::raw("CONCAT(first_name,' ',last_name)"), "LIKE", "%" . $name . "%");
         }
         if (!empty($email)) {
             $list_query = $list_query->where('email', 'LIKE', '%'.$email.'%');

@@ -77,7 +77,7 @@ class CMSPagesController extends Controller {
                                                                 <span class="custom-switch-indicator"></span>
                                                               </label>';
 
-                $all_records[$index]['edit'] = '<a href="#" class="btn btn-light edit_category" data-id="'.$value->id . '">Edit</a>';
+                $all_records[$index]['edit'] = '<a href="' . route($this->route_name . ".edit", $value->id  ) . '" class="btn btn-light edit_category" data-id="'.$value->id . '">Edit</a>';
 
                 $all_records[$index]['delete'] = '<button type="button" class="btn btn-danger delete_data_button" data-id="'.$value->id . '">Delete</button>';
 
@@ -123,7 +123,8 @@ class CMSPagesController extends Controller {
 
         if($validator->fails())
         {
-            return Response::json(['errors' => $validator->errors()]);
+            // return Response::json(['errors' => $validator->errors()]);
+            return back()->with(['errors' => $validator->errors()]);
         }
 
         $add_new_cms = array(
@@ -145,19 +146,22 @@ class CMSPagesController extends Controller {
             $msg = 'CMS Pages Update Successfully';
         }
 
-        return response()->json(
-            [
-                'success' => true,
-                'message' => $msg
-            ]
-        );
+        return redirect()->route($this->route_name . ".index")->with("success", $msg);
+
+        // return response()->json(
+        //     [
+        //         'success' => true,
+        //         'message' => $msg
+        //     ]
+        // );
     }
 
 
     public function edit($id) 
     {
         $cms = CMSPages::where('id',$id)->first();
-        return Response::json($cms);
+        // return Response::json($cms);
+        return view($this->route_name . ".edit", ['cms' =>$cms]);
     }
 
     public function change_status(Request $request) 

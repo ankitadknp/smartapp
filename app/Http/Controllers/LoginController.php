@@ -26,9 +26,7 @@ class LoginController extends Controller {
         // $this->middleware('guest:admin')->except('logout');
     }
 
-    public function username() {
-        return 'a_user_name';
-    }
+    
 
     /**
      * Display a listing of the resource.
@@ -55,9 +53,16 @@ class LoginController extends Controller {
         $email = $request->get("email");
         $password = $request->get("password");
 
-        if(Auth::attempt(['email' => $email, 'password' => ($password),'user_status' => (3)]))
+        if(Auth::attempt(['email' => $email, 'password' => ($password),'user_status' => [3,4]]))
         { 
-            return redirect('dashboard');
+            $user = User::where('email',$email)->whereIn('user_status',[3,4])->first();
+            if ($user->status == 1)
+            { 
+                return redirect('dashboard');
+            } else {
+                // return \Redirect::back()->withErrors(["SubAdmin isn't Active"]);
+                return redirect()->route('login')->with("errors", "SubAdmin isn't Active");
+            }
         }
 
         return \Redirect::back()->withErrors(["Invalid email or password"]);

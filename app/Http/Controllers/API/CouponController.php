@@ -10,13 +10,11 @@ use App\Http\Controllers\Controller;
 use App\Share;
 use App\UseCoupon;
 use App\User;
-use DB;
+use DB,QrCode,URL,Validator,File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use QrCode;
-use URL;
-use Validator;
+
 
 class CouponController extends Controller
 {
@@ -33,7 +31,7 @@ class CouponController extends Controller
             'coupon_title' => 'required|max:50',
             'coupon_description' => 'required',
             'category_id' => 'required',
-            'qrcode_url' => 'required',
+            'qrcode_url' => 'required|url',
             'coupon_title_ab' => 'required',
             'coupon_title_he' => 'required',
         ]);
@@ -93,12 +91,14 @@ class CouponController extends Controller
                         $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
                     })
                     ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                    ->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%')
+                    ->where(function ($query) use ($search) { 
+                        $query->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
+                        ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
+                        ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
+                        ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
+                        ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
+                        ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%');
+                    })
                     ->where('coupon.user_id', '=', $user_id)
                     ->orderby('coupon.coupon_id', 'DESC')
                     ->get();

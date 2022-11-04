@@ -75,9 +75,9 @@
                                     <tr>
                                         <th>Coupon Code</th>
                                         <th>Coupon Title</th>
-                                        <th>Qrcode Url</th>
-                                        <th>Qrcode</th>
-                                        <th>Delete</th>
+                                        <th>QR Code url </th>
+                                        <th>QR Code</th>
+                                        <!-- <th>Delete</th> -->
                                     </tr>
                                 </thead>
                             </table>
