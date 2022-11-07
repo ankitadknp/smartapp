@@ -23,7 +23,6 @@ class LoginController extends Controller {
         $this->adminModel = new \App\User();
 
         $this->middleware('guest')->except('logout');
-        // $this->middleware('guest:admin')->except('logout');
     }
 
     
@@ -55,20 +54,23 @@ class LoginController extends Controller {
 
         if(Auth::attempt(['email' => $email, 'password' => ($password),'user_status' => [3,4]]))
         { 
+          
             $user = User::where('email',$email)->whereIn('user_status',[3,4])->first();
             if ($user->status == 1)
             { 
                 return redirect('dashboard');
-            } else {
-                // return \Redirect::back()->withErrors(["SubAdmin isn't Active"]);
-                return redirect()->route('login')->with("errors", "SubAdmin isn't Active");
+            } else if ($user->status == 2)
+            {
+                Auth::logout();
+                return redirect('/')->withErrors('Your account is not activated. Please activate it first.');
             }
         }
 
         return \Redirect::back()->withErrors(["Invalid email or password"]);
     }
 
-    public function demo() {
+    public function demo() 
+    {
         return view("demo");
     }
 

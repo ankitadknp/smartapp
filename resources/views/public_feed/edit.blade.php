@@ -14,13 +14,13 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h1>Edit Category</h1>
+            <h1>Edit Public Feed</h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active">
                     <a href="{{route("dashboard")}}">Dashboard</a>
                 </div>
                 <div class="breadcrumb-item">
-                    <a href="{{route("public_feed.index")}}">Category</a>
+                    <a href="{{route("public_feed.index")}}">Public Feed</a>
                 </div>
                 <div class="breadcrumb-item">Edit</div>
             </div>
@@ -101,17 +101,25 @@
                                     <div class="col-sm-12 form-group">
                                         <label for="customFileGallery">Public Feed Images</label>
                                         <div class="file-loading">
-                                            <input id="file-0b" type="file" class="file form-control required" name="images[]" accept="image/*" alt="Image" multiple="">
+                                            <input id="file-0b" type="file" class="file form-control required" name="images[]" accept="image/*|audio/*|video/*" alt="Image" multiple="">
                                         </div>
                                     </div>
 
                                     <div class="row pb-2 gallery_section_card col-sm-12 form-group">
                                         @if(!empty($feed_images))
                                         @foreach($feed_images as $gallery)
-                                            <div class="avatar-item mb-0">
-                                                <img alt="image" src="{{$gallery->image}}" class="img-fluid" data-toggle="tooltip" title=""  style="width: 100px;height: 100px;">
-                                                <div class="avatar-badge delete_data_button" data-id="{{$gallery->public_feed_image_id }}" data-name="{{$gallery->image}}" title="" data-toggle="tooltip" data-original-title="Remove" style="cursor: pointer"><i class="fas fa-trash text-danger"></i></div>
-                                            </div>
+                                          <?php $ext = substr($gallery->image, strrpos($gallery->image, '.') + 1);
+                                            if ($ext == 'mp4') { ?>
+                                                <div class="avatar-item mb-0">
+                                                        <iframe src="{{$gallery->image}}" name="iframe_a" title="Iframe Example" style="width: 100px;height: 100px;"></iframe>
+                                                        <div class="avatar-badge delete_data_button" data-id="{{$gallery->public_feed_image_id }}" data-name="{{$gallery->image}}" title="" data-toggle="tooltip" data-original-title="Remove" style="cursor: pointer"><i class="fas fa-trash text-danger"></i></div>
+                                                </div>
+                                            <?php } else { ?>
+                                                <div class="avatar-item mb-0">
+                                                    <img alt="image" src="{{$gallery->image}}" class="img-fluid" data-toggle="tooltip" title=""  style="width: 100px;height: 100px;">
+                                                    <div class="avatar-badge delete_data_button" data-id="{{$gallery->public_feed_image_id }}" data-name="{{$gallery->image}}" title="" data-toggle="tooltip" data-original-title="Remove" style="cursor: pointer"><i class="fas fa-trash text-danger"></i></div>
+                                                </div>
+                                            <?php } ?>
                                         @endforeach
                                         @endif
                                     </div>
