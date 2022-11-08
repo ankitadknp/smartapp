@@ -6,11 +6,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Language;
 use App\LanguageSetting;
-use Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Response;
-use DB;
-use Illuminate\Validation\Rule;
 
 class LanguageController extends Controller
 {

@@ -3,7 +3,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Validator;
+use Validator,DB;
 use App\Blog;
 use App\BlogComment;
 use App\BlogLike;
@@ -11,9 +11,6 @@ use App\User;
 use App\BlogCommentLike;
 use App\BlogReport;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Response;
-use DB;
-use Illuminate\Validation\Rule;
 
 class BlogController extends Controller
 {

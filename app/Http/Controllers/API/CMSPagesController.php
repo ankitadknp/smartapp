@@ -3,12 +3,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Validator;
 use App\CMSPages;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Response;
-use DB;
-use Illuminate\Validation\Rule;
 
 class CMSPagesController extends Controller
 {

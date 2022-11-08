@@ -14,8 +14,6 @@ use App\User;
 use DB,QrCode,URL,Validator,File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-
 
 class CouponController extends Controller
 {
@@ -182,7 +180,7 @@ class CouponController extends Controller
 
         $coupon = Coupon::find($request->coupon_id);
 
-        if ($request->qrcode_url != '') {
+        if ( !empty($request->qrcode_url)) {
 
             $publicPath = public_path('qrcodes/'.time().'.svg');
             $fileName = basename($publicPath);
@@ -195,7 +193,7 @@ class CouponController extends Controller
             ]);
         } 
 
-        if ($request->term_condition != '') 
+        if (!empty($request->term_condition)) 
         {
             CouponTerm::where('coupon_id',$request->coupon_id)->delete();
 
@@ -427,11 +425,11 @@ class CouponController extends Controller
         $share = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->get();
         $term = CouponTerm::where('coupon_id',$request->coupon_id)->get();
 
-        if ($mycoupon != '[]') 
+        if (!empty($mycoupon)) 
         {
             ClientMyCoupon::where('coupon_id',$request->coupon_id)->delete();
         }
-        if ($qrcode != '[]') 
+        if (!empty($qrcode)) 
         {
             foreach ($qrcode as $img_val) 
             {
@@ -445,15 +443,15 @@ class CouponController extends Controller
             }
             CouponQRcode::where('coupon_id',$request->coupon_id)->delete();
         }
-        if ($usecoupon != '[]') 
+        if (!empty($usecoupon)) 
         {
             UseCoupon::where('coupon_id',$request->coupon_id)->delete();
         }
-        if ($share != '[]') 
+        if (!empty($share)) 
         {
             Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->delete();
         }
-        if ($term != '[]') 
+        if (!empty($term)) 
         {
             CouponTerm::where('coupon_id',$request->coupon_id)->delete();
         }

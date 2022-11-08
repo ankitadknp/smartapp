@@ -7,7 +7,6 @@ use App\User;
 use Hash,File,DB,Validator,Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Str;

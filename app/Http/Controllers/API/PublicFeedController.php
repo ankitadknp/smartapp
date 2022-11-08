@@ -3,17 +3,13 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Validator;
+use Validator,DB;
 use App\PublicFeed;
 use App\PublicFeedComment;
 use App\PublicFeedCommentLike;
 use App\PublicFeedLike;
 use App\PublicFeedReport;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Response;
-use DB;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Config;
 
 class PublicFeedController extends Controller
 {

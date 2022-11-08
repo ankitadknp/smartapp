@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Share;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Response;
-use DB;
-use Illuminate\Validation\Rule;
 
 class ShareController extends Controller
 {

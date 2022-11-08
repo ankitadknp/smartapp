@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Notification;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Response;
-use DB;
-use Illuminate\Validation\Rule;
 
 class NotificationController extends Controller
 {
