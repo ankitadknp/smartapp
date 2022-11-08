@@ -52,7 +52,7 @@ class ShareController extends Controller
         $input['user_id'] = $user_id;
         $input['key'] = $key;
 
-        if ( $share == '' || !isset($share)) {
+        if ( empty($share) || !isset($share)) {
 
             $feed_comment = Share::create($input);
 

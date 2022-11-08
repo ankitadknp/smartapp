@@ -171,8 +171,6 @@ class BlogController extends Controller
     {
         $user_id = Auth::user()->id;
 
-        $user_data = User::where('id',$user_id)->first();
-
         $validator = Validator::make($request->all(), [
             'blog_id' => 'required',
         ]);

@@ -67,10 +67,10 @@ class SmartCardController extends Controller
             ]);
         } else {
             return response()->json([
-            'success' => true,
-            'message' => 'Card not found!',
-            'status' => 201,
-        ]);
+                'success' => true,
+                'message' => 'Card not found!',
+                'status' => 201,
+            ]);
         }
     }
 

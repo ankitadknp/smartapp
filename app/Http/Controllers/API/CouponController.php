@@ -90,142 +90,40 @@ class CouponController extends Controller
 
         $user = User::find($user_id);
 
-        $BUSINESS_LOGO_URL = Config::get('constants.BUSINESS_LOGO_URL');
-
-        if ($user->user_status == 1) {
-            if ($search != '') {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                        $join->on('users.id', '=', 'coupon.user_id');
-                    })
-                    ->leftJoin('coupon_qrcode', function ($join) {
-                        $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                    })
-                    ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                    ->where(function ($query) use ($search) { 
+        $coupon = Coupon::select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
+                ->leftJoin('users', function ($join) {
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
+                ->leftJoin('coupon_qrcode', function ($join) {
+                    $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
+                })
+                ->where(function ($query) use ($search,$location,$discount_type,$category_id) { 
+                    if (!empty($search)) {
                         $query->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
-                        ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
-                        ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
-                        ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
-                        ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
-                        ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%');
-                    })
-                    ->where('coupon.user_id', '=', $user_id)
-                    ->orderby('coupon.coupon_id', 'DESC')
-                    ->get();
-            } elseif ($location != '') {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
-                        ->leftJoin('coupon_qrcode', function ($join) {
-                            $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                        })
-                        ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                        ->where('coupon.location', 'LIKE', '%'.$location.'%')
-                        ->where('coupon.user_id', '=', $user_id)
-                        ->orderby('coupon.coupon_id', 'DESC')
-                        ->get();
-            } elseif ($discount_type != '') {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
-                        ->leftJoin('coupon_qrcode', function ($join) {
-                            $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                        })
-                        ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                        ->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%')
-                        ->where('coupon.user_id', '=', $user_id)
-                        ->orderby('coupon.coupon_id', 'DESC')
-                        ->get();
-            } elseif ($category_id != '') {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
-                        ->leftJoin('coupon_qrcode', function ($join) {
-                            $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                        })
-                        ->select('coupon.*','users.business_logo','coupon_qrcode.qrcode_url')
-                        ->where('coupon.category_id', $category_id)
-                        ->where('coupon.user_id', '=', $user_id)
-                        ->orderby('coupon.coupon_id', 'DESC')
-                        ->get();
-            } else {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
-                        ->leftJoin('coupon_qrcode', function ($join) {
-                            $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                        })
-                        ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                        ->where('coupon.user_id', '=', $user_id)
-                        ->orderby('coupon.coupon_id', 'DESC')
-                        ->get();
-            }
-        } elseif ($user->user_status == 0) {
-            if ($search != '') {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                        $join->on('users.id', '=', 'coupon.user_id');
-                    })
-                    ->leftJoin('coupon_qrcode', function ($join) {
-                        $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                    })
-                    ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                    ->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
-                    ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%')
-                    ->orderby('coupon.coupon_id', 'DESC')
-                    ->get();
-            } elseif ($location != '') {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
-                        ->leftJoin('coupon_qrcode', function ($join) {
-                            $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                        })
-                        ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                        ->where('coupon.location', 'LIKE', '%'.$location.'%')
-                        ->orderby('coupon.coupon_id', 'DESC')
-                        ->get();
-            } elseif ($discount_type != '') {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
-                        ->leftJoin('coupon_qrcode', function ($join) {
-                            $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                        })
-                        ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                        ->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%')
-                        ->orderby('coupon.coupon_id', 'DESC')
-                        ->get();
-            } elseif ($category_id != '') {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                            $join->on('users.id', '=', 'coupon.user_id');
-                        })
-                        ->leftJoin('coupon_qrcode', function ($join) {
-                            $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                        })
-                        ->leftJoin('category', function($join) {
-                            $join->on('coupon.category_id', '=', 'category.category_id')
-                            ->where('category.type','=','Coupon');
-                        })
-                        ->select('coupon.*','users.business_logo','coupon_qrcode.qrcode_url')
-                        ->where('coupon.category_id', $category_id)
-                        ->orderby('coupon.coupon_id', 'DESC')
-                        ->get();
-            } else {
-                $coupon = Coupon::leftJoin('users', function ($join) {
-                        $join->on('users.id', '=', 'coupon.user_id');
-                    })
-                    ->leftJoin('coupon_qrcode', function ($join) {
-                        $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
-                    })
-                    ->select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
-                    ->orderby('coupon.coupon_id', 'DESC')
-                    ->get();
-            }
-        }
+                            ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%');
+                    }
+                    if ( !empty($location) ) {
+                        $query->where('coupon.location', 'LIKE', '%'.$location.'%');
+                    }
+                    if ( !empty($discount_type) ) {
+                        $query->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%');
+                    }
+                    if ( !empty($category_id) ) {
+                        $query->where('coupon.category_id', $category_id);
+                    }
+                })
+                ->where(function ($query) use ($user,$user_id) { 
+                    if ($user->user_status == 1) {
+                        $query->where('coupon.user_id',$user_id);
+                    }
+                })
+                ->orderby('coupon.coupon_id', 'DESC')
+                ->get();
+        
 
         foreach ($coupon as $key=>$val)
         {
@@ -356,7 +254,8 @@ class CouponController extends Controller
         $input = $request->all();
         $input['user_id'] = $user_id;
 
-        if ($added_coupon == '' || !isset($added_coupon)) {
+        if ( empty($added_coupon) || !isset($added_coupon)) 
+        {
             ClientMyCoupon::create($input);
             $msg = 'Added Coupon in mycoupon list';
         } else {
@@ -374,8 +273,6 @@ class CouponController extends Controller
     {
         $user_id = Auth::user()->id;
         $currentDate = date('Y-m-d');
-
-        $BUSINESS_LOGO_URL = Config::get('constants.BUSINESS_LOGO_URL');
 
         $active_coupon_list = ClientMyCoupon::leftJoin('coupon', function ($join) {
                         $join->on('coupon.coupon_id', '=', 'client_my_coupon.coupon_id');
@@ -475,12 +372,12 @@ class CouponController extends Controller
             return response()->json($response, 400);
         }
 
-        $blog_comment_like_data = UseCoupon::where('user_id', $user_id)->where('coupon_id', $request->coupon_id)->first();
+        $usecoupon = UseCoupon::where('user_id', $user_id)->where('coupon_id', $request->coupon_id)->first();
 
         $input = $request->all();
         $input['user_id'] = $user_id;
 
-        if ($blog_comment_like_data == '' || !isset($blog_comment_like_data)) {
+        if ( empty($usecoupon) || !isset($usecoupon)) {
             UseCoupon::create($input);
             $msg = 'Saved Coupon';
         } else {
@@ -530,8 +427,6 @@ class CouponController extends Controller
         $share = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->get();
         $term = CouponTerm::where('coupon_id',$request->coupon_id)->get();
 
-        Coupon::where('user_id',$user_id)->where('coupon_id',$request->coupon_id)->delete();
-
         if ($mycoupon != '[]') 
         {
             ClientMyCoupon::where('coupon_id',$request->coupon_id)->delete();
@@ -562,6 +457,8 @@ class CouponController extends Controller
         {
             CouponTerm::where('coupon_id',$request->coupon_id)->delete();
         }
+
+        Coupon::where('user_id',$user_id)->where('coupon_id',$request->coupon_id)->delete();
 
         return response()->json([
             'success' => true,

@@ -18,30 +18,19 @@ class LanguageController extends Controller
     {
         $user = auth()->user();
 
-        if ($user != null) 
+        if ( !empty($user)) 
         {
            $data = Language::get();
 
            $response = [
-            'success' => true,
-            'data'    => $data,
-            'message' => "Language List",
-            'status' => 200
-        ];
-
-        return response()->json($response, 200); 
-
-
-        } else {
-
-            $response = [
-                'success' => false,
-                'message' => "No User Data",
-                'status' => 400
+                'success' => true,
+                'data'    => $data,
+                'message' => "Language List",
+                'status' => 200
             ];
-    
-            return response()->json($response, 400);
-        }
+
+            return response()->json($response, 200); 
+        } 
     }
 
     public function language_setting(Request $request)
@@ -68,12 +57,9 @@ class LanguageController extends Controller
         $input = $request->all();
         $input['user_id'] = $user_id;
 
-        if ( $lan_set_data == '' || !isset($lan_set_data)) {
+        if ( empty($lan_set_data) || !isset($lan_set_data)) {
 
-            $language = LanguageSetting::create($input);
-
-            $success['language_id'] =  $language->language_id ;
-            $success['user_id'] =  $language->user_id;
+            $success = LanguageSetting::create($input);
 
         } else {
 

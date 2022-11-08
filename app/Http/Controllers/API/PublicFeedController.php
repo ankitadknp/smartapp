@@ -26,17 +26,13 @@ class PublicFeedController extends Controller
         $input = $request->all();
         $input['user_id'] = $user_id;
 
-        if ( $feed_comment_data == '' || !isset($feed_comment_data)) {
+        if ( empty($feed_comment_data) || !isset($feed_comment_data)) {
 
-            $feed_comment = PublicFeedComment::create($input);
-
-            $success['public_feed_id '] =  $feed_comment->public_feed_id ;
-            $success['user_id'] =  $feed_comment->user_id;
-            $success['comment'] =  $feed_comment->comment;
+            $feed_comment_res = PublicFeedComment::create($input);
 
             return response()->json([
                 'success' => true,
-                'data'    => $success,
+                'data'    => $feed_comment_res,
                 'message' => 'Added Public Feed Comment Successfully',
                 'status' => 200
             ]);
@@ -68,13 +64,9 @@ class PublicFeedController extends Controller
             $msg = 'Public Feed Unlike Succesfully';
         }
 
-        if ( $feed_like_data == '' || !isset($feed_like_data)) {
+        if ( empty($feed_like_data) || !isset($feed_like_data)) {
 
-            $feed_like = PublicFeedLike::create($input);
-
-            $success['public_feed_id'] = $feed_like->public_feed_id ;
-            $success['user_id'] =  $feed_like->user_id;
-            $success['is_like'] =  $feed_like->is_like;
+            $success = PublicFeedLike::create($input);
 
         } else {
 
@@ -109,14 +101,9 @@ class PublicFeedController extends Controller
             $msg = 'Public Feed Comment Unlike Succesfully';
         }
 
-        if ( $feed_comment_like_data == '' || !isset($feed_comment_like_data)) {
+        if ( empty($feed_comment_like_data) || !isset($feed_comment_like_data)) {
 
-            $feed_comment_like = PublicFeedCommentLike::create($input);
-
-            $success['public_feed_id'] = $feed_comment_like->public_feed_id ;
-            $success['user_id'] =  $feed_comment_like->user_id;
-            $success['public_feed_comment_id'] =  $feed_comment_like->public_feed_comment_id;
-            $success['is_like'] =  $feed_comment_like->is_like;
+            $success = PublicFeedCommentLike::create($input);
 
         } else {
 
@@ -144,38 +131,28 @@ class PublicFeedController extends Controller
 
         $user_id = Auth::user()->id;
 
-        if ($search == '') 
-        {
-            $feed = PublicFeed::with('images')
-                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
-                ->leftJoin('public_feed_like', function($join) use($user_id){
+        $feedobj = PublicFeed::with('images')
+                    ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
+                    ->leftJoin('public_feed_like', function($join) use($user_id) {
                         $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
                         ->where('public_feed_like.user_id',$user_id);
                     })
-                ->where('public_feed.status','=',1)
-                ->get();
-
-        } else {
-
-            $feed = PublicFeed::with('images')
-                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
-                ->leftJoin('public_feed_like', function($join) use($user_id) {
-                        $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
-                        ->where('public_feed_like.user_id',$user_id);
+                    ->where(function ($query) use ($search) {
+                        if(!empty($search)) {
+                            $query->where('public_feed.public_feed_title', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.public_feed_title_ab', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.public_feed_title_he', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.content', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.content_he', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.content_ab', 'LIKE', '%'.$search.'%');
+                        }
                     })
-                ->where('public_feed.public_feed_title', 'LIKE', '%'.$search.'%')
-                ->orWhere('public_feed.public_feed_title_ab', 'LIKE', '%'.$search.'%')
-                ->orWhere('public_feed.public_feed_title_he', 'LIKE', '%'.$search.'%')
-                ->orWhere('public_feed.content', 'LIKE', '%'.$search.'%')
-                ->orWhere('public_feed.content_he', 'LIKE', '%'.$search.'%')
-                ->orWhere('public_feed.content_ab', 'LIKE', '%'.$search.'%')
-                ->where('public_feed.status','=',1)
-                ->get();
-        }
+                    ->where('public_feed.status','=',1)
+                    ->get();
 
         return response()->json([
             'success' => true,
-            'data'    => $feed,
+            'data'    => $feedobj,
             'message' => 'Public Feed List',
             'status' => 200
         ]);
@@ -200,29 +177,29 @@ class PublicFeedController extends Controller
             return response()->json($response, 400);
         }
 
-        $feed_comment = PublicFeedComment::leftJoin('users', function($join) {
-                $join->on('users.id', '=', 'public_feed_comment.user_id');
-            })
-            ->leftJoin('public_feed_comment_like', function($join) use($user_id){
-                $join->on('public_feed_comment.public_feed_comment_id', '=', 'public_feed_comment_like.public_feed_comment_id')
-                ->where('public_feed_comment_like.user_id',$user_id);
-            })
-            ->leftJoin('public_feed', function($join) {
-                $join->on('public_feed.public_feed_id', '=', 'public_feed_comment.public_feed_id');
-            })
-            ->select ('public_feed_comment.*',DB::raw('(CASE 
-            WHEN users.user_status = "0" THEN CONCAT(last_name, " ", first_name) 
-            WHEN users.status = "1" THEN users.business_name 
-            END) AS name'),DB::raw('IFNULL( public_feed_comment_like.is_like, 0) as is_like')
-            )
-            ->where('public_feed_comment.public_feed_id',$request->public_feed_id)
-            ->where('public_feed.status','=',1)
-            ->orderby('public_feed_comment.public_feed_id','DESC')
-            ->get();
+        $feed_comment_res = PublicFeedComment::leftJoin('users', function($join) {
+                            $join->on('users.id', '=', 'public_feed_comment.user_id');
+                        })
+                        ->leftJoin('public_feed_comment_like', function($join) use($user_id){
+                            $join->on('public_feed_comment.public_feed_comment_id', '=', 'public_feed_comment_like.public_feed_comment_id')
+                            ->where('public_feed_comment_like.user_id',$user_id);
+                        })
+                        ->leftJoin('public_feed', function($join) {
+                            $join->on('public_feed.public_feed_id', '=', 'public_feed_comment.public_feed_id');
+                        })
+                        ->select ('public_feed_comment.*',DB::raw('(CASE 
+                        WHEN users.user_status = "0" THEN CONCAT(last_name, " ", first_name) 
+                        WHEN users.status = "1" THEN users.business_name 
+                        END) AS name'),DB::raw('IFNULL( public_feed_comment_like.is_like, 0) as is_like')
+                        )
+                        ->where('public_feed_comment.public_feed_id',$request->public_feed_id)
+                        ->where('public_feed.status','=',1)
+                        ->orderby('public_feed_comment.public_feed_id','DESC')
+                        ->get();
 
         return response()->json([
             'success' => true,
-            'data'    => $feed_comment,
+            'data'    => $feed_comment_res,
             'message' => 'Recent Public Feed Comment List',
             'status' => 200
         ]);
@@ -279,19 +256,19 @@ class PublicFeedController extends Controller
             return response()->json($response, 400);
         }
 
-        $feed = PublicFeed::with('images')
-            ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
-            ->leftJoin('public_feed_like', function($join) use($user_id){
-                    $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
-                    ->where('public_feed_like.user_id',$user_id);
-                })
-            ->where('public_feed.public_feed_id',$request->public_feed_id)
-            ->where('public_feed.status','=',1)
-            ->first();
+        $feed_res = PublicFeed::with('images')
+                ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 0) as is_like'))
+                ->leftJoin('public_feed_like', function($join) use($user_id){
+                        $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
+                        ->where('public_feed_like.user_id',$user_id);
+                    })
+                ->where('public_feed.public_feed_id',$request->public_feed_id)
+                ->where('public_feed.status','=',1)
+                ->first();
 
         return response()->json([
             'success' => true,
-            'data'    => $feed,
+            'data'    => $feed_res,
             'message' => 'Public Feed List',
             'status' => 200
         ]);

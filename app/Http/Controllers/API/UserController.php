@@ -56,7 +56,6 @@ class UserController extends Controller
 
             $input['user_status'] = $request->user_status;
             $verify_otp = '111111';
-            // $verify_otp_time = now()->addMinutes(5);
             $verify_otp_time = Carbon::now()->addMinutes(5);
             $user_status = 1;
 
@@ -136,8 +135,6 @@ class UserController extends Controller
         $input['password'] = Hash::make($input['password']);
         $user = User::create($input);
 
-
-
         $success['token'] =  $user->createToken('SmartApp')->accessToken;
         $success['user_id'] =  $user->id;
         $success['email'] =  $user->email;
@@ -185,7 +182,7 @@ class UserController extends Controller
             'user_status' => 'required',
         ]);
     
-        if($validator->fails()){
+        if ($validator->fails()){
 
             $response = [
                 'success' => false,
@@ -196,7 +193,7 @@ class UserController extends Controller
             return response()->json($response, 400);
         }
 
-        if(Auth::attempt(['email' => $request->email, 'password' => ($request->password),'user_status' => ($request->user_status)])){ 
+        if (Auth::attempt(['email' => $request->email, 'password' => ($request->password),'user_status' => ($request->user_status)])){ 
 
             $user = Auth::user(); 
             if ( $user->status == 1) 
@@ -229,14 +226,14 @@ class UserController extends Controller
                 $success['district'] =  ($user->district != null)?$user->district:'';
                 $success['user_status'] =  $user->user_status;
                 
-
                 return response()->json([
                     'success' => true,
                     'data'    => $success,
                     'message' => 'Login Successfuly',
                     'status' => 200
                 ]);
-            }else {
+
+            } else {
                 return response()->json([
                     'success' => false,
                     'message' =>'User is blocked',
@@ -244,7 +241,7 @@ class UserController extends Controller
                 ]);
             }
 
-        } else{ 
+        } else { 
             return response()->json([
                 'success' => false,
                 'message' =>'Your login credentials could not be verified, please try again.',
@@ -275,7 +272,7 @@ class UserController extends Controller
 
         $user = User::select('*')->where('phone_number',$request->phone_number)->where('id',$user_id)->first();
 
-        if ($user == '') {
+        if ( empty($user) ) {
 
             $response = [
                 'success' => false,
@@ -381,7 +378,7 @@ class UserController extends Controller
 
         $password  = auth()->user()->password;
 
-        if (Hash::check($request->get('current_password'), $password)) {
+        if (Hash::check($request->get('current_password'), $password) ) {
 
             $New_Password = $request->new_password;
 
@@ -411,11 +408,8 @@ class UserController extends Controller
         
         $user = auth()->user();
    
-        $STORE_IMGAE_URL =  Config::get('constants.BUSINESS_LOGO_URL');
-
-        if ($user != null) 
+        if ( !empty($user) ) 
         {
-
             $success['user_id'] =  $user->id;
             $success['email'] =  $user->email;
             $success['first_name'] =  ($user->first_name != null)?$user->first_name:'';
@@ -450,15 +444,6 @@ class UserController extends Controller
     
             return response()->json($response, 200); 
     
-        } else {
-
-            $response = [
-                'success' => false,
-                'message' => "No User Data",
-                'status' => 400
-            ];
-    
-            return response()->json($response, 400); 
         }
     }
 
@@ -490,7 +475,7 @@ class UserController extends Controller
                 'district' => 'required|max:50',
             ]);
 
-            if($validator->fails()){
+            if ($validator->fails() ) {
 
                 $response = [
                     'success' => false,
@@ -526,7 +511,7 @@ class UserController extends Controller
                 'district' => 'required|max:50',
             ]);
 
-            if($user_validator->fails()){
+            if ($user_validator->fails() ) {
 
                 $response = [
                     'success' => false,
@@ -542,7 +527,6 @@ class UserController extends Controller
 
         $input = $request->all();
 
-
         if ($request->user_status == 1) 
         {
 
@@ -552,7 +536,7 @@ class UserController extends Controller
                 $destinationPath = public_path().'/uploads/business_logo';
                 $image->move($destinationPath, $cover_image_name);
                 $pic = $STORE_IMGAE_URL.$cover_image_name;
-                $input['business_logo']   = $pic;
+                $input['business_logo']  = $pic;
             }
         }
     
@@ -616,7 +600,7 @@ class UserController extends Controller
 
         $check_email = User::where('email',$request->email)->first();
 
-        if ($check_email == null) {
+        if ( empty($check_email) ) {
 			
             return response()->json([
                 'success' => false,
@@ -628,7 +612,7 @@ class UserController extends Controller
             $check_email_deleted = User::where('email',$request->email)->where('status','=',1)
             ->where('user_status',$request->user_status)->first();
 
-            if ($check_email_deleted == null) {
+            if ( empty($check_email_deleted) ) {
 				
                 return response()->json([
                     'success' => false,
