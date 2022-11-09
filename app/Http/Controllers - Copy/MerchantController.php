@@ -12,12 +12,18 @@ class MerchantController extends Controller
 {
     protected $route_name;
     protected $module_singular_name;
+    protected $module_plural_name;
 
     public function __construct()
     {
         $this->route_name = 'merchant';
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         return view($this->route_name.'.index');
@@ -39,8 +45,7 @@ class MerchantController extends Controller
 
         $sidx = 'id';
 
-        $list_query = User::select("*")->where('user_status','=','1')->orderBy($sidx, $sord)
-        ->take($rows);
+        $list_query = User::select("*")->where('user_status','=','1');
 
         if (!empty($business_name)) {
             $list_query = $list_query->where('business_name', 'LIKE', '%'.$business_name.'%');
@@ -55,15 +60,18 @@ class MerchantController extends Controller
             $list_query = $list_query->where('status', '=', $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = [];
 
         if ($total_rows > 0)
         {
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
                 $all_records[$index]['business_name'] = $value->business_name;
                 $all_records[$index]['email'] = $value->email;
                 $all_records[$index]['phone_number'] = $value->phone_number;
@@ -215,6 +223,13 @@ class MerchantController extends Controller
         
         User::updateOrCreate(['id' => $user_id ],$add_new);
 
+        // return response()->json(
+        //     [
+        //         'success' => true,
+        //         'message' => $msg
+        //     ]
+        // );
+
         return redirect()->route($this->route_name.'.index')->with('success', $msg);
 
     }
@@ -249,6 +264,7 @@ class MerchantController extends Controller
     {
         $user = User::where('id',$id)->first();
         return view($this->route_name.'.edit')->with(['user' => $user]);
+        // return Response::json($user);
     }
 
     public function destroy(Request $request)

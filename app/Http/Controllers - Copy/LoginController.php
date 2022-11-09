@@ -9,14 +9,29 @@ use App\User;
 
 class LoginController extends Controller {
 
+    /**
+     *
+     * @var type 
+     */
     protected $adminModel;
 
+    /**
+     * Create a new controller instance.
+     *
+     */
     public function __construct() {
         $this->adminModel = new \App\User();
 
         $this->middleware('guest')->except('logout');
     }
 
+    
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
     
 

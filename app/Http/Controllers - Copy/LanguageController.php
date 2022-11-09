@@ -5,18 +5,26 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Language;
 use Hash,Redirect,Response,DB,Validator;
+use Illuminate\Validation\Rule;
 
 class LanguageController extends Controller {
 
     protected $route_name;
     protected $module_singular_name;
+    protected $module_plural_name;
 
     public function __construct() {
         $this->route_name = 'language';
         $this->module_singular_name = 'Language';
+        $this->module_plural_name = 'Languages';
 
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
         return view($this->route_name . ".index");
     }
@@ -35,7 +43,7 @@ class LanguageController extends Controller {
 
         $sidx = 'language_id';
 
-        $list_query = Language::select("*")->orderBy($sidx, $sord)->take($rows);
+        $list_query = Language::select("*");
    
         if (!empty($language_name) ) {
             $list_query = $list_query->where("language_name", "LIKE", "%" . $language_name . "%");
@@ -44,15 +52,18 @@ class LanguageController extends Controller {
             $list_query = $list_query->where("language_code", "LIKE", "%" . $language_code . "%");
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
 
                 $all_records[$index]['language_name'] = $value->language_name;
 
@@ -78,6 +89,12 @@ class LanguageController extends Controller {
         return view($this->route_name . ".add");
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request) {
 
         $validator = Validator::make($request->all(),[
@@ -122,6 +139,12 @@ class LanguageController extends Controller {
         return Response::json($language);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Request $request) 
     {
         $id = $request->get("id");

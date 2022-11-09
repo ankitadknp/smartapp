@@ -10,12 +10,21 @@ class CategoriesController extends Controller {
 
     protected $route_name;
     protected $module_singular_name;
+    protected $module_plural_name;
 
     public function __construct() {
         $this->route_name = 'categories';
         $this->module_singular_name = 'Category';
+        $this->module_plural_name = 'Category';
+
+        // $this->middleware("checkmodulepermission", ['except' => []]);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
         return view($this->route_name . ".index");
     }
@@ -35,7 +44,7 @@ class CategoriesController extends Controller {
        
         $sidx = 'category_id';
 
-        $list_query = Category::select("*")->orderBy($sidx, $sord)->take($rows);
+        $list_query = Category::select("*");
 
         if (!empty($name)) {
             $list_query = $list_query->where('category_name', "LIKE", "%" . $name . "%")->orWhere('category_name_ab', "LIKE", "%" . $name . "%")->orWhere('category_name_he', "LIKE", "%" . $name . "%");
@@ -47,15 +56,18 @@ class CategoriesController extends Controller {
             $list_query = $list_query->where("status", "=", $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
 
                 $all_records[$index]['category_name'] = $value->category_name;
                 $all_records[$index]['type'] = $value->type;
@@ -87,10 +99,21 @@ class CategoriesController extends Controller {
         return $response;
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create() {
         return view($this->route_name . ".add");
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request) 
     {
         $validator = Validator::make($request->all(),[
@@ -132,6 +155,12 @@ class CategoriesController extends Controller {
         );
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Category  $category
+     * @return \Illuminate\Http\Response
+     */
     public function edit($id) 
     {
         $category = Category::where('category_id',$id)->first();
@@ -165,6 +194,12 @@ class CategoriesController extends Controller {
         return $response;
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Request $request) 
     {
         $id = $request->get("id");

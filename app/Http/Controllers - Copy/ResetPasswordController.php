@@ -30,6 +30,7 @@ class ResetPasswordController extends Controller {
                       ->update(['password' => Hash::make($request->password)]);
 
         return redirect()->route('password.success');
+        
     }
 
     public function showResetSuccessForm() {

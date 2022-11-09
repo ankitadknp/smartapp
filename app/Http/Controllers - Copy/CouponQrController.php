@@ -5,10 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\CouponQRcode;
 use Hash,Redirect,Response,DB,Validator;
+use Illuminate\Validation\Rule;
 use File;
 
-class CouponQrController extends Controller 
-{
+class CouponQrController extends Controller {
+    
+   /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
         return view("coupon_qrcode.index");
     }
@@ -46,6 +52,10 @@ class CouponQrController extends Controller
 
         if ($total_rows > 0) 
         {
+            // $list_of_all_data = $list_query->skip($page)
+            //         ->orderBy($sidx, $sord)
+            //         ->take($rows)
+            //         ->get();
             $index = 0;
 
             foreach ($list_query as $value) {
@@ -66,6 +76,12 @@ class CouponQrController extends Controller
         return $response;
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Request $request) 
     {
         $id = $request->get("id");

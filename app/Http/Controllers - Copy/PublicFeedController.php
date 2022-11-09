@@ -17,12 +17,19 @@ class PublicFeedController extends Controller {
 
     protected $route_name;
     protected $module_singular_name;
+    protected $module_plural_name;
 
     public function __construct() {
         $this->route_name = 'public_feed';
         $this->module_singular_name = 'public_feed';
+        $this->module_plural_name = 'public_feed';
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
         return view($this->route_name . ".index");
     }
@@ -41,9 +48,7 @@ class PublicFeedController extends Controller {
 
         $sidx = 'public_feed_id';
 
-        $list_query = PublicFeed::select("*")
-                    ->orderBy($sidx, $sord)
-                    ->take($rows);
+        $list_query = PublicFeed::select("*");
 
         if (!empty($name)) {
             $list_query = $list_query->where('public_feed_title', "LIKE", "%" . $name . "%")->orWhere('public_feed_title_ab', "LIKE", "%" . $name . "%")->orWhere('public_feed_title_he', "LIKE", "%" . $name . "%");
@@ -52,15 +57,18 @@ class PublicFeedController extends Controller {
             $list_query = $list_query->where("status", "=", $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
 
                 $report_count = PublicFeedReport::where('public_feed_id',$value->public_feed_id)->count();
                 $comment_count = PublicFeedComment::where('public_feed_id',$value->public_feed_id)->count();
@@ -72,7 +80,10 @@ class PublicFeedController extends Controller {
                     $checked = 'checked="checked"';
                 }
 
-                $all_records[$index]['status'] = '<label class="custom-switch mt-2"><input type="checkbox" '.$checked.' data-id="'.$value->public_feed_id .'" class="change_status custom-switch-input"><span class="custom-switch-indicator"></span></label>';
+                $all_records[$index]['status'] = '<label class="custom-switch mt-2">
+                                                                <input type="checkbox" '.$checked.' data-id="'.$value->public_feed_id .'" class="change_status custom-switch-input">
+                                                                <span class="custom-switch-indicator"></span>
+                                                              </label>';
 
                 $all_records[$index]['view'] = '<a href="#" data-toggle="modal" data-target="#myModal" data-id="'.$value->public_feed_id  .'" class="btn btn-light show_modal"><i class="fa fa-file" aria-hidden="true"></i> ('.$report_count.')</a>';
 
@@ -283,14 +294,18 @@ class PublicFeedController extends Controller {
         $response = array("success" => false, "message" => "Problem while deleting this record");
 
         if ($find_record) {
-            if ( !empty($feed_image) )
+
+
+            if ($feed_image != '[]')
             {
+
                 foreach ($feed_image as $img_val) 
                 {
                     $destinationPath = public_path("/uploads/");
                     $new_path = substr($img_val->image, strpos($img_val->image, "public_feed/") );  
                     $image_path = $destinationPath.$new_path;
                     
+        
                     if (File::exists($image_path)) {
                         unlink($image_path);
                     }
@@ -303,19 +318,19 @@ class PublicFeedController extends Controller {
                 PublicFeedImage::where('public_feed_id',$id)->delete();
             }
 
-            if ( !empty($feed_like) ) 
+            if ($feed_like != '[]') 
             {
                 PublicFeedLike::where('public_feed_id',$id)->delete();
             }
-            if ( !empty($feed_report) ) 
+            if ($feed_report != '[]') 
             {
                 PublicFeedReport::where('public_feed_id',$id)->delete();
             }
-            if ( !empty($feed_comment) ) 
+            if ($feed_comment != '[]') 
             {
                 PublicFeedComment::where('public_feed_id',$id)->delete();
             }
-            if ( !empty($feed_comment_like) ) 
+            if ($feed_comment_like != '[]') 
             {
                 PublicFeedCommentLike::where('public_feed_id',$id)->delete();
             }
@@ -334,10 +349,11 @@ class PublicFeedController extends Controller {
         $feed = PublicFeedReport::where('public_feed_id','=',$id)->get();
         $report_count = PublicFeedReport::where('public_feed_id',$id)->count();
 
+
         $feed_report = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($feed) )
+        if ($feed != '[]' )
         {
             $all_report = '<div class="card-body" id="top-5-scroll"><ul class="list-unstyled list-unstyled-border">';
             foreach ($feed as $val)
@@ -372,7 +388,7 @@ class PublicFeedController extends Controller {
         $feed_comment = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($feed) )
+        if ($feed != '[]' )
         {
             $all_comment = '<div class="card-body" id="feed-scroll"><ul class="list-unstyled list-unstyled-border">';
             foreach ($feed as $val)
@@ -402,10 +418,11 @@ class PublicFeedController extends Controller {
         $feed = PublicFeedLike::where('public_feed_id','=',$id)->get();
         $like_count = PublicFeedLike::where('public_feed_id',$id)->count();
 
+
         $feed_like = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($feed) )
+        if ($feed != '[]' )
         {
             $all_like = '<div class="card-body" id="like-scroll"><ul class="list-unstyled list-unstyled-border">';
             foreach ($feed as $val)
@@ -465,6 +482,7 @@ class PublicFeedController extends Controller {
             $image_path = $destinationPath.$new_path;
 
             if (File::exists($image_path)) {
+                // File::delete($destinationPath);
                 unlink($image_path);
             }
 
@@ -473,7 +491,9 @@ class PublicFeedController extends Controller {
             $response['success'] = true;
             $response['message'] = "image deleted successfully";
         }
+
         return $response;
+
     }
    
 }

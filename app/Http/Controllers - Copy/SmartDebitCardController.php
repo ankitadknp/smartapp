@@ -4,10 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\SmartCards;
-use Redirect,Response,DB,Validator;
+use Hash,Redirect,Response,DB,Validator;
+use Illuminate\Validation\Rule;
+use File;
 
 class SmartDebitCardController extends Controller {
     
+   /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
         return view("smart_debit_card.index");
     }
@@ -72,6 +79,12 @@ class SmartDebitCardController extends Controller {
         return $response;
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Request $request) 
     {
         $id = $request->get("id");

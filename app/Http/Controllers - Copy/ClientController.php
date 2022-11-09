@@ -4,20 +4,26 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-use Redirect,Response,DB,Validator,Hash,File;
+use Redirect,Response,DB,Validator,Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Config;
 
-class MerchantController extends Controller
+class ClientController extends Controller
 {
     protected $route_name;
     protected $module_singular_name;
+    protected $module_plural_name;
 
     public function __construct()
     {
-        $this->route_name = 'merchant';
+        $this->route_name = 'client';
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         return view($this->route_name.'.index');
@@ -32,18 +38,17 @@ class MerchantController extends Controller
         $sidx = !empty($request->get('order')[0]['column']) ? $request->get('order')[0]['column'] : 0;
         $sord = !empty($request->get('order')[0]['dir']) ? $request->get('order')[0]['dir'] : 'DESC';
 
-        $business_name = !empty($request->get('business_name')) ? $request->get('business_name') : '';
+        $name = !empty($request->get("name")) ? $request->get("name") : '';
         $email = !empty($request->get('email')) ? $request->get('email') : '';
         $phone_number = !empty($request->get('phone_number')) ? $request->get('phone_number') : '';
         $status = !empty($request->get('status')) ? $request->get('status') : '';
 
         $sidx = 'id';
 
-        $list_query = User::select("*")->where('user_status','=','1')->orderBy($sidx, $sord)
-        ->take($rows);
+        $list_query = User::select("*")->where('user_status','=',0);
 
-        if (!empty($business_name)) {
-            $list_query = $list_query->where('business_name', 'LIKE', '%'.$business_name.'%');
+        if (!empty($name)) {
+            $list_query = $list_query->where(DB::raw("CONCAT(first_name,' ',last_name)"), "LIKE", "%" . $name . "%");
         }
         if (!empty($email)) {
             $list_query = $list_query->where('email', 'LIKE', '%'.$email.'%');
@@ -55,16 +60,19 @@ class MerchantController extends Controller
             $list_query = $list_query->where('status', '=', $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = [];
 
         if ($total_rows > 0)
         {
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
-                $all_records[$index]['business_name'] = $value->business_name;
+            foreach ($list_of_all_data as $value) {
+                $all_records[$index]['name'] = $value->first_name.' '.$value->last_name;
                 $all_records[$index]['email'] = $value->email;
                 $all_records[$index]['phone_number'] = $value->phone_number;
                 
@@ -78,9 +86,9 @@ class MerchantController extends Controller
                                                                 <span class="custom-switch-indicator"></span>
                                                               </label>';
 
-                $all_records[$index]['edit'] = '<a href="'.route($this->route_name.'.edit', $value->id).'" class="btn btn-light edit_merchant" data-id="'.$value->id.'">Edit</a>';
+                $all_records[$index]['edit'] = '<a href="#" class="btn btn-light edit_client" data-id="'.$value->id.'">Edit</a>';
 
-                $all_records[$index]['view'] = '<a href="'.route($this->route_name.'.show', $value->id).'" class="btn btn-light edit_merchant" data-id="'.$value->id.'">View</a>';
+                $all_records[$index]['view'] = '<a href="'.route($this->route_name.'.show', $value->id).'" class="btn btn-light view_client" data-id="'.$value->id.'">View</a>';
 
                 $all_records[$index]['delete'] = '<button type="button" class="btn btn-danger delete_data_button" data-id="'.$value->id.'">Delete</button>';
 
@@ -92,6 +100,7 @@ class MerchantController extends Controller
         $response['recordsTotal'] = (int) $total_rows;
         $response['recordsFiltered'] = (int) $total_rows;
         $response['data'] = $all_records;
+        
 
         return $response;
     }
@@ -103,119 +112,104 @@ class MerchantController extends Controller
 
     public function store(Request $request)
     {
+        
         $user_id  = $request->user_id ;
         $STORE_IMGAE_URL =  Config::get('constants.BUSINESS_LOGO_URL');
 
         if ( empty($user_id) )
         {
-            $request->validate([
-                'business_name' => 'required|max:50',
-                'registration_number' => 'required|max:30',
+            $validator = Validator::make($request->all(),[
                 'email' => [
                     'required',
                     'email',
                     'max:50',
                     Rule::unique('users')
-                        ->where('user_status', 1)
+                        ->where('user_status',0)
                 ],
-                'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
                 'password' => 'min:6|required_with:password_confirmation|same:password_confirmation',
                 'password_confirmation' => 'min:6',
-                'website' => 'required|max:50',
-                'business_activity' => 'required',
-                'business_sector' => 'required',
-                'establishment_year' => 'required',
-                'business_logo' => 'required',
-                'business_hours' => 'required',
+                'first_name' => 'required|string|max:50',
+                'last_name' => 'required|string|max:50',
+                'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
+                'id_number' => 'required|max:20',
+                'marital_status' => 'required',
+                'no_of_child' => 'required',
+                'occupation' => 'required|max:50',
+                'education_level' => 'required',
                 'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
+                'house_number' => 'required',
+                'city' => 'required|max:50',
                 'district' => 'required|max:50',
-                'marital_status'=>'required'
             ]);
-            
-            if ($request->hasFile('business_logo')) {
-                 $image = $request->file('business_logo');
-                $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path().'/uploads/business_logo';
-
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
-                }
-            
-                $image->move($destinationPath, $cover_image_name);
-                $business_logo = $STORE_IMGAE_URL.$cover_image_name;
-                
-            }
-
             $pwd = Hash::make($request->get('password'));
-
-            $msg = 'Merchant Added Successfully.';
+            $msg = 'Client Added Successfully.';
         } else 
         {
-            $request->validate([
-                'business_name' => 'required|max:50',
-                'registration_number' => 'required|max:30',
+            $validator = Validator::make($request->all(),[
                 'email' => [
                     'required',
                     'email',
                     'max:50',
                     Rule::unique('users')->ignore($user_id)
-                        ->where('user_status', 1)
+                        ->where('user_status', 0)
                 ],
-                'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
-                'website' => 'required|max:50',
-                'business_activity' => 'required',
-                'business_sector' => 'required',
-                'establishment_year' => 'required',
-                'business_hours' => 'required',
+                'first_name' => 'required|string|max:50',
+                'last_name' => 'required|string|max:50',
+                'phone_number' =>'required|string|min:10|max:15|regex:/[0-9]{9}/',
+                'id_number' => 'required|max:20',
+                'marital_status' => 'required',
+                'no_of_child' => 'required',
+                'occupation' => 'required|max:50',
+                'education_level' => 'required',
                 'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
+                'house_number' => 'required',
+                'city' => 'required|max:50',
                 'district' => 'required|max:50',
-                'marital_status'=>'required'
             ]);
 
             $user_data = User::where('id',$user_id)->first();
 
-            if ($request->hasFile('business_logo')) {
-                $image = $request->file('business_logo');
-                $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path().'/uploads/business_logo';
-                $image->move($destinationPath, $cover_image_name);
-                $business_logo = $STORE_IMGAE_URL.$cover_image_name;
-            } else {
-                $business_logo = $user_data->business_logo;
-            }
-
-
             $pwd = $user_data->password;
 
-            $msg = 'Merchant Update Successfully';
+            $msg = 'Client Update Successfully';
+        }
+
+        if($validator->fails())
+        {
+            return Response::json(['errors' => $validator->errors()]);
         }
 
         $add_new = [
-            'business_name' => $request->get('business_name'),
-            'registration_number' => $request->get('registration_number'),
+            'first_name' => $request->get('first_name'),
+            'last_name' => $request->get('last_name'),
             'email' => $request->get('email'),
-            'password' =>$pwd ,
+            'password' => $pwd,
             'phone_number' => $request->get('phone_number'),
-            'website' => $request->get('website'),
+            'id_number' => $request->get('id_number'),
             'marital_status' => $request->get('marital_status'),
-            'business_activity' => $request->get('business_activity'),
-            'business_sector' => $request->get('business_sector'),
-            'establishment_year' => $request->get('establishment_year'),
-            'business_hours' => $request->get('business_hours'),
+            'no_of_child' => $request->get('no_of_child'),
+            'occupation' => $request->get('occupation'),
+            'education_level' => $request->get('education_level'),
+            'house_number' => $request->get('house_number'),
             'street_address_name' => $request->get('street_address_name'),
             'street_number' => $request->get('street_number'),
             'district' => $request->get('district'),
-            'business_logo' => $business_logo,
+            'city' => $request->get('city'),
             'status' => 1,
-            'user_status' =>1,
+            'user_status' =>0,
         ];
 
         
         User::updateOrCreate(['id' => $user_id ],$add_new);
 
-        return redirect()->route($this->route_name.'.index')->with('success', $msg);
+        return response()->json(
+            [
+                'success' => true,
+                'message' => $msg
+            ]
+        );
 
     }
 
@@ -233,9 +227,9 @@ class MerchantController extends Controller
             $find_record->save();
 
             if ($status == 1) {
-                $message = 'Merchant has been unblocked';
+                $message = 'Client has been unblocked';
             } else {
-                $message = 'Merchant has been blocked';
+                $message = 'Client has been blocked';
             }
 
             $response['success'] = true;
@@ -245,10 +239,16 @@ class MerchantController extends Controller
         return $response;
     }
 
+    public function show($id)
+    {
+        $user = User::where('id',$id)->first();
+        return view($this->route_name.'.show')->with(['user' => $user]);
+    }
+
     public function edit($id)
     {
         $user = User::where('id',$id)->first();
-        return view($this->route_name.'.edit')->with(['user' => $user]);
+        return Response::json($user);
     }
 
     public function destroy(Request $request)
@@ -267,12 +267,6 @@ class MerchantController extends Controller
         }
 
         return $response;
-    }
-
-    public function show($id)
-    {
-        $user = User::where('id',$id)->first();
-        return view($this->route_name.'.show')->with(['user' => $user]);
     }
 
 }

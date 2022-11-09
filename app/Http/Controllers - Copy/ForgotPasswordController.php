@@ -19,7 +19,7 @@ class ForgotPasswordController extends Controller
 
     public function sendResetLinkEmail(Request $request) 
     {
-        $user_data = User::where('email',$request->email)->where('status','=',1)->whereIn('user_status',[3,4])->first();
+        $user_data = User::where('email',$request->email)->where('status','=',1)->where('user_status','=',3)->first();
 
         if (empty($user_data)) 
         {
@@ -46,4 +46,6 @@ class ForgotPasswordController extends Controller
             return redirect()->back()->with('message', 'We have e-mailed your password reset link!');
         }
     }
+
+ 
 }

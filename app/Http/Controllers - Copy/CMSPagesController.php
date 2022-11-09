@@ -10,13 +10,20 @@ class CMSPagesController extends Controller {
 
     protected $route_name;
     protected $module_singular_name;
+    protected $module_plural_name;
 
     public function __construct() {
         $this->route_name = 'cms_pages';
         $this->module_singular_name = 'CMSPage';
+        $this->module_plural_name = 'CMSPage';
 
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
         return view($this->route_name . ".index");
     }
@@ -35,7 +42,7 @@ class CMSPagesController extends Controller {
        
         $sidx = 'id';
 
-        $list_query = CMSPages::select("*")->orderBy($sidx, $sord)->take($rows);
+        $list_query = CMSPages::select("*");
 
         if (!empty($title)) {
             $list_query = $list_query->where('title', "LIKE", "%" . $title . "%")->orWhere('title_ab', "LIKE", "%" . $title . "%")->orWhere('title_he', "LIKE", "%" . $title . "%");
@@ -45,15 +52,18 @@ class CMSPagesController extends Controller {
             $list_query = $list_query->where("status", "=", $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
 
                 $all_records[$index]['title'] = $value->title;
 
@@ -83,10 +93,21 @@ class CMSPagesController extends Controller {
         return $response;
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create() {
         return view($this->route_name . ".add");
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request) 
     {
         $cms_id  = $request->id ;
@@ -102,6 +123,7 @@ class CMSPagesController extends Controller {
 
         if($validator->fails())
         {
+            // return Response::json(['errors' => $validator->errors()]);
             return back()->with(['errors' => $validator->errors()]);
         }
 
@@ -125,12 +147,20 @@ class CMSPagesController extends Controller {
         }
 
         return redirect()->route($this->route_name . ".index")->with("success", $msg);
+
+        // return response()->json(
+        //     [
+        //         'success' => true,
+        //         'message' => $msg
+        //     ]
+        // );
     }
 
 
     public function edit($id) 
     {
         $cms = CMSPages::where('id',$id)->first();
+        // return Response::json($cms);
         return view($this->route_name . ".edit", ['cms' =>$cms]);
     }
 

@@ -11,13 +11,20 @@ class SubAdminController extends Controller {
 
     protected $route_name;
     protected $module_singular_name;
+    protected $module_plural_name;
 
     public function __construct() {
         $this->route_name = 'sub_admin';
         $this->module_singular_name = 'User';
+        $this->module_plural_name = 'Users';
 
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
         return view($this->route_name . ".index");
     }
@@ -39,7 +46,7 @@ class SubAdminController extends Controller {
         $sidx = 'id';
 
         $list_query = User::select("*", DB::raw("CONCAT(first_name, ' ', last_name) AS 
-        name"))->where('user_status','=',4)->orderBy($sidx, $sord)->take($rows);
+        name"))->where('user_status','=',4);
    
         if (!empty($name) ) {
             $list_query = $list_query->where(DB::raw("CONCAT(first_name,' ',last_name)"), "LIKE", "%" . $name . "%");
@@ -51,15 +58,17 @@ class SubAdminController extends Controller {
             $list_query = $list_query->where("status", "=", $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) {
-       
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
 
                 $all_records[$index]['name'] = $value->name ;
 
@@ -95,6 +104,12 @@ class SubAdminController extends Controller {
         return view($this->route_name . ".add");
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request) 
     {
 
@@ -187,6 +202,7 @@ class SubAdminController extends Controller {
 
         return $response;
     }
+
  
     public function edit($id) 
     {
@@ -194,6 +210,12 @@ class SubAdminController extends Controller {
         return Response::json($user);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Request $request) 
     {
         $id = $request->get("id");

@@ -15,12 +15,18 @@ class BlogController extends Controller
 {
     protected $route_name;
     protected $module_singular_name;
+    protected $module_plural_name;
 
     public function __construct()
     {
         $this->route_name = 'blog';
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $all_avilable_category = \App\Category::where('status', 1)->where('type','=','Blog')->select('category_id', 'category_name')->get();
@@ -47,9 +53,7 @@ class BlogController extends Controller
         $list_query = Blog::leftJoin('category', function ($join) {
             $join->on('blog.category_id', '=', 'category.category_id');
         })
-        ->select('blog.*', 'category.category_name')
-        ->orderBy($sidx, $sord)
-        ->take($rows);
+        ->select('blog.*', 'category.category_name');
 
         if (!empty($blog_title)) {
             $list_query = $list_query->where('blog_title', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_title_ab', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_title_he', 'LIKE', '%'.$blog_title.'%');
@@ -63,15 +67,17 @@ class BlogController extends Controller
             $list_query = $list_query->where('blog.status', '=', $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = [];
 
         if ($total_rows > 0) {
-  
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
                 $all_records[$index]['category_id'] = $value->category_name;
                 $all_records[$index]['blog_title'] = $value->blog_title;
                 $checked = '';
@@ -150,6 +156,8 @@ class BlogController extends Controller
         $added_blog = Blog::create($add_new_blog);
 
         if ($added_blog) {
+            $blog_id = $added_blog->blog_id;
+
             return redirect()->route($this->route_name.'.index')->with('success', $this->module_singular_name.' Added Successfully');
         } else {
             return back()->withInput();
@@ -188,7 +196,8 @@ class BlogController extends Controller
         ->select('category_id', 'category_name')
         ->get();
 
-        return view($this->route_name.'.edit')->with(['all_avilable_category' => $all_avilable_category,
+        return view($this->route_name.'.edit')->with(
+            ['all_avilable_category' => $all_avilable_category,
                 'blog' => $blog, ]);
     }
 
@@ -218,6 +227,8 @@ class BlogController extends Controller
         $added_blog = $blog->update();
 
         if ($added_blog) {
+            $blog_id = $blog->blog_id;
+
             return redirect()->route($this->route_name.'.index')->with('success', $this->module_singular_name.' Update Successfully');
         } else {
             return back()->withInput();
@@ -238,19 +249,19 @@ class BlogController extends Controller
 
         if ($find_record) 
         {
-            if ( !empty($blog_like) ) 
+            if ($blog_like != '[]') 
             {
                 BlogLike::where('blog_id',$id)->delete();
             }
-            if ( !empty($blog_report) ) 
+            if ($blog_report != '[]') 
             {
                 BlogReport::where('blog_id',$id)->delete();
             }
-            if ( !empty($blog_comment) ) 
+            if ($blog_comment != '[]') 
             {
                 BlogComment::where('blog_id',$id)->delete();
             }
-            if ( !empty($blog_comment_like) ) 
+            if ($blog_comment_like != '[]') 
             {
                 BlogCommentLike::where('blog_id',$id)->delete();
             }
@@ -272,7 +283,7 @@ class BlogController extends Controller
         $blog_report = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($blog) ) {
+        if ($blog != '[]') {
             $all_report = '<div class="card-body" id="top-5-scroll"><ul class="list-unstyled list-unstyled-border">';
 
             foreach ($blog as $val) {
@@ -301,7 +312,7 @@ class BlogController extends Controller
         $blog_comment = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($blog) ) {
+        if ($blog != '[]') {
             $all_comment = '<div class="card-body" id="comment_scroll"><ul class="list-unstyled list-unstyled-border">';
 
             foreach ($blog as $val) {
@@ -331,7 +342,7 @@ class BlogController extends Controller
         $blog_like = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($blog) ) {
+        if ($blog != '[]') {
             $all_like = '<div class="card-body" id="like_scroll"><ul class="list-unstyled list-unstyled-border">';
 
             foreach ($blog as $val) {
