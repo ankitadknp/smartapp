@@ -6,16 +6,6 @@
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
-<style>
-
-#saveBtn:disabled {
-  background: #999;
-  color: #555;
-  cursor: not-allowed;
-  border: 1px solid #999999;
-}
-
-</style>
 @endsection
 
 @section('content')
@@ -28,7 +18,6 @@
                 $routeName = explode('.', \Request::route()->getName());
                 @endphp
                 <h1>Language</h1>
-                <!-- <a href="#" class="float-right btn btn-primary add_language">Add New</a> -->
             </div>
         </div>
         <div class="row">
@@ -76,8 +65,6 @@
                                     <tr>
                                         <th>Language Name</th>
                                         <th>Language Code</th>
-                                        <!-- <th>Edit</th>
-                                        <th>Delete</th> -->
                                     </tr>
                                 </thead>
                             </table>
@@ -142,71 +129,10 @@
 
 <script type="text/javascript">
     var controller_url = "{{route('language.index')}}";
-
-    $(".add_language").click(function(){
-        $('#language_id').val('');
-        $('#language_form').trigger("reset");
-        $('#saveBtn').html("Save");
-        $('#exampleModalLongTitle').html("Add Language");
-        $('#add_language').modal('show');
-        $( '#name-error').html( "" );
-        $( '#code-error').html( "" );
-    });
-
-    $('body').on('click', '.edit_language', function () {
-        var language_id = $(this).data('id');
-        $( '#name-error').html( "" );
-        $( '#code-error').html( "" );
-
-        $.get('language/'+language_id+'/edit', function (data) {
-            $('#exampleModalLongTitle').html("Edit Language");
-            $('#saveBtn').html("Update");
-            $('#add_language').modal('show');
-            $('#language_id').val(data.language_id);
-            $('#lan_name').val(data.language_name);
-            $('#lan_code').val(data.language_code);
-        })
-    });
-
-    $('#saveBtn').click(function (e) {
-        e.preventDefault();
-
-        $.ajax({
-          data: $('#language_form').serialize(),
-          url: "",
-          type: "POST",
-          dataType: 'json',
-      
-            success: function (data) 
-            {
-                
-                if(data.success){
-
-                    $('#language_form').trigger("reset");
-                    $('#add_language').modal('hide');
-                    jQuery(data_table).DataTable().draw();
-                    // $('#datatable').DataTable().draw();
-
-                    setTimeout(function () {
-                        swal(data.message, {
-                            icon: 'success',
-                        });
-                    });
-                } else {
-                    $( '#name-error').html( data.errors.language_name );
-                    $( '#code-error').html( data.errors.language_code );
-                }
-            },
-            error: function (data) {
-                console.log('Error:', data);
-                $('#saveBtn').html('Save Changes');
-            }
-        });
-    });
-  
 </script>
 
 
 <!-- Page Specific JS File -->
 <script src="{{asset("public/assets/pages-js/language/index.js")}}"></script>
+<script src="{{asset("public/assets/pages-js/language/add.js")}}"></script>
 @endsection

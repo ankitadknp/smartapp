@@ -98,14 +98,12 @@
 
                 @yield('content')
 
-                <!--<footer class="main-footer" style="position: absolute;bottom: 0">-->
                 <footer class="main-footer">
                     <div class="footer-left">
                         Copyright &copy; {{date("Y")}} 
                         <div class="bullet"></div> Powered By <a href="https://www.knp-tech.com/">KNP Technologies</a>
                     </div>
                     <div class="footer-right">
-
                     </div>
                 </footer>
             </div>
@@ -154,11 +152,9 @@
                 beforeSend: function (xhr, data) {
                     console.log("timestamp =" + timestamp);
                     data.data += '&timestamp=' + timestamp;
-//                        $('#loading').show();
                 },
                 complete: function ()
                 {
-//                        $('#loading').hide();
                 }
             });
         </script>
@@ -210,11 +206,9 @@
                 jQuery.ajaxSetup({
                     beforeSend: function (xhr, data) {
                         data.data += '&_token=' + $('meta[name="csrf-token"]').attr('content') + '&timestamp=' + timestamp;
-//                        $('#loading').show();
                     },
                     complete: function ()
                     {
-//                        $('#loading').hide();
                     }
                 });
             });

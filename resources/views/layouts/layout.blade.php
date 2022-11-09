@@ -5,11 +5,11 @@
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
             <a href="{{route("dashboard")}}">
-                <img src="{{asset("public/assets/images/logo.png")}}" alt="logo" class="img-fluid" style="height: 55px">
+                <img src="{{asset("public/assets/images/smart_logo.png")}}" alt="logo" class="img-fluid" style="height: 55px">
             </a>
         </div>
         <div class="sidebar-brand sidebar-brand-sm">
-            <a href="{{route("dashboard")}}"><img src="{{asset("public/assets/images/logo.png")}}" alt="logo" class="img-fluid" style="width: 52px;min-height: 30px;"></a>
+            <a href="{{route("dashboard")}}"><img src="{{asset("public/assets/images/smart_logo.png")}}" alt="logo" class="img-fluid" style="width: 52px;min-height: 30px;"></a>
         </div>
         <ul class="sidebar-menu">
             <li class="{{ request()->is('dashboard') ? 'active' : '' }}">
@@ -36,11 +36,13 @@
                 </a>
             </li>
 
+            @if(Auth::user()->user_status  == 3)
             <li class="{{ request()->is('sub_admin') || request()->is('sub_admin/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('sub_admin.index')}}">
                     <i class="fas fa-users"></i><span>Sub Admin</span>
                 </a>
             </li>
+            @endif
 
             <li class="{{ request()->is('merchant') || request()->is('merchant/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('merchant.index')}}">
@@ -77,7 +79,6 @@
                     <i class="fa fa-language"></i><span>Language</span>
                 </a>
             </li>
-
         </ul>
     </aside>
 </div>

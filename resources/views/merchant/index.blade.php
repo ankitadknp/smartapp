@@ -83,7 +83,6 @@
                                         <th>Email</th>
                                         <th>Phone Number</th>
                                         <th>Status</th>
-                                        <!-- <th>Edit</th> -->
                                         <th>View</th>
                                         <th>Delete</th>
                                     </tr>
@@ -109,7 +108,6 @@
 <script type="text/javascript">
     var controller_url = "{{route('merchant.index')}}";
 </script>
-
 
 <script src="{{asset("public/assets/pages-js/merchant/index.js?v1")}}"></script>
 @endsection

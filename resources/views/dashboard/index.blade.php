@@ -8,27 +8,7 @@
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
 @endsection
 
-
 @section('content')
-<style>
-    #map{
-        padding: 0;
-        margin: 0;
-        height: 600px;
-        width: 100%;
-    }
-    #route_map{
-        padding: 0;
-        margin: 0;
-        height: 400px;
-        width: 100%;
-    }
-
-    #delete-button, #delete-all-button {
-        margin: 10px;
-    }
-</style>
-
 <div class="main-content">
     <section class="section">
         <div class="section-header">

@@ -6,16 +6,6 @@
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
-<style>
-
-#saveBtn:disabled {
-  background: #999;
-  color: #555;
-  cursor: not-allowed;
-  border: 1px solid #999999;
-}
-
-</style>
 @endsection
 
 @section('content')
@@ -77,7 +67,6 @@
                                         <th>Coupon Title</th>
                                         <th>QR Code url </th>
                                         <th>QR Code</th>
-                                        <!-- <th>Delete</th> -->
                                     </tr>
                                 </thead>
                             </table>

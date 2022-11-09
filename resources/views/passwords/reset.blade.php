@@ -14,32 +14,7 @@
   <!-- Template CSS -->
   <link rel="stylesheet" href="{{asset("public/assets/css/style.css")}}">
   <link rel="stylesheet" href="{{asset("public/assets/css/components.css")}}">
-    <style>
-    .card-header{
-        margin-left: 206px;
-    }
-    div#show_hide_password.input-group>.form-control:not(:last-child) {
-        border-radius: 0.25rem;
-    }
-    .password_eye {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        right: 12px;
-        z-index: 999;
-    }
-    div#show_hide_cpassword.input-group>.form-control:not(:last-child) {
-        border-radius: 0.25rem;
-    }
-    .cpassword_eye {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        right: 12px;
-        z-index: 999;
-    }
-    </style>
-
+  <link rel="stylesheet" href="{{asset("public/css/style.css")}}">
 </head>
 
 <body>
@@ -49,7 +24,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
                         <div class="login-brand">
-                            <img src="{{asset("public/assets/images/logo.png")}}" alt="logo" width="150" >
+                            <img src="{{asset("public/assets/images/smart_logo.png")}}" alt="logo" width="150" >
                         </div>
                         <div class="card card-primary">
                             <div class="card-header"><h4>{{ __('Reset Password') }}</h4></div>
@@ -66,7 +41,7 @@
                                             <div class="input-group" id="show_hide_password">
                                                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
 
-                                                <div class="input-group-addon password_eye">
+                                                <div class="input-group-addon rpassword_eye">
                                                     <a href=""><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
                                                 </div>
                                             </div>
@@ -117,39 +92,9 @@
   <script src="{{asset("public/assets/modules/moment.min.js")}}"></script>
   <script src="{{asset("public/assets/js/stisla.js")}}"></script>
   
-  <!-- JS Libraies -->
-
-  <!-- Page Specific JS File -->
-  
   <!-- Template JS File -->
   <script src="{{asset("public/assets/js/scripts.js")}}"></script>
   <script src="{{asset("public/assets/js/custom.js")}}"></script>
-  <script type="text/javascript">
-    $("#show_hide_password a").on('click', function(event) {
-        event.preventDefault();
-        if($('#show_hide_password input').attr("type") == "text"){
-            $('#show_hide_password input').attr('type', 'password');
-            $('#show_hide_password i').addClass( "fa-eye-slash" );
-            $('#show_hide_password i').removeClass( "fa-eye" );
-        }else if($('#show_hide_password input').attr("type") == "password"){
-            $('#show_hide_password input').attr('type', 'text');
-            $('#show_hide_password i').removeClass( "fa-eye-slash" );
-            $('#show_hide_password i').addClass( "fa-eye" );
-        }
-    });
-
-    $("#show_hide_cpassword a").on('click', function(event) {
-        event.preventDefault();
-        if($('#show_hide_cpassword input').attr("type") == "text"){
-            $('#show_hide_cpassword input').attr('type', 'password');
-            $('#show_hide_cpassword i').addClass( "fa-eye-slash" );
-            $('#show_hide_cpassword i').removeClass( "fa-eye" );
-        }else if($('#show_hide_cpassword input').attr("type") == "password"){
-            $('#show_hide_cpassword input').attr('type', 'text');
-            $('#show_hide_cpassword i').removeClass( "fa-eye-slash" );
-            $('#show_hide_cpassword i').addClass( "fa-eye" );
-        }
-    });
-</script>
+  <script src="{{asset("public/js/scripts.js")}}"></script>
 </body>
 </html>

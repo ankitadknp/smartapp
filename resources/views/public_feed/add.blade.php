@@ -1,7 +1,6 @@
 @extends('layouts.layout')
 @section('title', 'Public Feed')
 @section('addcss')
-<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"> -->
 @endsection
 
 @section('content')
@@ -96,7 +95,7 @@
                                     <div class="col-sm-12 form-group">
                                         <label for="customFileGallery">Public Feed Images</label>
                                         <div class="file-loading">
-                                            <input id="file-0b" type="file" class="file form-control required" name="images[]" accept="image/*" alt="Image" multiple="">
+                                            <input id="file-0b" type="file" class="file form-control required" name="images[]" accept="image/*|audio/*|video/*" alt="Image" multiple="">
                                         </div>
                                     </div>
                                 </div>
@@ -123,46 +122,6 @@
 
 <!-- Editor Js-->
 <script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
-<script>
-    CKEDITOR.replace('ckeditor_he', {
-        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
-    });
-    CKEDITOR.replace('ckeditor_ab', {
-        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
-    });
-    CKEDITOR.replace('ckeditor', {
-        filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
-    });
-
-    CKEDITOR.on("instanceReady", function(event) {
-        event.editor.on("beforeCommandExec", function(event) {
-            // Show the paste dialog for the paste buttons and right-click paste
-            if (event.data.name == "paste") {
-                event.editor._.forcePasteDialog = true;
-            }
-            // Don't show the paste dialog for Ctrl+Shift+V
-            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
-                event.cancel();
-            }
-        })
-    });
-
-    CKEDITOR.on("instanceReady", function(event) {
-        event.editor.on("beforeCommandExec", function(event) {
-            // Show the paste dialog for the paste buttons and right-click paste
-            if (event.data.name == "paste") {
-                event.editor._.forcePasteDialog = true;
-            }
-            // Don't show the paste dialog for Ctrl+Shift+V
-            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
-                event.cancel();
-            }
-        })
-    });
-
-</script>
+<script src="{{asset("public/assets/pages-js/publicfeed/add.js")}}"></script>
 <!-- Editor Js End -->
 @endsection

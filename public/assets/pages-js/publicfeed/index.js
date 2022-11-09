@@ -1,5 +1,4 @@
 "use strict";
-
 var data_table = '#datatable';
 function get_all_data() {
     var public_feed_title = $('#public_feed_title').val();
@@ -11,7 +10,6 @@ function get_all_data() {
         serverSide: true,
         pagingType: "full_numbers",
         scrollY: '50vh',
-        //scrollX: true,
         scrollCollapse: true,
         searching: false,
         order: [0, 'DESC'],

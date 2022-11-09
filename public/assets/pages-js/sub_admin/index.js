@@ -1,5 +1,4 @@
 "use strict";
-
 var data_table = '#datatable';
 
 function get_all_data() {
@@ -14,7 +13,6 @@ function get_all_data() {
         serverSide: true,
         pagingType: "full_numbers",
         scrollY: '50vh',
-        //scrollX: true,
         scrollCollapse: true,
         searching: false,
         order: [0, 'DESC'],

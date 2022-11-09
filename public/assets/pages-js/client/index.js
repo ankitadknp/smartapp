@@ -1,5 +1,4 @@
 "use strict";
-
 var data_table = '#datatable';
 function get_all_data() 
 {
@@ -24,7 +23,6 @@ function get_all_data()
             {"data": "phone_number"},
             {"data": "status"},
             {"data": "view"},
-            // {"data": "edit"},
             {"data": "delete"}
         ],
         columnDefs: [

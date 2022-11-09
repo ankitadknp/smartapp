@@ -14,11 +14,7 @@
   <!-- Template CSS -->
   <link rel="stylesheet" href="{{asset("public/assets/css/style.css")}}">
   <link rel="stylesheet" href="{{asset("public/assets/css/components.css")}}">
-  <style>
-    .card-header{
-        margin-left: 206px;
-    }
-  </style>
+  <link rel="stylesheet" href="{{asset("public/css/style.css")}}">
 </head>
 
 <body>
@@ -91,18 +87,9 @@
   <script src="{{asset("public/assets/modules/moment.min.js")}}"></script>
   <script src="{{asset("public/assets/js/stisla.js")}}"></script>
   
-  <!-- JS Libraies -->
-
-  <!-- Page Specific JS File -->
-  
   <!-- Template JS File -->
   <script src="{{asset("public/assets/js/scripts.js")}}"></script>
   <script src="{{asset("public/assets/js/custom.js")}}"></script>
-  <script>
-  
-    setTimeout(function (){
-      $(".alert").hide();
-    }, 3000);
-  </script>
+  <script src="{{asset("public/js/scripts.js")}}"></script>
 </body>
 </html>

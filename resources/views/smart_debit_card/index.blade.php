@@ -6,16 +6,6 @@
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
-<style>
-
-#saveBtn:disabled {
-  background: #999;
-  color: #555;
-  cursor: not-allowed;
-  border: 1px solid #999999;
-}
-
-</style>
 @endsection
 
 @section('content')
@@ -137,52 +127,9 @@
 
 <script type="text/javascript">
     var controller_url = "{{route('smart-debit-card.index')}}";
-
-    
-    $('body').on('click', '.edit_data_button', function () {
-        var smart_card_id = $(this).data('id');
-
-        $.get('smart-debit-card/'+smart_card_id+'/edit', function (data) 
-        {
-            $('#edit_status').modal('show');
-            $('#id').val(data.id);
-            $('#s_status').val(data.status);
-        })
-    });
-
-    $('#saveBtn').click(function (e) {
-        e.preventDefault();
-
-        $.ajax({
-          data: $('#smart_form').serialize(),
-          type: "POST",
-          dataType: 'json',
-      
-            success: function (data) 
-            {
-                if(data.success){
-                    $('#smart_form').trigger("reset");
-                    $('#edit_status').modal('hide');
-                    jQuery(data_table).DataTable().draw();
-
-                    setTimeout(function () {
-                        swal(data.message, {
-                            icon: 'success',
-                        });
-                    });
-                } else {
-                    $( '#status-error').html( data.errors.status );
-                }
-            },
-            error: function (data) {
-                console.log('Error:', data);
-                $('#saveBtn').html('Save Changes');
-            }
-        });
-    });
 </script>
-
 
 <!-- Page Specific JS File -->
 <script src="{{asset("public/assets/pages-js/smart_debit_card/index.js?v=1.1")}}"></script>
+<script src="{{asset("public/assets/pages-js/smart_debit_card/add.js")}}"></script>
 @endsection

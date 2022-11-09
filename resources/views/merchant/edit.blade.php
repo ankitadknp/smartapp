@@ -3,11 +3,7 @@
 @section('title', 'Merchant')
 
 @section('addcss')
-<style>
-    .avatar-item {
-        margin-left: 5px
-    }
-</style>
+<link rel="stylesheet" href="{{asset("public/css/style.css")}}">
 @endsection
 
 @section('content')

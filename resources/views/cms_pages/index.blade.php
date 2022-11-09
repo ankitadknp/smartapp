@@ -18,7 +18,6 @@
                 $routeName = explode('.', \Request::route()->getName());
                 @endphp
                 <h1>CMS Pages</h1>
-                <!-- <a href="#" class="float-right btn btn-primary add_cms">Add New</a> -->
             </div>
         </div>
         <div class="row">
@@ -70,7 +69,6 @@
                                         <th>CMS Pages Title</th>
                                         <th>Status</th>
                                         <th>Edit</th>
-                                        <!-- <th>Delete</th> -->
                                     </tr>
                                 </thead>
                             </table>
@@ -162,138 +160,11 @@
 
 
 <script type="text/javascript">
-
-// $.ajaxSetup({
-//     headers: {
-//         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-//     }
-// });
     var controller_url = "{{route('cms_pages.index')}}";
-
-    $(".add_cms").click(function(){
-        $('#id').val('');
-        $('#cms_form').trigger("reset");
-        $('#saveBtn').html("Save");
-        $('#exampleModalLongTitle').html("Add CMS Pages");
-        $('#add_cms').modal('show');
-        $( '#title-error').html( "" );
-        $( '#title_ab_error').html( "" );
-        $( '#title_he_error').html( "" );
-        $( '#content_error').html( "" );
-        $( '#content_ab_error').html( "" );
-        $( '#content_he_error').html( "" );
-    });
-
-    $('body').on('click', '.edit_category', function () {
-        var id = $(this).data('id');
-        $( '#title-error').html( "" );
-        $( '#title_ab_error').html( "" );
-        $( '#title_he_error').html( "" );
-        $( '#content_error').html( "" );
-        $( '#content_ab_error').html( "" );
-        $( '#content_he_error').html( "" );
-
-        $.get('cms_pages/'+id+'/edit', function (data) {
-            $('#exampleModalLongTitle').html("Edit CMS Pages");
-            $('#saveBtn').html("Update");
-            // $('#add_cms').modal('show');
-            $('#id').val(data.id);
-            $('#c_title').val(data.title);
-            $('#title_ab').val(data.title_ab);
-            $('#title_he').val(data.title_he);
-            CKEDITOR.instances['content'].setData(data.content)
-            CKEDITOR.instances['content_ab'].setData(data.content_ab)
-            CKEDITOR.instances['content_he'].setData(data.content_he)
-        })
-    });
-
-    $('#saveBtn').click(function (e) {
-        e.preventDefault();
-
-        var id = $('#id').val();
-        var title = $('#c_title').val();
-        var title_ab = $('#title_ab').val();
-        var title_he = $('#title_he').val();
-        var content = CKEDITOR.instances['content'].getData();
-        var content_ab = CKEDITOR.instances['content_ab'].getData();
-        var content_he = CKEDITOR.instances['content_he'].getData();
-        
-        var parameters =
-        {
-            id:id,
-            title:title,
-            title_ab:title_ab,
-            title_he:title_he,
-            content:content,
-            content_ab:content_ab,
-            content_he:content_he,
-        } 
-
-        $.ajax({
-          url:"{{route("cms_pages.store")}}",
-          data: parameters,
-          type: "POST",
-          dataType: 'json',
-          cache : false,
-            success: function (data) 
-            {
-                if(data.success){
-
-                    $('#cms_form').trigger("reset");
-                    $('#add_cms').modal('hide');
-                    jQuery(data_table).DataTable().draw();
-
-                    setTimeout(function () {
-                        swal(data.message, {
-                            icon: 'success',
-                        });
-                    });
-                } else {
-                    $( '#title_error').html( data.errors.title );
-                    $( '#title_ab_error').html( data.errors.title_ab );
-                    $( '#title_he_error').html( data.errors.title_he );
-                    $( '#content_error').html( data.errors.content );
-                    $( '#content_ab_error').html( data.errors.content_ab );
-                    $( '#content_he_error').html( data.errors.content_he );
-                }
-            },
-            error: function (data) {
-                console.log('Error:', data);
-                $('#saveBtn').html('Save Changes');
-            }
-        });
-    });
 </script>
 
 <!-- Page Specific JS File -->
 <script src="{{asset("public/assets/pages-js/cms_pages/index.js")}}"></script>
-<!-- Editor Js-->
-<script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
-<script>
-    CKEDITOR.replace('content_he', {
-        removeButtons: 'Image'
-    });
-    CKEDITOR.replace('content_ab', {
-        removeButtons: 'Image'
-    });
-    CKEDITOR.replace('content', {
-        removeButtons: 'Image'
-    });
+<script src="{{asset("public/assets/pages-js/cms_pages/add.js")}}"></script>
 
-
-    CKEDITOR.on("instanceReady", function(event) {
-        event.editor.on("beforeCommandExec", function(event) {
-            // Show the paste dialog for the paste buttons and right-click paste
-            if (event.data.name == "paste") {
-                event.editor._.forcePasteDialog = true;
-            }
-            // Don't show the paste dialog for Ctrl+Shift+V
-            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
-                event.cancel();
-            }
-        })
-    });
-</script>
-
-<!-- Editor Js End -->
 @endsection

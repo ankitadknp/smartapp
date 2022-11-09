@@ -1,5 +1,4 @@
 "use strict";
-
 var data_table = '#datatable';
 function get_all_data() {
     var title = $('#title').val();
@@ -20,7 +19,6 @@ function get_all_data() {
             {"data": "title"},
             {"data": "status"},
             {"data": "edit"},
-            // {"data": "delete"}
         ],
         columnDefs: [
             {

@@ -87,29 +87,8 @@
 @section('addjs')
 <!-- Editor Js-->
 <script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
+<script src="{{asset("public/assets/pages-js/cms_pages/edit.js")}}"></script>
 <script>
-    CKEDITOR.replace('content_he', {
-        removeButtons: 'Image'
-    });
-    CKEDITOR.replace('content_ab', {
-        removeButtons: 'Image'
-    });
-    CKEDITOR.replace('content', {
-        removeButtons: 'Image'
-    });
 
-
-    CKEDITOR.on("instanceReady", function(event) {
-        event.editor.on("beforeCommandExec", function(event) {
-            // Show the paste dialog for the paste buttons and right-click paste
-            if (event.data.name == "paste") {
-                event.editor._.forcePasteDialog = true;
-            }
-            // Don't show the paste dialog for Ctrl+Shift+V
-            if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
-                event.cancel();
-            }
-        })
-    });
 </script>
 @endsection

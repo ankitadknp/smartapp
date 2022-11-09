@@ -6,64 +6,7 @@
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css")}}">
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
-<style>
-.modal-dialog{
-      overflow-y: initial !important
-}
-#top-5-scroll{
-  height: 420px;
-  overflow-y: auto;
-}
-#comment_scroll{
-  height: 420px;
-  overflow-y: auto;
-}
-#like_scroll{
-  height: 420px;
-  overflow-y: auto;
-}
-.overlay{
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 999;
-    background: rgba(255,255,255,0.8);
-}
-
-/* Turn off scrollbar when body element has the loading class */
-body.loading{
-    overflow: hidden;   
-}
-/* Make spinner image visible when body element has the loading class */
-body.loading .overlay{
-    display: block;
-}
-
-.cv-spinner {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;  
-}
-
-.spinner-new {
-  width: 40px;
-  height: 40px;
-  border: 4px #ddd solid;
-  border-top: 4px #2e93e6 solid;
-  border-radius: 50%;
-  animation: sp-anime 0.8s infinite linear;
-}
-
-@keyframes sp-anime {
-  100% { 
-    transform: rotate(360deg); 
-  }
-}
-</style>
+<link rel="stylesheet" href="{{asset("public/css/style.css")}}">
 @endsection
 
 @section('content')
@@ -243,7 +186,6 @@ body.loading .overlay{
 <script type="text/javascript">
 var controller_url = "{{route('blog.index')}}";
 </script>
-
 
 <!-- Page Specific JS File -->
 <script src="{{asset("public/assets/pages-js/blog/index.js?v1")}}"></script>

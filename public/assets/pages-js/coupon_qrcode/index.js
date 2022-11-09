@@ -1,5 +1,4 @@
 "use strict";
-
 var data_table = '#datatable';
 
 function get_all_data() {
@@ -22,7 +21,6 @@ function get_all_data() {
             {"data": "coupon_title"},
             {"data": "qrcode_url"},
             {"data": "qrcode_file"},
-            {"data": "delete"}
         ],
         columnDefs: [
             {
@@ -35,16 +33,6 @@ function get_all_data() {
                 searchable: true,
                 sortable: true
             },
-            // {
-            //     targets: [2],
-            //     searchable: true,
-            //     sortable: false,
-            // },
-            // {
-            //     targets: [3],
-            //     searchable: true,
-            //     sortable: false,
-            // }
         ],
         language: {
             emptyTable: "No data available",

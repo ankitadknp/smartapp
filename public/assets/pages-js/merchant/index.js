@@ -1,5 +1,4 @@
 "use strict";
-
 var data_table = '#datatable';
 function get_all_data() {
     var business_name = $('#business_name').val();
@@ -22,7 +21,6 @@ function get_all_data() {
             {"data": "email"},
             {"data": "phone_number"},
             {"data": "status"},
-            // {"data": "edit"},
             {"data": "view"},
             {"data": "delete"}
         ],
