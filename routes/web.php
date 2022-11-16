@@ -119,4 +119,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("change_status", "CMSPagesController@change_status")->name("cms_pages.change_status");
     });
     
+
+    //Locations Module Routing
+    Route::resource("locations", "LocationController");
+    Route::prefix('locations')->group(function () {
+        Route::post("delete", "LocationController@destroy")->name("locations.delete");
+        Route::post("list-data", "LocationController@load_data_in_table")->name("locations.load_data_in_table");
+        Route::post("change_status", "LocationController@change_status")->name("locations.change_status");
+    });
 });

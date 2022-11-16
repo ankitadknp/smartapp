@@ -11,9 +11,11 @@ use App\Http\Controllers\Controller;
 use App\Share;
 use App\UseCoupon;
 use App\User;
+use App\Location;
 use DB,QrCode,URL,Validator,File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\API\NotificationController;
 
 class CouponController extends Controller
 {
@@ -24,7 +26,7 @@ class CouponController extends Controller
             'coupon_code' => 'required|max:20',
             'discount_amount' => 'required',
             'discount_type' => 'required',
-            'location' => 'required',
+            'location_id' => 'required',
             'expiry_date' => 'required',
             'term_condition' => 'required',
             'coupon_title' => 'required|max:50',
@@ -69,6 +71,11 @@ class CouponController extends Controller
                 ]);
             }
         }
+
+        $notification_controller = new NotificationController();
+        $msgVal  = "Coupon is Active";
+        $device_token = '11';
+        $notification_controller->send_notification($msgVal,$device_token);
 
         return response()->json([
             'success' => true,
@@ -157,7 +164,7 @@ class CouponController extends Controller
             'coupon_code' => 'required|max:20',
             'discount_amount' => 'required',
             'discount_type' => 'required',
-            'location' => 'required',
+            'location_id' => 'required',
             'expiry_date' => 'required',
             'term_condition' => 'required',
             'category_id' => 'required',
@@ -324,32 +331,44 @@ class CouponController extends Controller
         }
 
         $coupon = Coupon::find($request->coupon_id);
-        $total_add = ClientMyCoupon::where('coupon_id', $request->coupon_id)->count();
-        $total_use = UseCoupon::where('coupon_id', $request->coupon_id)->count();
-        $total_share = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->count();
-        $total_email = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->where('share_by', 1)->count();
-        $total_whatsapp = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->where('share_by', 0)->count();
 
-        $success['coupon_id'] = $coupon->coupon_id;
-        $success['coupon_code'] = $coupon->coupon_code;
-        $success['discount_amount'] = $coupon->discount_amount;
-        $success['discount_type'] = $coupon->discount_type;
-        $success['location'] = $coupon->location;
-        $success['expiry_date'] = $coupon->expiry_date;
-        $success['term_condition'] = $coupon->term_condition;
-        $success['total_added_by'] = $total_add;
-        $success['total_used_by'] = $total_use;
-        $success['total_share'] = $total_share;
-        $success['total_whatsapp'] = $total_whatsapp;
-        $success['total_email'] = $total_email;
-        $success['created_at'] = $coupon->created_at;
+        if ( !empty($coupon) ) {
+            $total_coupon = Coupon::where('user_id',$user_id)->count();
+            $total_add = ClientMyCoupon::where('coupon_id', $request->coupon_id)->count();
+            $total_use = UseCoupon::where('coupon_id', $request->coupon_id)->count();
+            $total_share = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->count();
+            $total_email = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->where('share_by', 1)->count();
+            $total_whatsapp = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->where('share_by', 0)->count();
 
-        return response()->json([
-            'success' => true,
-            'data' => $success,
-            'message' => 'Coupon Statistics',
-            'status' => 200,
-        ]);
+            $success['coupon_id'] = $coupon->coupon_id;
+            $success['coupon_code'] = $coupon->coupon_code;
+            $success['discount_amount'] = $coupon->discount_amount;
+            $success['discount_type'] = $coupon->discount_type;
+            $success['location'] = $coupon->location;
+            $success['expiry_date'] = $coupon->expiry_date;
+            $success['term_condition'] = $coupon->term_condition;
+            $success['total_coupon'] = $total_coupon;
+            $success['total_added_by'] = $total_add;
+            $success['total_used_by'] = $total_use;
+            $success['total_share'] = $total_share;
+            $success['total_whatsapp'] = $total_whatsapp;
+            $success['total_email'] = $total_email;
+            $success['created_at'] = $coupon->created_at;
+
+            return response()->json([
+                'success' => true,
+                'data' => $success,
+                'message' => 'Coupon Statistics',
+                'status' => 200,
+            ]);
+        } else {
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Coupon id not found',
+                'status' => 400,
+            ]);
+        }
     }
 
     public function save_coupon(Request $request)
@@ -464,5 +483,17 @@ class CouponController extends Controller
             'status' => 200,
         ]);
 
+    }
+    
+    public function location_list(Request $request)
+    {
+        $location = Location::all();
+
+        return response()->json([
+            'success' => true,
+            'data' =>  $location,
+            'message' => 'Location List',
+            'status' => 200,
+        ]);
     }
 }

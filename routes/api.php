@@ -17,6 +17,7 @@ Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
 Route::post('forgot_password', [UserController::class, 'forgot_password']);
 Route::get('coupon_category_list', [CouponController::class, 'coupon_category_list']);
+Route::get('location_list', [CouponController::class, 'location_list']);
 Route::get('cms_pages_list', [CMSPagesController::class, 'cms_pages_list']);
 
 Route::middleware('auth:api')->group(function () {

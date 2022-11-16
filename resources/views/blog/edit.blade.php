@@ -128,9 +128,8 @@
     var controller_url = "{{route('blog.index')}}";
 </script>
 
-<script src="{{asset("public/assets/pages-js/blog/edit.js")}}"></script>
-
 <!-- Editor Js-->
 <script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
+<script src="{{asset("public/assets/pages-js/blog/edit.js")}}"></script>
 <!-- Editor Js End -->
 @endsection
