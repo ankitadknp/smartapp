@@ -3,6 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\BlogReport;
+use App\BlogComment;
+use App\BlogLike;
+use App\BlogCommentLike;
+use App\PublicFeedReport;
+use App\PublicFeedComment;
+use App\PublicFeedLike;
+use App\PublicFeedCommentLike;
+use App\Share;
+use App\UseCoupon;
+use App\Coupon;
+use App\ClientMyCoupon;
+use App\SmartCards;
 use Illuminate\Http\Request;
 use Redirect,Response,DB,Validator,Hash,File;
 use Illuminate\Validation\Rule;
@@ -261,6 +274,79 @@ class MerchantController extends Controller
 
         if ($find_record) 
         {
+            $blog_like = BlogLike::where('user_id',$id)->get();
+            $blog_report = BlogReport::where('user_id',$id)->get();
+            $blog_comment = BlogComment::where('user_id',$id)->get();
+            $blog_comment_like = BlogCommentLike::where('user_id',$id)->get();
+
+            $feed_like = PublicFeedLike::where('user_id',$id)->get();
+            $feed_report = PublicFeedReport::where('user_id',$id)->get();
+            $feed_comment = PublicFeedComment::where('user_id',$id)->get();
+            $feed_comment_like = PublicFeedCommentLike::where('user_id',$id)->get();
+
+            $mycoupon = ClientMyCoupon::where('user_id',$id)->get();
+            $usecoupon = UseCoupon::where('user_id',$id)->get();
+            $share = Share::where('user_id', $id)->get();
+            $Coupon = Coupon::where('user_id',$id)->get();
+            $smartcard = SmartCards::where('user_id',$id)->get();
+            $device = DB::table('user_device')->where('user_id',$id)->first();
+
+            if ( !empty($blog_like) ) 
+            {
+                BlogLike::where('user_id',$id)->delete();
+            }
+            if ( !empty($blog_report) ) 
+            {
+                BlogReport::where('user_id',$id)->delete();
+            }
+            if ( !empty($blog_comment) ) 
+            {
+                BlogComment::where('user_id',$id)->delete();
+            }
+            if ( !empty($blog_comment_like) ) 
+            {
+                BlogCommentLike::where('user_id',$id)->delete();
+            }
+
+            if ( !empty($feed_like) ) 
+            {
+                PublicFeedLike::where('user_id',$id)->delete();
+            }
+            if ( !empty($feed_report) ) 
+            {
+                PublicFeedReport::where('user_id',$id)->delete();
+            }
+            if ( !empty($feed_comment) ) 
+            {
+                PublicFeedComment::where('user_id',$id)->delete();
+            }
+            if ( !empty($feed_comment_like) ) 
+            {
+                PublicFeedCommentLike::where('user_id',$id)->delete();
+            }
+
+
+            if (!empty($mycoupon)) 
+            {
+                ClientMyCoupon::where('user_id',$id)->delete();
+            }     
+            if (!empty($usecoupon)) 
+            {
+                UseCoupon::where('user_id',$id)->delete();
+            }
+            if (!empty($share)) 
+            {
+                Share::where('user_id', $id)->delete();
+            }
+            if (!empty($smartcard)) 
+            {
+                SmartCards::where('user_id', $id)->delete();
+            }
+            if (!empty($device)) 
+            {
+                DB::table('user_device')->where('user_id',$id)->delete();
+            }
+            
             $find_record->delete();
             $response['success'] = true;
             $response['message'] = $this->module_singular_name.' deleted successfully';

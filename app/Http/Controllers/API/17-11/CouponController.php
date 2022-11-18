@@ -54,9 +54,6 @@ class CouponController extends Controller
         $fileName = basename($publicPath);
         $basePath = URL::to('/public/qrcodes/'.$fileName);
 
-        $user_data = User::where('user_status',0)->get();
-
-
         if ($couponRes->coupon_id) {
             QrCode::generate($request->qrcode_url, $publicPath);
             $QrRes = CouponQRcode::create([
@@ -73,16 +70,12 @@ class CouponController extends Controller
                     'term_condition' => $val,
                 ]);
             }
-
-            //send notification
-            // foreach( $user_data as $u_val) {
-            //     $user_device= DB::table('user_device')->where('user_id',$u_val->id)->first();
-            //     $notification_controller = new NotificationController();
-            //     $msgVal  = "Coupon is available for you";
-            //     $device_token = $user_device->device_token;
-            //     $notification_controller->send_notification($msgVal,$device_token);
-            // }
         }
+
+        $notification_controller = new NotificationController();
+        $msgVal  = "Coupon is Active";
+        $device_token = '11';
+        $notification_controller->send_notification($msgVal,$device_token);
 
         return response()->json([
             'success' => true,
@@ -102,12 +95,15 @@ class CouponController extends Controller
 
         $user = User::find($user_id);
 
-        $coupon = Coupon::select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
+        $coupon = Coupon::select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url','locations.city_area','locations.city_area_ab','locations.city_area_he')
                 ->leftJoin('users', function ($join) {
                     $join->on('users.id', '=', 'coupon.user_id');
                 })
                 ->leftJoin('coupon_qrcode', function ($join) {
                     $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
+                })
+                ->leftJoin('locations', function ($join) {
+                    $join->on('locations.id', '=', 'coupon.location_id');
                 })
                 ->where(function ($query) use ($search,$location,$discount_type,$category_id) { 
                     if (!empty($search)) {
@@ -115,11 +111,15 @@ class CouponController extends Controller
                             ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
-                            ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
+                            ->orWhere('locations.city_area', 'LIKE', '%'.$search.'%')
+                            ->orWhere('locations.city_area_ab', 'LIKE', '%'.$search.'%')
+                            ->orWhere('locations.city_area_he', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%');
                     }
                     if ( !empty($location) ) {
-                        $query->where('coupon.location', 'LIKE', '%'.$location.'%');
+                        $query->where('locations.city_area', 'LIKE', '%'.$location.'%')
+                            ->orWhere('locations.city_area_ab', 'LIKE', '%'.$location.'%')
+                            ->orWhere('locations.city_area_he', 'LIKE', '%'.$location.'%');
                     }
                     if ( !empty($discount_type) ) {
                         $query->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%');

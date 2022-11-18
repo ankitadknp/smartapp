@@ -63,8 +63,7 @@ class NotificationController extends Controller
     public function send_notification($device_token,$msgVal) {
         $header = array();
         $header[] = 'Content-type: application/json';
-        // $header[] = 'Authorization: key=AAAA6zB6G50:APA91bFXYT3W5YnaNhUvJCAGAKBzWsyIEY-CpH5EGQen-Y0QQIjQwfdrYxkTi3w5Fe9aeZEuwotACprIfrQtO3py1eFj7prbWb3HjAthEGEPya3-t008AWABiI5a5liwH6vHqTJfseuz';
-        $header[] = 'Authorization: key=AIzaSyCR5elRoenTX3gK0ygpLrfQ_pOf8d5Go8Q';
+        $header[] = 'Authorization: key=AAAA6zB6G50:APA91bFXYT3W5YnaNhUvJCAGAKBzWsyIEY-CpH5EGQen-Y0QQIjQwfdrYxkTi3w5Fe9aeZEuwotACprIfrQtO3py1eFj7prbWb3HjAthEGEPya3-t008AWABiI5a5liwH6vHqTJfseuz';
         $payload=[
             'to'=>$device_token,
             // 'data' =>$body,

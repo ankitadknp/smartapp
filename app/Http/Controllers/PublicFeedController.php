@@ -20,7 +20,7 @@ class PublicFeedController extends Controller {
 
     public function __construct() {
         $this->route_name = 'public_feed';
-        $this->module_singular_name = 'public_feed';
+        $this->module_singular_name = 'Public Feed';
     }
 
     public function index() {
@@ -337,13 +337,17 @@ class PublicFeedController extends Controller {
         $feed_report = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($feed) )
+        if ( $feed != '[]') 
         {
             $all_report = '<div class="card-body" id="top-5-scroll"><ul class="list-unstyled list-unstyled-border">';
             foreach ($feed as $val)
             {
                 $user = User::find($val->user_id);
-                $u_name = $user['first_name']. ' '.$user['last_name'];
+                if ($user['user_status'] == 0 ) {
+                    $u_name = $user['first_name'].' '.$user['last_name'];
+                } else if ($user['user_status'] == 1 ) {
+                    $u_name = $user['business_name'];
+                }
                 $report = $val->report;
                 $date =  date_format($val->created_at,"Y-m-d");
                 $report = $val->report;
@@ -372,13 +376,17 @@ class PublicFeedController extends Controller {
         $feed_comment = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($feed) )
+        if ( $feed != '[]') 
         {
             $all_comment = '<div class="card-body" id="feed-scroll"><ul class="list-unstyled list-unstyled-border">';
             foreach ($feed as $val)
             {
                 $user = User::find($val->user_id);
-                $u_name = $user['first_name']. ' '.$user['last_name'];
+                if ($user['user_status'] == 0 ) {
+                    $u_name = $user['first_name'].' '.$user['last_name'];
+                } else if ($user['user_status'] == 1 ) {
+                    $u_name = $user['business_name'];
+                }
                 $date =  date_format($val->created_at,"Y-m-d");
                 $comment = $val->comment;
 
@@ -405,13 +413,17 @@ class PublicFeedController extends Controller {
         $feed_like = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($feed) )
+        if ( $feed != '[]') 
         {
             $all_like = '<div class="card-body" id="like-scroll"><ul class="list-unstyled list-unstyled-border">';
             foreach ($feed as $val)
             {
                 $user = User::find($val->user_id);
-                $u_name = $user['first_name']. ' '.$user['last_name'];
+                if ($user['user_status'] == 0 ) {
+                    $u_name = $user['first_name'].' '.$user['last_name'];
+                } else if ($user['user_status'] == 1 ) {
+                    $u_name = $user['business_name'];
+                }
                 $date =  date_format($val->created_at,"Y-m-d");
                 if ($val->is_like == 0) {
                     $like = '<i class="fa fa-thumbs-down"></i>';

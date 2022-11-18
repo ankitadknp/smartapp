@@ -19,6 +19,7 @@ class BlogController extends Controller
     public function __construct()
     {
         $this->route_name = 'blog';
+        $this->module_singular_name = 'Blogs';
     }
 
     public function index()
@@ -272,12 +273,16 @@ class BlogController extends Controller
         $blog_report = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($blog) ) {
+        if ( $blog != '[]') {
             $all_report = '<div class="card-body" id="top-5-scroll"><ul class="list-unstyled list-unstyled-border">';
 
             foreach ($blog as $val) {
                 $user = User::find($val->user_id);
-                $u_name = $user['first_name'].' '.$user['last_name'];
+                if ($user['user_status'] == 0 ) {
+                    $u_name = $user['first_name'].' '.$user['last_name'];
+                } else if ($user['user_status'] == 1 ) {
+                    $u_name = $user['business_name'];
+                }
                 $report = $val->report;
                 $date = date_format($val->created_at, 'Y-m-d');
 
@@ -301,12 +306,16 @@ class BlogController extends Controller
         $blog_comment = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($blog) ) {
+        if ( $blog != '[]') {
             $all_comment = '<div class="card-body" id="comment_scroll"><ul class="list-unstyled list-unstyled-border">';
 
             foreach ($blog as $val) {
                 $user = User::find($val->user_id);
-                $u_name = $user['first_name'].' '.$user['last_name'];
+                if ($user['user_status'] == 0 ) {
+                    $u_name = $user['first_name'].' '.$user['last_name'];
+                } else if ($user['user_status'] == 1 ) {
+                    $u_name = $user['business_name'];
+                }
                 $comment = $val->comment;
                 $date = date_format($val->created_at, 'Y-m-d');
 
@@ -331,12 +340,16 @@ class BlogController extends Controller
         $blog_like = [];
         $path = Config::get('constants.USER_ICON');
 
-        if ( !empty($blog) ) {
+        if ( $blog != '[]') {
             $all_like = '<div class="card-body" id="like_scroll"><ul class="list-unstyled list-unstyled-border">';
 
             foreach ($blog as $val) {
                 $user = User::find($val->user_id);
-                $u_name = $user['first_name'].' '.$user['last_name'];
+                if ($user['user_status'] == 0 ) {
+                    $u_name = $user['first_name'].' '.$user['last_name'];
+                } else if ($user['user_status'] == 1 ) {
+                    $u_name = $user['business_name'];
+                }
                 $date = date_format($val->created_at, 'Y-m-d');
                 if ($val->is_like == 0) {
                     $like = '<i class="fa fa-thumbs-down"></i>';

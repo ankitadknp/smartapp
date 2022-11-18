@@ -40,7 +40,7 @@ class UserController extends Controller
                 'street_number' => 'required',
                 'district' => 'required|max:50',
                 // 'device_token' => 'required',
-                // 'device_type' => 'required',
+           
             ]);
 
             if($validator->fails()){
@@ -85,7 +85,6 @@ class UserController extends Controller
                 'city' => 'required|max:50',
                 'district' => 'required|max:50',
                 // 'device_token' => 'required',
-                // 'device_type' => 'required',
             ]);
 
             if($user_validator->fails()){
@@ -100,11 +99,6 @@ class UserController extends Controller
             }
 
             $input['user_status'] = $request->user_status;
-
-            if ( !empty($request->latitude) && !empty($request->longitude) ) {
-                $input['latitude'] = $request->latitude;
-                $input['longitude'] = $request->longitude;
-            }
 
             $verify_otp = '111111';
             $verify_otp_time = Carbon::now()->addMinutes(5);
@@ -142,13 +136,12 @@ class UserController extends Controller
         $input['password'] = Hash::make($input['password']);
         $user = User::create($input);
 
-        if ( !empty($user) ) {
-            DB::table('user_device')->insert([
-                'user_id' =>$user->id,
-                'device_token'=>$request->device_token,
-                'device_type'=>$request->device_type,
-            ]);
-        }
+        // if ( !empty($user) ) {
+        //     DB::table('user_device')->insert([
+        //         'user_id' =>$user->id,
+        //         'device_token'=>$request->device_token
+        //     ]);
+        // }
 
         $success['token'] =  $user->createToken('SmartApp')->accessToken;
         $success['user_id'] =  $user->id;
@@ -195,8 +188,6 @@ class UserController extends Controller
             'email' => 'required',
             'password' => 'required',
             'user_status' => 'required',
-            // 'device_token' => 'required',
-            // 'device_type' => 'required',
         ]);
     
         if ($validator->fails()){
@@ -215,15 +206,6 @@ class UserController extends Controller
             $user = Auth::user(); 
             if ( $user->status == 1) 
             {
-                if ( !empty($request->latitude) && !empty($request->longitude) ) {
-                  User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude]);
-                }
-
-                DB::table('user_device')->where('user_id',$user->id)->update
-                ([
-                    'device_token'=>$request->device_token,
-                    'device_type'=>$request->device_type,
-                ]);
                     
                 $success['token'] =  $user->createToken('SmartApp')->accessToken;
                 $success['user_id'] =  $user->id;
