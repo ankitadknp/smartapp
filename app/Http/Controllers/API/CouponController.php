@@ -15,7 +15,6 @@ use App\Location;
 use DB,QrCode,URL,Validator,File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\API\NotificationController;
 
 class CouponController extends Controller
 {
@@ -56,7 +55,6 @@ class CouponController extends Controller
 
         $user_data = User::where('user_status',0)->get();
 
-
         if ($couponRes->coupon_id) {
             QrCode::generate($request->qrcode_url, $publicPath);
             $QrRes = CouponQRcode::create([
@@ -75,13 +73,19 @@ class CouponController extends Controller
             }
 
             //send notification
-            // foreach( $user_data as $u_val) {
-            //     $user_device= DB::table('user_device')->where('user_id',$u_val->id)->first();
-            //     $notification_controller = new NotificationController();
-            //     $msgVal  = "Coupon is available for you";
-            //     $device_token = $user_device->device_token;
-            //     $notification_controller->send_notification($msgVal,$device_token);
-            // }
+            foreach( $user_data as $u_val) {
+                $user_device= DB::table('user_device')->where('user_id',$u_val->id)->first();
+                if ( !empty($user_device) ) {
+                    $notification_controller = new NotificationController();
+                    $msgVal  = $request->coupon_code." is Coupon available";
+                    $title = 'Add Coupon';
+                    $type = 3;
+                    $u_id = $u_val->id;
+                    $device_token = $user_device->device_token;
+                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
+                    $notification_controller->send_notification($msgVal,$device_token,$title);
+                }
+            }
         }
 
         return response()->json([

@@ -89,10 +89,30 @@ class BlogController extends Controller
 
         $blog_comment_like_data = BlogCommentLike::where('user_id',$user_id)->where('blog_id',$request->blog_id)->where('blog_comment_id',$request->blog_comment_id)->first();
 
+        $blog_comment_data = BlogComment::where('blog_comment_id',$request->blog_comment_id)->first();
+        $user_data = User::where('id',$user_id)->first();
+
         $input = $request->all();
         $input['user_id'] = $user_id;
 
         if ($request->is_like == 1) {
+            // send notification
+            if ($user_data->user_status == 0 ) {
+                $u_name = $user_data->first_name .' '.$user_data->last_name;
+            } else if ($user_data->user_status == 1 ) {
+                $u_name = $user_data->business_name;
+            }
+            $user_device = DB::table('user_device')->where('user_id',$blog_comment_data->user_id)->first();
+            if ( !empty($user_device) ) {
+                $notification_controller = new NotificationController();
+                $msgVal  = $u_name." is Like your blog comment";
+                $title = 'Like Blog Comment';
+                $type = 1;
+                $device_token = $user_device->device_token;
+                $notification_controller->add_notification($msgVal,$title,$user_id,$type);
+                $notification_controller->send_notification($msgVal,$device_token,$title);
+            }
+
             $msg = 'Blog Comment Like Succesfully';
         } else {
             $msg = 'Blog Comment Unlike Succesfully';
@@ -112,6 +132,8 @@ class BlogController extends Controller
             $success['is_like'] =  $request->is_like;
 
         }
+
+
 
         return response()->json([
             'success' => true,

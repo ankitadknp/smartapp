@@ -9,6 +9,7 @@ use App\PublicFeedComment;
 use App\PublicFeedCommentLike;
 use App\PublicFeedLike;
 use App\PublicFeedReport;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 
 class PublicFeedController extends Controller
@@ -87,11 +88,30 @@ class PublicFeedController extends Controller
         $user_id = Auth::user()->id;
 
         $feed_comment_like_data = PublicFeedCommentLike::where('user_id',$user_id)->where('public_feed_id',$request->public_feed_id)->where('public_feed_comment_id',$request->public_feed_comment_id)->first();
+        $feed_comment_data = PublicFeedComment::where('public_feed_comment_id',$request->public_feed_comment_id)->first();
+        $user_data = User::where('id',$user_id)->first();
 
         $input = $request->all();
         $input['user_id'] = $user_id;
 
         if ($request->is_like == 1) {
+            // send notification
+            if ($user_data->user_status == 0 ) {
+                $u_name = $user_data->first_name .' '.$user_data->last_name;
+            } else if ($user_data->user_status == 1 ) {
+                $u_name = $user_data->business_name;
+            }
+            $user_device = DB::table('user_device')->where('user_id',$feed_comment_data->user_id)->first();
+            if ( !empty($user_device) ) {
+                $notification_controller = new NotificationController();
+                $msgVal  = $u_name." is Like your public feed comment";
+                $title = 'Like Public Feed Comment';
+                $type = 2;
+                $device_token = $user_device->device_token;
+                $notification_controller->add_notification($msgVal,$title,$user_id,$type);
+                $notification_controller->send_notification($msgVal,$device_token,$title);
+            }
+
             $msg = 'Public Feed Comment Like Succesfully';
         } else {
             $msg = 'Public Feed Comment Unlike Succesfully';

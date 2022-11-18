@@ -9,41 +9,20 @@ use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
-    public function add_notification(Request $request)
+    public function add_notification($msgVal,$title,$user_id,$type)
     {
-        $user_id = Auth::user()->id;
-
-        $validator = Validator::make($request->all(), [
-            'title' => 'required', 
-            'description' => 'required', 
-            'type' => 'required',    
-        ]);
-
-        if($validator->fails())
-        {
-
-            $response = [
-                'success' => false,
-                'message' => $validator->errors()->first(),
-                'status' => 400
-            ];
-
-            return response()->json($response, 400);
-        }
         
-        $input = $request->all();
-        $input['user_id'] = $user_id;
-        $input['status'] = 1;
-
+       $add = array(
+        'user_id' =>$user_id,
+        'title'=>$title,
+        'description'=>$msgVal,
+        'status'=>1,
+        'type'=>$type
+       );
         
-        $notification = Notification::create($input);
+        $notification = Notification::create($add);
 
-        return response()->json([
-            'success' => true,
-            'data'=>$notification,
-            'message' => 'Add Notification Successfully',
-            'status' => 200
-        ]);
+        return true;
     }
 
     public function notification_list(Request $request)
@@ -60,7 +39,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function send_notification($device_token,$msgVal) {
+    public function send_notification($device_token,$msgVal,$title) {
         $header = array();
         $header[] = 'Content-type: application/json';
         // $header[] = 'Authorization: key=AAAA6zB6G50:APA91bFXYT3W5YnaNhUvJCAGAKBzWsyIEY-CpH5EGQen-Y0QQIjQwfdrYxkTi3w5Fe9aeZEuwotACprIfrQtO3py1eFj7prbWb3HjAthEGEPya3-t008AWABiI5a5liwH6vHqTJfseuz';
@@ -69,7 +48,7 @@ class NotificationController extends Controller
             'to'=>$device_token,
             // 'data' =>$body,
             'notification'=>[
-                'title' =>$msgVal,
+                'title' => $title,
                 'body' => $msgVal,
             ],
         ];
