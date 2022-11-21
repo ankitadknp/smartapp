@@ -35,7 +35,7 @@ class CategoriesController extends Controller {
        
         $sidx = 'category_id';
 
-        $list_query = Category::select("*")->orderBy($sidx, $sord)->take($rows);
+        $list_query = Category::select("*");
 
         if (!empty($name)) {
             $list_query = $list_query->where('category_name', "LIKE", "%" . $name . "%")->orWhere('category_name_ab', "LIKE", "%" . $name . "%")->orWhere('category_name_he', "LIKE", "%" . $name . "%");
@@ -47,15 +47,18 @@ class CategoriesController extends Controller {
             $list_query = $list_query->where("status", "=", $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+                ->orderBy($sidx, $sord)
+                ->take($rows)
+                ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
 
                 $all_records[$index]['category_name'] = $value->category_name;
                 $all_records[$index]['type'] = $value->type;

@@ -39,31 +39,36 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function send_notification($device_token,$msgVal,$title) {
-        $header = array();
-        $header[] = 'Content-type: application/json';
-        // $header[] = 'Authorization: key=AAAA6zB6G50:APA91bFXYT3W5YnaNhUvJCAGAKBzWsyIEY-CpH5EGQen-Y0QQIjQwfdrYxkTi3w5Fe9aeZEuwotACprIfrQtO3py1eFj7prbWb3HjAthEGEPya3-t008AWABiI5a5liwH6vHqTJfseuz';
-        $header[] = 'Authorization: key=AIzaSyCR5elRoenTX3gK0ygpLrfQ_pOf8d5Go8Q';
+    public function send_notification($msgVal,$device_token,$title) {
+        $server_key = 'AAAAnqpM3rU:APA91bEgxavRy82K9zuZoxjGzwpdtwDXfIhXj_MCWj9_irDPm7sU2Sg4AGg_VSPIMkBD3uOsDIhSe2LXP3psn71M5QDlKPgrNwfC7wXtGz0y-3NIra-5RtPtP1QVpLAE1QN8zfA3kU3f';
+
+        $headers = array(
+            'Authorization:key='.$server_key,
+            'Content-Type: application/json'
+        );
+
         $payload=[
             'to'=>$device_token,
-            // 'data' =>$body,
             'notification'=>[
                 'title' => $title,
                 'body' => $msgVal,
             ],
         ];
-        $crl = curl_init();
-        curl_setopt($crl, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($crl, CURLOPT_POST,true);
-        curl_setopt($crl, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($crl, CURLOPT_POSTFIELDS, json_encode( $payload ));
-        curl_setopt($crl, CURLOPT_RETURNTRANSFER, true );
-        $result = curl_exec($crl);
-        curl_close($crl);
-        $resultArr = json_decode($result, true);
-        if (isset($resultArr['success']) && $resultArr['success'] == 1) {
-            return true;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        $result = curl_exec($ch);
+        // print_r($result);exit;
+
+        if ( $result === FALSE) {
+            die('FCM Send Error:'.curl_error($ch));
         }
-        return false;
+        curl_close($ch);
+        return $result;
     }
 }

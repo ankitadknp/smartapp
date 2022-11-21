@@ -52,7 +52,7 @@ class ClientController extends Controller
 
         $sidx = 'id';
 
-        $list_query = User::select("*")->where('user_status','=',0)->orderBy($sidx, $sord)->take($rows);
+        $list_query = User::select("*")->where('user_status',0);
 
         if (!empty($name)) {
             $list_query = $list_query->where(DB::raw("CONCAT(first_name,' ',last_name)"), "LIKE", "%" . $name . "%");
@@ -67,15 +67,19 @@ class ClientController extends Controller
             $list_query = $list_query->where('status', '=', $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
-        $all_records = [];
+        $all_records = array();
 
         if ($total_rows > 0)
         {
+            $list_of_all_data = $list_query->skip($page)
+                    ->orderBy($sidx, $sord)
+                    ->take($rows)
+                    ->get();
+                    
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
                 $all_records[$index]['name'] = $value->first_name.' '.$value->last_name;
                 $all_records[$index]['email'] = $value->email;
                 $all_records[$index]['phone_number'] = $value->phone_number;

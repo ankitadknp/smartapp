@@ -52,6 +52,8 @@ class BlogController extends Controller
 
         $blog_like_data = BlogLike::where('user_id',$user_id)->where('blog_id',$request->blog_id)->first();
 
+        $b_list = Blog::where('blog_id',$request->blog_id)->first();
+
         $input = $request->all();
         $input['user_id'] = $user_id;
 
@@ -105,13 +107,16 @@ class BlogController extends Controller
             $user_device = DB::table('user_device')->where('user_id',$blog_comment_data->user_id)->first();
             if ( !empty($user_device) ) {
                 $notification_controller = new NotificationController();
-                $msgVal  = $u_name." is Like your blog comment";
-                $title = 'Like Blog Comment';
+                $msgVal  = $u_name." is like a comment on your blog";
+                $title = 'Like The Blog Comment';
                 $type = 1;
+                $u_id = $blog_comment_data->user_id;
                 $device_token = $user_device->device_token;
-                $notification_controller->add_notification($msgVal,$title,$user_id,$type);
+                $notification_controller->add_notification($msgVal,$title,$u_id,$type);
                 $notification_controller->send_notification($msgVal,$device_token,$title);
             }
+
+
 
             $msg = 'Blog Comment Like Succesfully';
         } else {
@@ -133,8 +138,6 @@ class BlogController extends Controller
 
         }
 
-
-
         return response()->json([
             'success' => true,
             'data'    => $success,
@@ -152,11 +155,11 @@ class BlogController extends Controller
     
     
         $blogObj = Blog::select('blog.*','category.category_name','category.category_name_ab','category.category_name_he',DB::raw('IFNULL( blog_like.is_like, 0) as is_like'))
-                    ->leftJoin('category', function($join) {
+                        ->leftJoin('category', function($join) {
                             $join->on('blog.category_id', '=', 'category.category_id')
                             ->where('category.type','=','Blog');
                         })
-                    ->leftJoin('blog_like', function($join) use($user_id){
+                        ->leftJoin('blog_like', function($join) use($user_id){
                             $join->on('blog.blog_id', '=', 'blog_like.blog_id')
                             ->where('blog_like.user_id',$user_id);
                         })

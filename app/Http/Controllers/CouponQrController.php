@@ -28,9 +28,7 @@ class CouponQrController extends Controller
         $sidx = 'coupon_qrcode.id';
 
         $list_query = CouponQRcode::select('coupon_qrcode.id', 'coupon_qrcode.qrcode_url', 'coupon_qrcode.qrcode_file', 'coupon.coupon_code', 'coupon.coupon_title')
-                      ->leftjoin('coupon', 'coupon.coupon_id', 'coupon_qrcode.coupon_id')
-                      ->orderBy($sidx, $sord)
-                      ->take($rows);
+                      ->leftjoin('coupon', 'coupon.coupon_id', 'coupon_qrcode.coupon_id');
 
         if (!empty($coupon_code) ) {
             $list_query = $list_query->where("coupon.coupon_code", "LIKE", "%" . $coupon_code . "%");
@@ -38,17 +36,19 @@ class CouponQrController extends Controller
         if (!empty($coupon_title)) {
             $list_query = $list_query->where("coupon.coupon_title", "LIKE", "%" . $coupon_title . "%");
         }
-
-        $list_query = $list_query->get();
-
+        
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+            ->orderBy($sidx, $sord)
+            ->take($rows)
+            ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
                 $all_records[$index]['qrcode_url'] = $value->qrcode_url;
                 $all_records[$index]['qrcode_file'] = $value->qrcode_file ? '<img src="'.$value->qrcode_file.'" width="50px" />' : 'No Image Found';
                 $all_records[$index]['coupon_code'] = $value->coupon_code;

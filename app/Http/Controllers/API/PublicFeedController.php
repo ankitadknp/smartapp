@@ -104,11 +104,12 @@ class PublicFeedController extends Controller
             $user_device = DB::table('user_device')->where('user_id',$feed_comment_data->user_id)->first();
             if ( !empty($user_device) ) {
                 $notification_controller = new NotificationController();
-                $msgVal  = $u_name." is Like your public feed comment";
-                $title = 'Like Public Feed Comment';
+                $msgVal  = $u_name." is like a comment on your public feed";
+                $title = 'Like The Public Feed Comment';
+                $u_id = $feed_comment_data->user_id;
                 $type = 2;
                 $device_token = $user_device->device_token;
-                $notification_controller->add_notification($msgVal,$title,$user_id,$type);
+                $notification_controller->add_notification($msgVal,$title,$u_id,$type);
                 $notification_controller->send_notification($msgVal,$device_token,$title);
             }
 

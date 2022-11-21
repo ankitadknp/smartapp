@@ -41,9 +41,7 @@ class PublicFeedController extends Controller {
 
         $sidx = 'public_feed_id';
 
-        $list_query = PublicFeed::select("*")
-                    ->orderBy($sidx, $sord)
-                    ->take($rows);
+        $list_query = PublicFeed::select("*");
 
         if (!empty($name)) {
             $list_query = $list_query->where('public_feed_title', "LIKE", "%" . $name . "%")->orWhere('public_feed_title_ab', "LIKE", "%" . $name . "%")->orWhere('public_feed_title_he', "LIKE", "%" . $name . "%");
@@ -52,15 +50,18 @@ class PublicFeedController extends Controller {
             $list_query = $list_query->where("status", "=", $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+                ->orderBy($sidx, $sord)
+                ->take($rows)
+                ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
 
                 $report_count = PublicFeedReport::where('public_feed_id',$value->public_feed_id)->count();
                 $comment_count = PublicFeedComment::where('public_feed_id',$value->public_feed_id)->count();

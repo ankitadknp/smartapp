@@ -48,9 +48,7 @@ class BlogController extends Controller
         $list_query = Blog::leftJoin('category', function ($join) {
             $join->on('blog.category_id', '=', 'category.category_id');
         })
-        ->select('blog.*', 'category.category_name')
-        ->orderBy($sidx, $sord)
-        ->take($rows);
+        ->select('blog.*', 'category.category_name');
 
         if (!empty($blog_title)) {
             $list_query = $list_query->where('blog_title', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_title_ab', 'LIKE', '%'.$blog_title.'%')->orWhere('blog_title_he', 'LIKE', '%'.$blog_title.'%');
@@ -64,15 +62,18 @@ class BlogController extends Controller
             $list_query = $list_query->where('blog.status', '=', $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
-        $all_records = [];
+        $all_records = array();
 
         if ($total_rows > 0) {
-  
+            $list_of_all_data = $list_query->skip($page)
+                ->orderBy($sidx, $sord)
+                ->take($rows)
+                ->get();
+            
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
                 $all_records[$index]['category_id'] = $value->category_name;
                 $all_records[$index]['blog_title'] = $value->blog_title;
                 $checked = '';

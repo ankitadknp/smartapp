@@ -35,7 +35,7 @@ class CMSPagesController extends Controller {
        
         $sidx = 'id';
 
-        $list_query = CMSPages::select("*")->orderBy($sidx, $sord)->take($rows);
+        $list_query = CMSPages::select("*");
 
         if (!empty($title)) {
             $list_query = $list_query->where('title', "LIKE", "%" . $title . "%")->orWhere('title_ab', "LIKE", "%" . $title . "%")->orWhere('title_he', "LIKE", "%" . $title . "%");
@@ -45,15 +45,18 @@ class CMSPagesController extends Controller {
             $list_query = $list_query->where("status", "=", $status);
         }
 
-        $list_query = $list_query->get();
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+                ->orderBy($sidx, $sord)
+                ->take($rows)
+                ->get();
             $index = 0;
 
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
 
                 $all_records[$index]['title'] = $value->title;
 

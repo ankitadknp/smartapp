@@ -219,11 +219,24 @@ class UserController extends Controller
                   User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude]);
                 }
 
-                DB::table('user_device')->where('user_id',$user->id)->update
-                ([
-                    'device_token'=>$request->device_token,
-                    'device_type'=>$request->device_type,
-                ]);
+                $user_device = DB::table('user_device')->where('user_id',$user->id)->first();
+
+                if ( !empty($user_device) ) {
+
+                    DB::table('user_device')->where('user_id',$user->id)->update
+                    ([
+                        'device_token'=>$request->device_token,
+                        'device_type'=>$request->device_type,
+                    ]);
+
+                } else {
+                    DB::table('user_device')->insert
+                    ([
+                        'user_id' =>$user->id,
+                        'device_token'=>$request->device_token,
+                        'device_type'=>$request->device_type,
+                    ]);
+                }
                     
                 $success['token'] =  $user->createToken('SmartApp')->accessToken;
                 $success['user_id'] =  $user->id;

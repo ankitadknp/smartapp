@@ -27,9 +27,7 @@ class SmartDebitCardController extends Controller {
         $sidx = 'smart_cards.id';
 
         $list_query = SmartCards::select('smart_cards.id', 'smart_cards.status', 'users.first_name', 'users.last_name', 'users.email', 'users.phone_number','users.user_status','users.business_name')
-                      ->leftjoin('users', 'users.id', 'smart_cards.user_id')
-                      ->orderBy($sidx, $sord)
-                      ->take($rows);
+                      ->leftjoin('users', 'users.id', 'smart_cards.user_id');
 
         if (!empty($name) ) {
             $list_query = $list_query->where(function ($query) use ($name) { 
@@ -41,15 +39,17 @@ class SmartDebitCardController extends Controller {
             $list_query = $list_query->where("users.email", "LIKE", "%" . $email . "%");
         }
 
-        $list_query = $list_query->get();
-
         $total_rows = $list_query->count();
         $all_records = array();
 
         if ($total_rows > 0) 
         {
+            $list_of_all_data = $list_query->skip($page)
+                ->orderBy($sidx, $sord)
+                ->take($rows)
+                ->get();
             $index = 0;
-            foreach ($list_query as $value) {
+            foreach ($list_of_all_data as $value) {
                 if ($value->user_status == '1') {
                     $all_records[$index]['name'] = $value->business_name;
                 } else if ($value->user_status == 0)  {
