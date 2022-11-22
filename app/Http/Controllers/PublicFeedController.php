@@ -10,8 +10,9 @@ use App\PublicFeedComment;
 use App\PublicFeedLike;
 use App\PublicFeedCommentLike;
 use App\User;
-use File;
+use File,DB;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\API\NotificationController;
 
 class PublicFeedController extends Controller {
 
@@ -139,6 +140,21 @@ class PublicFeedController extends Controller {
 
         if ($added) 
         {
+            // send notification
+            $user_device = DB::table('user_device')->get();
+            foreach ( $user_device as $key=>$val) {
+                if ( !empty($user_device) ) {
+                    $notification_controller = new NotificationController();
+                    $msgVal  = $added->public_feed_title." Public Feed has been added";
+                    $title = 'The Public Feed has been added';
+                    $type = 2;
+                    $u_id = $val->user_id;
+                    $device_token = $val->device_token;
+                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
+                    $notification_controller->send_notification($msgVal,$device_token,$title);
+                }
+            }
+
             $added_id = $added->public_feed_id;
 
             // Handle multiple file upload

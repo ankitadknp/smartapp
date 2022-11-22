@@ -10,6 +10,8 @@ use App\User;
 use App\BlogCommentLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use DB;
+use App\Http\Controllers\API\NotificationController;
 
 class BlogController extends Controller
 {
@@ -152,6 +154,20 @@ class BlogController extends Controller
         $added_blog = Blog::create($add_new_blog);
 
         if ($added_blog) {
+            // send notification
+            $user_device = DB::table('user_device')->get();
+            foreach ( $user_device as $key=>$val) {
+                if ( !empty($user_device) ) {
+                    $notification_controller = new NotificationController();
+                    $msgVal  = $added_blog->blog_title." Blog has been added";
+                    $title = 'The Blog has been added';
+                    $type = 1;
+                    $u_id = $val->user_id;
+                    $device_token = $val->device_token;
+                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
+                    $notification_controller->send_notification($msgVal,$device_token,$title);
+                }
+            }
             return redirect()->route($this->route_name.'.index')->with('success', $this->module_singular_name.' Added Successfully');
         } else {
             return back()->withInput();

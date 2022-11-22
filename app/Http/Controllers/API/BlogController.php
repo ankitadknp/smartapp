@@ -67,9 +67,23 @@ class BlogController extends Controller
 
             $success = BlogLike::create($input);
 
+            $like_count = $b_list->blog_like_count + 1 ;
+
+            Blog::where('blog_id',$request->blog_id)->update(['blog_like_count'=>$like_count]);
+
         } else {
 
             $blog_like = BlogLike::where('user_id',$user_id)->where('blog_id',$request->blog_id)->update(['is_like'=>$request->is_like]);
+
+            if ($request->is_like == 1) {
+                $like_count = $b_list->blog_like_count + 1 ;
+                $unlike_count = $b_list->blog_unlike_count - 1 ;
+            } else {
+                $unlike_count = $b_list->blog_unlike_count + 1 ;
+                $like_count = $b_list->blog_like_count - 1 ;
+            }
+
+            Blog::where('blog_id',$request->blog_id)->update(['blog_like_count'=>$like_count,'blog_unlike_count'=>$unlike_count]);
 
             $success['blog_id'] = $request->blog_id ;
             $success['user_id'] =  $user_id;
@@ -93,6 +107,7 @@ class BlogController extends Controller
 
         $blog_comment_data = BlogComment::where('blog_comment_id',$request->blog_comment_id)->first();
         $user_data = User::where('id',$user_id)->first();
+        $blog = Blog::where('blog_id',$request->blog_id)->first();
 
         $input = $request->all();
         $input['user_id'] = $user_id;
@@ -107,7 +122,7 @@ class BlogController extends Controller
             $user_device = DB::table('user_device')->where('user_id',$blog_comment_data->user_id)->first();
             if ( !empty($user_device) ) {
                 $notification_controller = new NotificationController();
-                $msgVal  = $u_name." is like a comment on your blog";
+                $msgVal  = $u_name." liked your comment on '$blog->blog_title' Blog";
                 $title = 'Like The Blog Comment';
                 $type = 1;
                 $u_id = $blog_comment_data->user_id;
@@ -116,18 +131,26 @@ class BlogController extends Controller
                 $notification_controller->send_notification($msgVal,$device_token,$title);
             }
 
-
-
             $msg = 'Blog Comment Like Succesfully';
         } else {
             $msg = 'Blog Comment Unlike Succesfully';
         }
 
         if ( empty($blog_comment_like_data) || !isset($blog_comment_like_data)) {
-
             $success = BlogCommentLike::create($input);
 
+            $like_count = $blog_comment_data->comment_like_count + 1 ;
+            BlogComment::where('blog_comment_id',$request->blog_comment_id )->update(['comment_like_count'=>$like_count]);
+
         } else {
+            if ($request->is_like == 1) {
+                $like_count = $blog_comment_data->comment_like_count + 1 ;
+                $unlike_count = $blog_comment_data->comment_unlike_count - 1 ;
+            } else {
+                $unlike_count = $blog_comment_data->comment_unlike_count + 1 ;
+                $like_count = $blog_comment_data->comment_like_count - 1 ;
+            }
+            BlogComment::where('blog_comment_id',$request->blog_comment_id )->update(['comment_like_count'=>$like_count,'comment_unlike_count'=>$unlike_count]);
 
             $blog_comment_like = BlogCommentLike::where('user_id',$user_id)->where('blog_id',$request->blog_id)->where('blog_comment_id',$request->blog_comment_id)->update(['is_like'=>$request->is_like]);
 
@@ -219,7 +242,7 @@ class BlogController extends Controller
                             $join->on('blog.blog_id', '=', 'blog_comment.blog_id');
                         })
                         ->select ('blog_comment.*',DB::raw('(CASE 
-                            WHEN users.user_status = "0" THEN CONCAT(last_name, " ", first_name) 
+                            WHEN users.user_status = "0" THEN CONCAT(first_name, " ",last_name ) 
                             WHEN users.status = "1" THEN users.business_name 
                             END) AS name'),DB::raw('IFNULL( blog_comment_like.is_like, 0) as is_like')
                         )
