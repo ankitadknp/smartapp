@@ -18,6 +18,20 @@
                 </a>
             </li>
 
+            @if(Auth::user()->user_status  == 3)
+            <li class="{{ request()->is('sub_admin') || request()->is('sub_admin/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('sub_admin.index')}}">
+                    <i class="fas fa-users"></i><span>Sub Admin</span>
+                </a>
+            </li>
+
+            <li class="{{ request()->is('user-roles') || request()->is('user-roles/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('user-roles.index')}}">
+                <i class="fas fa-users"></i><span>User Roles</span>
+                </a>
+            </li>
+            @endif
+
             <li class="{{ request()->is('blog') || request()->is('blog/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('blog.index')}}">
                 <i class="fab fa-blogger-b"></i><span>Blog</span>
@@ -35,14 +49,6 @@
                     <i class="fa fa-rss"></i><span>Public Feed</span>
                 </a>
             </li>
-
-            @if(Auth::user()->user_status  == 3)
-            <li class="{{ request()->is('sub_admin') || request()->is('sub_admin/*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{route('sub_admin.index')}}">
-                    <i class="fas fa-users"></i><span>Sub Admin</span>
-                </a>
-            </li>
-            @endif
 
             <li class="{{ request()->is('merchant') || request()->is('merchant/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('merchant.index')}}">
@@ -71,6 +77,12 @@
             <li class="{{ request()->is('cms_pages') || request()->is('cms_pages/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('cms_pages.index')}}">
                 <i class="fa fa-file"></i><span>CMS Pages</span>
+                </a>
+            </li>
+
+            <li class="{{ request()->is('locations') || request()->is('locations/*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{route('locations.index')}}">
+                <i class="fa fa-map-marker "></i><span>Locations</span>
                 </a>
             </li>
 

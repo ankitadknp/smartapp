@@ -127,4 +127,19 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("list-data", "LocationController@load_data_in_table")->name("locations.load_data_in_table");
         Route::post("change_status", "LocationController@change_status")->name("locations.change_status");
     });
+
+    //User Role Module Routing
+    Route::resource("user-roles", "UserRolesController");
+    Route::prefix('user-roles')->group(function () {
+        Route::post("delete", "UserRolesController@destroy")->name("user-roles.delete");
+        Route::post("list-data", "UserRolesController@load_data_in_table")->name("user-roles.load_data_in_table");
+        Route::post("change_status", "UserRolesController@change_status")->name("user-roles.change_status");
+        Route::post("list-roles", "UserRolesController@all_role_list_for_select")->name("user-roles.list-roles");
+    });
+});
+
+Route::get('/run-migrate-seed', function () {
+    \Illuminate\Support\Facades\Artisan::call('db:seed');
+    echo 'Migration done';
+    die;
 });

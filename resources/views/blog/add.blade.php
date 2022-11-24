@@ -24,9 +24,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <form class="" id="add_user_form" novalidate="" action="{{route("blog.store")}}" enctype="multipart/form-data" method="POST"
-                              oninput='c_password.setCustomValidity(c_password.value != password.value ? "Passwords do not match." : "")'
-                              >
+                        <form class="" id="add_user_form" novalidate="" action="{{route("blog.store")}}" enctype="multipart/form-data" method="POST">
                             @csrf
 
                             <div class="col-sm-12">
