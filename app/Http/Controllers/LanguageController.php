@@ -14,6 +14,7 @@ class LanguageController extends Controller {
     public function __construct() {
         $this->route_name = 'language';
         $this->module_singular_name = 'Language';
+        $this->middleware("checkmodulepermission");
 
     }
 

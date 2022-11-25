@@ -14,6 +14,7 @@ class CMSPagesController extends Controller {
     public function __construct() {
         $this->route_name = 'cms_pages';
         $this->module_singular_name = 'CMSPage';
+        $this->middleware("checkmodulepermission");
 
     }
 

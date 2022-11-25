@@ -9,6 +9,10 @@ use File;
 
 class CouponQrController extends Controller 
 {
+    public function __construct() {
+        $this->middleware("checkmodulepermission");
+    }
+
     public function index() {
         return view("coupon_qrcode.index");
     }

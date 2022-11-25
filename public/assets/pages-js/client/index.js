@@ -55,6 +55,7 @@ function get_all_data()
                 targets: [5],
                 searchable: true,
                 sortable: false,
+                visible: jQuery.inArray("destroy", module_permission) >= 0 ? true : false,
             },
         
         ],

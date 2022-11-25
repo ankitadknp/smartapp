@@ -14,6 +14,7 @@ class CategoriesController extends Controller {
     public function __construct() {
         $this->route_name = 'categories';
         $this->module_singular_name = 'Category';
+        $this->middleware("checkmodulepermission");
     }
 
     public function index() {

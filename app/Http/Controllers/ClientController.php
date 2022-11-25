@@ -29,6 +29,7 @@ class ClientController extends Controller
     public function __construct()
     {
         $this->route_name = 'client';
+        $this->middleware("checkmodulepermission");
     }
 
     public function index()

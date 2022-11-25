@@ -106,7 +106,9 @@
                                           <?php $ext = substr($gallery->image, strrpos($gallery->image, '.') + 1);
                                             if ($ext == 'mp4') { ?>
                                                 <div class="avatar-item mb-0">
-                                                        <iframe src="{{$gallery->image}}" name="iframe_a" title="Iframe Example" style="width: 100px;height: 100px;"></iframe>
+                                                        <video height="100" width="100" class="embed-responsive-item" controls>
+                                                            <source src="{{$gallery->image}}" type="video/mp4">
+                                                        </video>
                                                         <div class="avatar-badge delete_data_button" data-id="{{$gallery->public_feed_image_id }}" data-name="{{$gallery->image}}" title="" data-toggle="tooltip" data-original-title="Remove" style="cursor: pointer"><i class="fas fa-trash text-danger"></i></div>
                                                 </div>
                                             <?php } else { ?>

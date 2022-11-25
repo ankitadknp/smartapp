@@ -10,7 +10,7 @@ use App\User;
 use App\BlogCommentLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use DB;
+use DB,Auth;
 use App\Http\Controllers\API\NotificationController;
 
 class BlogController extends Controller
@@ -22,10 +22,14 @@ class BlogController extends Controller
     {
         $this->route_name = 'blog';
         $this->module_singular_name = 'Blogs';
+
+        $this->middleware("checkmodulepermission");
     }
 
     public function index()
     {
+        $user = Auth::user();
+        // print_r($user->role('subadmin'));exit;
         $all_avilable_category = \App\Category::where('status', 1)->where('type','=','Blog')->select('category_id', 'category_name')->get();
 
         return view($this->route_name.'.index')->with(['all_avilable_category' => $all_avilable_category]);

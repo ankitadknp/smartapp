@@ -10,6 +10,11 @@
 @endsection
 
 @section('content')
+
+@php
+$module_permissions = Session::get("user_access_permission");
+$module_permission = !empty($module_permissions['blog']) ? $module_permissions['blog'] : array();
+@endphp
 <div class="main-content">
     <section class="section">
         <div class="section-header">
@@ -185,6 +190,7 @@
 
 <script type="text/javascript">
 var controller_url = "{{route('blog.index')}}";
+var module_permission = {!! json_encode(array_values($module_permission)) !!};
 </script>
 
 <!-- Page Specific JS File -->

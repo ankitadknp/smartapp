@@ -12,30 +12,37 @@ class UserRolesController extends Controller {
 
     public function __construct() {
         $this->route_name = 'user-roles';
-        $this->middleware("checkmodulepermission");
 
-        $this->types_of_permission = array(
-            1 => array(
-                "key" => "can_view_other_data",
-                "value" => "List"
-            ),
-            2 => array(
-                "key" => "create",
-                "value" => "Add"
-            ),
-            3 => array(
-                "key" => "edit",
-                "value" => "Edit"
-            ),
-            4 => array(
-                "key" => "destroy",
-                "value" => "Delete"
-            ),
-            5 => array(
-                "key" => "index",
-                "value" => "View"
-            )
-        );
+        // $this->types_of_permission = array(
+        //     1 => array(
+        //         "key" => "index",
+        //         "value" => "List"
+        //     ),
+        //     2 => array(
+        //         "key" => "create",
+        //         "value" => "Add"
+        //     ),
+        //     3 => array(
+        //         "key" => "edit",
+        //         "value" => "Edit"
+        //     ),
+        //     4 => array(
+        //         "key" => "destroy",
+        //         "value" => "Delete"
+        //     ),
+        //     5 => array(
+        //         "key" => "index",
+        //         "value" => "View"
+        //     ),
+        //     6 => array(
+        //         "key" => "index",
+        //         "value" => "Like"
+        //     ),
+        //     7 => array(
+        //         "key" => "index",
+        //         "value" => "Comment"
+        //     ),
+        // );
 
         $module_permissions = \Session::get("user_access_permission");
         $module_permission = !empty($module_permissions['user-roles']) ? $module_permissions['user-roles'] : array();
@@ -105,7 +112,7 @@ class UserRolesController extends Controller {
         return view("user_roles.add")
         ->with(array(
             "all_avilable_role_permissions" => $all_avilable_role_permissions,
-            "types_of_permission" => $this->types_of_permission,
+            // "types_of_permission" => $this->types_of_permission,
             'user'=>$user
         ));
     }
@@ -120,14 +127,14 @@ class UserRolesController extends Controller {
         $role_permissions = $request->get("role_permissions");
 
         $add_new_role = array(
-            "user_id" => 1,
+            "user_id" => $user_id,
             "role_type" => 4,
             "role_permissions" => json_encode($role_permissions),
         );
 
         $added_role = UserRoles::create($add_new_role);
         if ($added_role) {
-            return redirect()->route("user-roles.index")->with("success", "Permission Added Successfully");
+            return redirect()->route("user-roles.index")->with("success", "User Permission Added Successfully");
         } else {
             return back()->withInput();
         }
@@ -148,7 +155,7 @@ class UserRolesController extends Controller {
                             "all_avilable_role_permissions" => $all_avilable_role_permissions,
                             "user_role" => $user_role,
                             "list_of_other_roles" => $list_of_other_roles,
-                            "types_of_permission" => $this->types_of_permission,
+                            // "types_of_permission" => $this->types_of_permission,
                             'user'=>$user
         ));
     }
@@ -163,7 +170,7 @@ class UserRolesController extends Controller {
         $user_role->role_permissions = json_encode($request->get("role_permissions"));
         $added_role = $user_role->save();
         if ($added_role) {
-            return redirect()->route("user-roles.index")->with("success", "Role Updated Successfully");
+            return redirect()->route("user-roles.index")->with("success", "User Permission Updated Successfully");
         } else {
             return back()->withInput();
         }
@@ -177,7 +184,7 @@ class UserRolesController extends Controller {
             $user_role->delete();
 
             $response['success'] = true;
-            $response['message'] = "Role deleted successfully";
+            $response['message'] = "User Permission deleted successfully";
         }
 
         return $response;

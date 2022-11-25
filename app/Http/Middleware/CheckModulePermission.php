@@ -16,6 +16,8 @@ class CheckModulePermission {
         'delete' => 'destroy',
         "load_data_in_table" => "index",
         "change_status" => "edit",
+        'like'=>'index',
+        'comment'=>'index'
     ];
 
     /**

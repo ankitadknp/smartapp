@@ -9,7 +9,7 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h1>Add Role</h1>
+            <h1>Add User Permission</h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active">
                     <a href="{{route("dashboard")}}">Dashboard</a>
@@ -77,9 +77,12 @@
                                                                 <div class="tab-content" id="nav-tabContent">
                                                                     @php($first_permission = true)
                                                                     @foreach($permission_modules as $permission)
+
+                                                                    @php($types_permission = json_decode($permission->module_list, true))
+                                                                    
                                                                     <div class="tab-pane fade {{$first_permission==true ? "active show":""}}" id="list-{{$permission->id}}" role="tabpanel" aria-labelledby="tab-{{$permission->id}}-list">
                                                                         <div class="selectgroup selectgroup-pills">
-                                                                            @foreach($types_of_permission as $key => $sub_permission)
+                                                                            @foreach($types_permission as $key => $sub_permission)
                                                                             <label class="selectgroup-item">
                                                                                 <input type="checkbox" name="role_permissions[{{$permission->id}}][{{$key}}]" value="{{$sub_permission['key']}}" class="selectgroup-input" id="permission_{{$permission->id}}_{{$key}}">
                                                                                 <span class="selectgroup-button">{{$sub_permission['value']}}</span>

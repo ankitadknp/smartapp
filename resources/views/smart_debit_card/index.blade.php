@@ -9,7 +9,10 @@
 @endsection
 
 @section('content')
-
+@php
+$module_permissions = Session::get("user_access_permission");
+$module_permission = !empty($module_permissions['smart-debit-card']) ? $module_permissions['smart-debit-card'] : array();
+@endphp
 <div class="main-content">
     <section class="section">
         <div class="section-header">
@@ -127,6 +130,7 @@
 
 <script type="text/javascript">
     var controller_url = "{{route('smart-debit-card.index')}}";
+    var module_permission = {!! json_encode(array_values($module_permission)) !!};
 </script>
 
 <!-- Page Specific JS File -->

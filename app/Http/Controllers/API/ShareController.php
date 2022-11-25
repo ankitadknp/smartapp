@@ -49,26 +49,13 @@ class ShareController extends Controller
         $input['user_id'] = $user_id;
         $input['key'] = $key;
 
-        if ( empty($share) || !isset($share)) {
+        $feed_comment = Share::create($input);
 
-            $feed_comment = Share::create($input);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Shared Successfully',
-                'status' => 200
-            ]);
-
-        } else {
-
-            $response = [
-                'success' => false,
-                'message' => 'Already shared',
-                'status' => 400
-            ];
-    
-            return response()->json($response, 400);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Shared Successfully',
+            'status' => 200
+        ]);
     }
 
 }

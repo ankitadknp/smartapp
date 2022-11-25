@@ -10,6 +10,10 @@
 @endsection
 
 @section('content')
+@php
+$module_permissions = Session::get("user_access_permission");
+$module_permission = !empty($module_permissions['public_feed']) ? $module_permissions['public_feed'] : array();
+@endphp
 <div class="main-content">
     <section class="section">
         <div class="section-header">
@@ -172,6 +176,7 @@
 
 <script type="text/javascript">
 var controller_url = "{{route('public_feed.index')}}";
+var module_permission = {!! json_encode(array_values($module_permission)) !!};
 </script>
 
 <!-- Page Specific JS File -->

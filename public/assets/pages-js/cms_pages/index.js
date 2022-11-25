@@ -35,6 +35,7 @@ function get_all_data() {
                 targets: [2],
                 searchable: true,
                 sortable: false,
+                visible: jQuery.inArray("edit", module_permission) >= 0 ? true : false,
             }
             
         ],

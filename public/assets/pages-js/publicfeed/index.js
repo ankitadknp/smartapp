@@ -53,11 +53,13 @@ function get_all_data() {
                 targets: [5],
                 searchable: true,
                 sortable: false,
+                visible: jQuery.inArray("edit", module_permission) >= 0 ? true : false,
             },
             {
                 targets: [6],
                 searchable: true,
                 sortable: false,
+                visible: jQuery.inArray("destroy", module_permission) >= 0 ? true : false,
             }
         ],
         language: {

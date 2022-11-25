@@ -35,6 +35,18 @@ function get_all_data() {
                 searchable: true,
                 sortable: true
             },
+            {
+                targets: [2],
+                searchable: true,
+                sortable: false,
+                visible: jQuery.inArray("edit", module_permission) >= 0 ? true : false,
+            },
+            {
+                targets: [3],
+                searchable: true,
+                sortable: false,
+                visible: jQuery.inArray("destroy", module_permission) >= 0 ? true : false,
+            }
         ],
         language: {
             emptyTable: "No data available",

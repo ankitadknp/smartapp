@@ -54,7 +54,7 @@ class LoginController extends Controller {
                     
                     //GET USER PERMISSION
                     $get_all_permissions_controller_names = \App\UserRolePermission::whereIn("id", $role_types_ids)
-                    ->select("id", "controller_name")
+                    ->select("id", "controller_name","module_list")
                     ->get();
                     $role_permissions_array = array();
                     foreach ($get_all_permissions_controller_names as $sinlge_value) {

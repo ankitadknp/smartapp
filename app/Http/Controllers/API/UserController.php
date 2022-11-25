@@ -687,4 +687,26 @@ class UserController extends Controller
         }
        
     }
+
+    public function logout(Request $request)
+    {
+        $user = auth()->user();
+
+        $user_device = DB::table('user_device')->where('user_id',$user->id)->first();
+
+        if ( !empty($user_device) ) {
+
+            DB::table('user_device')->where('user_id',$user->id)->update
+            ([
+                'device_token'=>'',
+                'device_type'=>'',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' =>'Logout Succefully',
+            'status'=>200
+        ]);
+    }
 }

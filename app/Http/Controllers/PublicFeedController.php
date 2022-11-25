@@ -22,6 +22,7 @@ class PublicFeedController extends Controller {
     public function __construct() {
         $this->route_name = 'public_feed';
         $this->module_singular_name = 'Public Feed';
+        $this->middleware("checkmodulepermission");
     }
 
     public function index() {

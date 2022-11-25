@@ -14,7 +14,7 @@ class LocationController extends Controller
     public function __construct() {
         $this->route_name = 'locations';
         $this->module_singular_name = 'Location';
-
+        $this->middleware("checkmodulepermission");
     }
 
     public function index() {

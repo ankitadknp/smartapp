@@ -9,7 +9,10 @@
 @endsection
 
 @section('content')
-
+@php
+$module_permissions = Session::get("user_access_permission");
+$module_permission = !empty($module_permissions['locations']) ? $module_permissions['locations'] : array();
+@endphp
 <div class="main-content">
     <section class="section">
         <div class="section-header">
@@ -42,6 +45,11 @@
                                             <div class="form-group">
                                                 <input type="text" placeholder="Area Code" name="area_code" id="area_code" class="form-control">
                                             </div>
+                                        </div>
+
+                                        <div class="col-lg-12">
+                                            <input type="button" name="resetfilter" value="Reset Filter" id="reset-filter" class="btn btn-light float-right reset_filter">
+                                            <input type="button" name="filter" value="Filter" id="apply-filter" class="btn btn-primary float-right search_filter" style="margin-right: 15px;">
                                         </div>
                                     </div>
                                 </div>
@@ -155,6 +163,7 @@
 
 <script type="text/javascript">
     var controller_url = "{{route('locations.index')}}";
+    var module_permission = {!! json_encode(array_values($module_permission)) !!};
 </script>
 
 

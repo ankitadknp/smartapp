@@ -53,7 +53,7 @@ class CouponController extends Controller
         $fileName = basename($publicPath);
         $basePath = URL::to('/public/qrcodes/'.$fileName);
 
-        $user_data = User::where('user_status',0)->get();
+        $user_data = User::where('user_status','=',0)->get();
 
         if ($couponRes->coupon_id) {
             QrCode::generate($request->qrcode_url, $publicPath);
@@ -77,7 +77,7 @@ class CouponController extends Controller
                 $user_device= DB::table('user_device')->where('user_id',$u_val->id)->first();
                 if ( !empty($user_device) ) {
                     $notification_controller = new NotificationController();
-                    $msgVal  = $request->coupon_code." is Coupon available";
+                    $msgVal  = "Coupon '$request->coupon_code' is available";
                     $title = 'Add Coupon';
                     $type = 3;
                     $u_id = $u_val->id;
@@ -313,6 +313,38 @@ class CouponController extends Controller
                     ->whereDate('coupon.expiry_date', '<', $currentDate)
                     ->orderby('client_my_coupon.client_my_coupon_id','DESC')
                     ->get();
+
+        foreach ($active_coupon_list as $key=>$val)
+        {
+            $term = [];
+
+            $coupon_id = $val->coupon_id;
+            $termcon = CouponTerm::where('coupon_id',$coupon_id)->get();
+            $term_count = CouponTerm::where('coupon_id',$coupon_id)->count();
+
+            for ($i=0; $i<count($termcon); $i++) 
+            {
+                $value = $termcon[$i]->term_condition;
+                array_push($term,$value);
+            }
+            $active_coupon_list[$key]['term_condition'] = $term;
+        }
+
+        foreach ($inactive_coupon_list as $key=>$val)
+        {
+            $term = [];
+
+            $coupon_id = $val->coupon_id;
+            $termcon = CouponTerm::where('coupon_id',$coupon_id)->get();
+            $term_count = CouponTerm::where('coupon_id',$coupon_id)->count();
+
+            for ($i=0; $i<count($termcon); $i++) 
+            {
+                $value = $termcon[$i]->term_condition;
+                array_push($term,$value);
+            }
+            $inactive_coupon_list[$key]['term_condition'] = $term;
+        }
 
         return response()->json([
             'success' => true,

@@ -66,5 +66,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('add_notification', [NotificationController::class, 'add_notification']);
     Route::get('notification_list', [NotificationController::class, 'notification_list']);
+
+    Route::get('logout', [UserController::class, 'logout']);
     
 });

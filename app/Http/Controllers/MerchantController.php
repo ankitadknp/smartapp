@@ -29,6 +29,7 @@ class MerchantController extends Controller
     public function __construct()
     {
         $this->route_name = 'merchant';
+        $this->middleware("checkmodulepermission");
     }
 
     public function index()

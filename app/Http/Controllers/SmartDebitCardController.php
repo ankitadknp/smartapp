@@ -7,6 +7,10 @@ use App\SmartCards;
 use Redirect,Response,DB,Validator;
 
 class SmartDebitCardController extends Controller {
+
+    public function __construct() {
+        $this->middleware("checkmodulepermission");
+    }
     
     public function index() {
         return view("smart_debit_card.index");
