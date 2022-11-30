@@ -38,6 +38,7 @@ function get_all_data() {
                 targets: [2],
                 searchable: true,
                 sortable: false,
+                visible: jQuery.inArray("change_status", module_permission) >= 0 ? true : false,
             },
             {
                 targets: [3],

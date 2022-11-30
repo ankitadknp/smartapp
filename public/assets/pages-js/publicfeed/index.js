@@ -33,6 +33,7 @@ function get_all_data() {
                 targets: [1],
                 searchable: true,
                 sortable: false,
+                visible: jQuery.inArray("change_status", module_permission) >= 0 ? true : false,
             },
             {
                 targets: [2],
@@ -43,11 +44,13 @@ function get_all_data() {
                 targets: [3],
                 searchable: true,
                 sortable: false,
+                visible: jQuery.inArray("comment", module_permission) >= 0 ? true : false,
             },
             {
                 targets: [4],
                 searchable: true,
                 sortable: false,
+                visible: jQuery.inArray("like", module_permission) >= 0 ? true : false,
             },
             {
                 targets: [5],

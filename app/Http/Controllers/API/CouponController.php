@@ -100,7 +100,7 @@ class CouponController extends Controller
     {
         $user_id = Auth::user()->id;
         $search = $request->search;
-        $location = $request->location;
+        $locationId = $request->location_id;
         $discount_type = $request->discount_type;
         $category_id = $request->category_id;
 
@@ -113,17 +113,17 @@ class CouponController extends Controller
                 ->leftJoin('coupon_qrcode', function ($join) {
                     $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
                 })
-                ->where(function ($query) use ($search,$location,$discount_type,$category_id) { 
+                ->where(function ($query) use ($search,$locationId,$discount_type,$category_id) { 
                     if (!empty($search)) {
                         $query->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
-                            ->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
+                            //->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%');
                     }
-                    if ( !empty($location) ) {
-                        $query->where('coupon.location', 'LIKE', '%'.$location.'%');
+                    if ( !empty($locationId) ) {
+                        $query->where('coupon.location_id', $locationId);
                     }
                     if ( !empty($discount_type) ) {
                         $query->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%');
@@ -196,7 +196,12 @@ class CouponController extends Controller
 
         $input = $request->all();
 
-        $coupon = Coupon::find($request->coupon_id);
+        $coupon = Coupon::leftJoin('locations', function ($join) {
+            $join->on('locations.id', '=', 'coupon.location_id');
+        })
+        ->select('coupon.*','locations.*')
+        ->where('coupon.coupon_id',$request->coupon_id)
+        ->first();
 
         if ( !empty($request->qrcode_url)) {
 
@@ -232,7 +237,10 @@ class CouponController extends Controller
         $success['coupon_code'] = $coupon->coupon_code;
         $success['discount_amount'] = $coupon->discount_amount;
         $success['discount_type'] = $coupon->discount_type;
-        $success['location'] = $coupon->location;
+        $success['location_id'] = $coupon->location_id;
+        $success['location'] = $coupon->city_area;
+        $success['location_ab'] = $coupon->city_area_ab;
+        $success['location_he'] = $coupon->city_area_he;
         $success['expiry_date'] = $coupon->expiry_date;
         $success['category_id'] = $coupon->category_id;
         $success['coupon_title_ab'] = $coupon->coupon_title_ab;
@@ -373,7 +381,12 @@ class CouponController extends Controller
             return response()->json($response, 400);
         }
 
-        $coupon = Coupon::find($request->coupon_id);
+        $coupon = Coupon::leftJoin('locations', function ($join) {
+            $join->on('locations.id', '=', 'coupon.location_id');
+        })
+        ->select('coupon.*','locations.*')
+        ->where('coupon.coupon_id',$request->coupon_id)
+        ->first();
 
         if ( !empty($coupon) ) {
             $total_coupon = Coupon::where('user_id',$user_id)->count();
@@ -387,7 +400,10 @@ class CouponController extends Controller
             $success['coupon_code'] = $coupon->coupon_code;
             $success['discount_amount'] = $coupon->discount_amount;
             $success['discount_type'] = $coupon->discount_type;
-            $success['location'] = $coupon->location;
+            $success['location_id'] = $coupon->location_id;
+            $success['location'] = $coupon->city_area;
+            $success['location_ab'] = $coupon->city_area_ab;
+            $success['location_he'] = $coupon->city_area_he;
             $success['expiry_date'] = $coupon->expiry_date;
             $success['term_condition'] = $coupon->term_condition;
             $success['total_coupon'] = $total_coupon;

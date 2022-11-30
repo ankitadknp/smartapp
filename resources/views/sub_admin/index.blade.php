@@ -14,9 +14,6 @@
     <section class="section">
         <div class="section-header">
             <div class="col-lg-12">
-                @php
-                $routeName = explode('.', \Request::route()->getName());
-                @endphp
                 <h1>Sub Admin</h1>
                 <a href="#" class="float-right btn btn-primary add_admin">Add New</a>
             </div>

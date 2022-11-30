@@ -17,9 +17,6 @@ $module_permission = !empty($module_permissions['smart-debit-card']) ? $module_p
     <section class="section">
         <div class="section-header">
             <div class="col-lg-12">
-                @php
-                $routeName = explode('.', \Request::route()->getName());
-                @endphp
                 <h1>Smart Debit Card</h1>
             </div>
         </div>

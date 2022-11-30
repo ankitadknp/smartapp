@@ -44,12 +44,13 @@ function get_all_data() {
                 targets: [3],
                 searchable: true,
                 sortable: true,
+                visible: jQuery.inArray("change_status", module_permission) >= 0 ? true : false,
             },
             {
                 targets: [4],
                 searchable: true,
                 sortable: false,
-                visible: jQuery.inArray("index", module_permission) >= 0 ? true : false,
+                visible: jQuery.inArray("show", module_permission) >= 0 ? true : false,
             },
             {
                 targets: [5],

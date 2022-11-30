@@ -14,9 +14,6 @@
     <section class="section">
         <div class="section-header">
             <div class="col-lg-12">
-                @php
-                $routeName = explode('.', \Request::route()->getName());
-                @endphp
                 <h1>Language</h1>
             </div>
         </div>

@@ -17,11 +17,12 @@ $module_permission = !empty($module_permissions['merchant']) ? $module_permissio
     <section class="section">
         <div class="section-header">
             <div class="col-lg-12">
-                @php
-                $routeName = explode('.', \Request::route()->getName());
-                @endphp
                 <h1>Merchant</h1>
-                <a href="{{route('merchant.create')}}" class="float-right btn btn-primary add_merchant">Add New</a>
+                <?php 
+                $pemission = in_array("create", $module_permission) ? 'true' : 'false';
+                if($pemission == 'true') { ?>
+                    <a href="{{route('merchant.create')}}" class="float-right btn btn-primary add_merchant">Add New</a>
+                <?php }?>
             </div>
         </div>
         <div class="row">

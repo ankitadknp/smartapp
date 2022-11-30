@@ -17,11 +17,12 @@ $module_permission = !empty($module_permissions['locations']) ? $module_permissi
     <section class="section">
         <div class="section-header">
             <div class="col-lg-12">
-                @php
-                $routeName = explode('.', \Request::route()->getName());
-                @endphp
                 <h1>Location</h1>
-                <a href="#" class="float-right btn btn-primary add_location">Add New</a>
+                <?php 
+                $pemission = in_array("create", $module_permission) ? 'true' : 'false';
+                if($pemission == 'true') { ?>
+                    <a href="#" class="float-right btn btn-primary add_location">Add New</a>
+                <?php }?>
             </div>
         </div>
         <div class="row">

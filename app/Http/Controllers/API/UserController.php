@@ -284,7 +284,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 // 'message' =>'Your login credentials could not be verified, please try again.',
-                'message' =>'Invalid email or password,please try again.',
+                'message' =>'Invalid email or password',
                 'status' => 401
             ]);
         } 

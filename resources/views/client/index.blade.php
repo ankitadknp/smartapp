@@ -17,11 +17,12 @@ $module_permission = !empty($module_permissions['client']) ? $module_permissions
     <section class="section">
         <div class="section-header">
             <div class="col-lg-12">
-                @php
-                $routeName = explode('.', \Request::route()->getName());
-                @endphp
                 <h1>Client</h1>
-                <a href="#" class="float-right btn btn-primary add_client">Add New</a>
+                <?php 
+                $pemission = in_array("create", $module_permission)  ? 'true' : 'false';
+                if($pemission == 'true') { ?>
+                    <a href="#" class="float-right btn btn-primary add_client">Add New</a>
+                <?php }?>
             </div>
         </div>
         <div class="row">

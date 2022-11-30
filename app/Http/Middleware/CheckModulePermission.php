@@ -8,16 +8,16 @@ class CheckModulePermission {
 
     private $abilities = [
         'index' => 'index',
-        'show' => 'index',
+        'show' => 'show',
         'edit' => 'edit',
         'update' => 'edit',
         'create' => 'create',
         'store' => 'create',
         'delete' => 'destroy',
         "load_data_in_table" => "index",
-        "change_status" => "edit",
-        'like'=>'index',
-        'comment'=>'index'
+        "change_status" => "change_status",
+        'like'=>'like',
+        'comment'=>'comment'
     ];
 
     /**
