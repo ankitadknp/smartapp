@@ -53,7 +53,7 @@ class CouponController extends Controller
         $fileName = basename($publicPath);
         $basePath = URL::to('/public/qrcodes/'.$fileName);
 
-        $user_data = User::where('user_status','=',0)->get();
+        $user_data = User::where('user_status','=',0)->where('is_verified_mobile_no',1)->where('status',1)->get();
 
         if ($couponRes->coupon_id) {
             QrCode::generate($request->qrcode_url, $publicPath);
@@ -73,17 +73,19 @@ class CouponController extends Controller
             }
 
             //send notification
-            foreach( $user_data as $u_val) {
-                $user_device= DB::table('user_device')->where('user_id',$u_val->id)->first();
-                if ( !empty($user_device) ) {
-                    $notification_controller = new NotificationController();
-                    $msgVal  = "Coupon '$request->coupon_code' is available";
-                    $title = 'Add Coupon';
-                    $type = 3;
-                    $u_id = $u_val->id;
-                    $device_token = $user_device->device_token;
-                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
-                    $notification_controller->send_notification($msgVal,$device_token,$title);
+            if ( $user_data != '[]') {
+                foreach( $user_data as $u_val) {
+                    $user_device= DB::table('user_device')->where('user_id',$u_val->id)->first();
+                    if ( !empty($user_device) ) {
+                        $notification_controller = new NotificationController();
+                        $msgVal  = "Coupon '$request->coupon_code' is available";
+                        $title = 'Add Coupon';
+                        $type = 3;
+                        $u_id = $u_val->id;
+                        $device_token = $user_device->device_token;
+                        $notification_controller->add_notification($msgVal,$title,$u_id,$type);
+                        $notification_controller->send_notification($msgVal,$device_token,$title);
+                    }
                 }
             }
         }

@@ -374,7 +374,7 @@ class UserController extends Controller
 
                     $response = [
                         'success' => false,
-                        'message' => 'Otp Is Incorrect.',
+                        'message' => 'OTP Is Incorrect.',
                         'status' => 400
                     ];
             
@@ -384,7 +384,7 @@ class UserController extends Controller
             // } else {
             //     $response = [
             //         'success' => false,
-            //         'message' => 'Otp Is Expired.',
+            //         'message' => 'OTP Is Expired.',
             //         'status' => 400
             //     ];
         

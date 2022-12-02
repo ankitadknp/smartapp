@@ -18,10 +18,14 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->check()) {
+        if (Auth::guard($guard)->check() && Auth::user()->user_status == 3) {
             return redirect('/dashboard');
+        } else if (Auth::guard($guard)->check() && Auth::user()->user_status == 4) {
+            return redirect('/dashboard');
+        } else if (Auth::guard($guard)->check() && Auth::user()->user_status == 1) {
+            return redirect()->route('merchantapp.dashboard');
+        } else {
+            return $next($request);
         }
-
-        return $next($request);
     }
 }

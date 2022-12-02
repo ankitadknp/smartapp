@@ -80,14 +80,8 @@
                                 <div class="d-sm-none d-lg-inline-block">Hi, {{Auth::user()->first_name}}</div>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a href="{{route('edit_profile',Auth::user()->id)}}" class="dropdown-item has-icon">
-                                    <i class="far fa-user"></i> Profile
-                                </a>
-                                <a href="{{route('change_password',Auth::user()->id)}}" class="dropdown-item has-icon">
-                                    <i class="fas fa-unlock"></i> Change Password
-                                </a>                                
                                 <div class="dropdown-divider"></div>
-                                <a href="{{route('logout')}}" class="dropdown-item has-icon text-danger">
+                                <a href="{{route('merchantapp.logout')}}" class="dropdown-item has-icon text-danger">
                                     <i class="fas fa-sign-out-alt"></i> Logout
                                 </a>
                             </div>
@@ -126,6 +120,7 @@
         <script src="{{asset("public/assets/modules/select2/dist/js/select2.full.min.js")}}"></script>
         <!--convert utc time stemp to local time-->
         <script src="{{asset("public/assets/js/local-time.js")}}"></script>
+        
         @if (session('success'))
         <script type="text/javascript">
             iziToast.success({

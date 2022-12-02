@@ -142,17 +142,24 @@ class PublicFeedController extends Controller {
         if ($added) 
         {
             // send notification
-            $user_device = DB::table('user_device')->get();
-            foreach ( $user_device as $key=>$val) {
-                if ( !empty($user_device) ) {
-                    $notification_controller = new NotificationController();
-                    $msgVal  = $added->public_feed_title." Public Feed has been added";
-                    $title = 'The Public Feed has been added';
-                    $type = 2;
-                    $u_id = $val->user_id;
-                    $device_token = $val->device_token;
-                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
-                    $notification_controller->send_notification($msgVal,$device_token,$title);
+            $user_device = DB::table('user_device')->leftJoin('users', function($join) {
+                $join->on('users.id', '=', 'user_device.user_id');
+                })
+                ->where('users.status',1)
+                ->where('users.is_verified_mobile_no',1)
+                ->get();
+            if ($user_device != '[]') {
+                foreach ( $user_device as $key=>$val) {
+                    if ( !empty($user_device) ) {
+                        $notification_controller = new NotificationController();
+                        $msgVal  = $added->public_feed_title." Public Feed has been added";
+                        $title = 'The Public Feed has been added';
+                        $type = 2;
+                        $u_id = $val->user_id;
+                        $device_token = $val->device_token;
+                        $notification_controller->add_notification($msgVal,$title,$u_id,$type);
+                        $notification_controller->send_notification($msgVal,$device_token,$title);
+                    }
                 }
             }
 

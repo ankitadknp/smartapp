@@ -8,20 +8,19 @@ use App\User;
 
 
 class LoginController extends Controller {
-
-    protected $adminModel;
+    protected $redirectTo;
 
     public function __construct() {
-        $this->adminModel = new \App\User();
-
         $this->middleware('guest')->except('logout');
     }
 
     public function index() {
-    
-
-        if (\Auth::check()) {
-            return redirect('dashboard');
+        if (\Auth::check() && Auth::user()->user_status == 3) {
+            return redirect('/dashboard');
+        } else if (\Auth::check() && Auth::user()->user_status == 4) {
+            return redirect('/dashboard');
+        } else if (\Auth::check() && Auth::user()->user_status == 1) {
+            return redirect(route('merchantapp.dashboard'));
         } else {
             return view("login");
         }
@@ -37,32 +36,35 @@ class LoginController extends Controller {
         $email = $request->get("email");
         $password = $request->get("password");
 
-        if(Auth::attempt(['email' => $email, 'password' => ($password),'user_status' => [3,4]]))
+        if(Auth::attempt(['email' => $email, 'password' => ($password),'user_status' => [3,4,1]]))
         { 
-          
-            $user = User::where('email',$email)->whereIn('user_status',[3,4])->first();
+            $user = User::where('email',$email)->whereIn('user_status',[3,4,1])->first();
             if ($user->status == 1)
             { 
-                $user_roles_data = $user->getUserRole;
-                if (!empty($user_roles_data)) {
-                    $role_permissions = json_decode($user_roles_data->role_permissions, true);
-                    $role_types_ids = array();
+                if ($user->user_status == 1) {
+                    return redirect()->route('merchantapp.dashboard');
+                } else {
+                    $user_roles_data = $user->getUserRole;
+                    if (!empty($user_roles_data)) {
+                        $role_permissions = json_decode($user_roles_data->role_permissions, true);
+                        $role_types_ids = array();
 
-                    foreach ($role_permissions as $key => $value) {
-                        $role_types_ids[] = $key;
+                        foreach ($role_permissions as $key => $value) {
+                            $role_types_ids[] = $key;
+                        }
+                        
+                        //GET USER PERMISSION
+                        $get_all_permissions_controller_names = \App\UserRolePermission::whereIn("id", $role_types_ids)
+                        ->select("id", "controller_name","module_list")
+                        ->get();
+                        $role_permissions_array = array();
+                        foreach ($get_all_permissions_controller_names as $sinlge_value) {
+                            $role_permissions_array[$sinlge_value->controller_name] = $role_permissions[$sinlge_value->id];
+                        }
+                        $request->session()->put("user_access_permission", $role_permissions_array);
                     }
-                    
-                    //GET USER PERMISSION
-                    $get_all_permissions_controller_names = \App\UserRolePermission::whereIn("id", $role_types_ids)
-                    ->select("id", "controller_name","module_list")
-                    ->get();
-                    $role_permissions_array = array();
-                    foreach ($get_all_permissions_controller_names as $sinlge_value) {
-                        $role_permissions_array[$sinlge_value->controller_name] = $role_permissions[$sinlge_value->id];
-                    }
-                    $request->session()->put("user_access_permission", $role_permissions_array);
+                    return redirect('dashboard');
                 }
-                return redirect('dashboard');
             } else if ($user->status == 2)
             {
                 Auth::logout();
