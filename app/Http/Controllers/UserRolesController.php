@@ -13,37 +13,6 @@ class UserRolesController extends Controller {
     public function __construct() {
         $this->route_name = 'user-roles';
 
-        // $this->types_of_permission = array(
-        //     1 => array(
-        //         "key" => "index",
-        //         "value" => "List"
-        //     ),
-        //     2 => array(
-        //         "key" => "create",
-        //         "value" => "Add"
-        //     ),
-        //     3 => array(
-        //         "key" => "edit",
-        //         "value" => "Edit"
-        //     ),
-        //     4 => array(
-        //         "key" => "destroy",
-        //         "value" => "Delete"
-        //     ),
-        //     5 => array(
-        //         "key" => "index",
-        //         "value" => "View"
-        //     ),
-        //     6 => array(
-        //         "key" => "index",
-        //         "value" => "Like"
-        //     ),
-        //     7 => array(
-        //         "key" => "index",
-        //         "value" => "Comment"
-        //     ),
-        // );
-
         $module_permissions = \Session::get("user_access_permission");
         $module_permission = !empty($module_permissions['user-roles']) ? $module_permissions['user-roles'] : array();
         $this->can_view_other_data = !empty($module_permission['can_view_other_data']) ? true : false;
@@ -112,7 +81,6 @@ class UserRolesController extends Controller {
         return view("user_roles.add")
         ->with(array(
             "all_avilable_role_permissions" => $all_avilable_role_permissions,
-            // "types_of_permission" => $this->types_of_permission,
             'user'=>$user
         ));
     }
@@ -125,6 +93,7 @@ class UserRolesController extends Controller {
 
         $user_id = $request->get("user");
         $role_permissions = $request->get("role_permissions");
+        // print_r(json_encode($role_permissions));exit;
 
         $add_new_role = array(
             "user_id" => $user_id,
@@ -146,7 +115,6 @@ class UserRolesController extends Controller {
         $list_of_other_roles = UserRoles::where("id",$user_role->id)->first();
 
         $selected_permissions = json_decode($user_role->role_permissions, true);
-        // print_r($selected_permissions);exit;
 
         $user = User::select('id',DB::raw("CONCAT(first_name, ' ', last_name) as name"))->where('user_status','=',4)->where('status','=',1)->get();
 
@@ -155,7 +123,6 @@ class UserRolesController extends Controller {
                             "all_avilable_role_permissions" => $all_avilable_role_permissions,
                             "user_role" => $user_role,
                             "list_of_other_roles" => $list_of_other_roles,
-                            // "types_of_permission" => $this->types_of_permission,
                             'user'=>$user
         ));
     }

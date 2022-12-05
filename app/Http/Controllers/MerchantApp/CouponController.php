@@ -21,6 +21,7 @@ class CouponController extends Controller
                 ->where('email', 'LIKE', '%'. $request->get('search'). '%')
                 ->where('user_status',0)
                 ->where('status',1)
+                ->limit(10)
                 ->get();
 
    
@@ -31,6 +32,7 @@ class CouponController extends Controller
     {
         $data = Coupon::select("coupon_id","coupon_code as value")
                 ->where('coupon_code', 'LIKE', '%'. $request->get('search'). '%')
+                ->limit(10)
                 ->groupBy('coupon_code')
                 ->get();
 
@@ -54,9 +56,9 @@ class CouponController extends Controller
         $userRes =  User::where('id',$request->get('user_id'))->first();
         if ( !empty($userRes) ) {
 
-        $couponRes = Coupon::where('coupon_id',$request->get('coupon_id'))->first();
+            $couponRes = Coupon::where('coupon_id',$request->get('coupon_id'))->first();
 
-        if ( !empty($couponRes) ) {
+            if ( !empty($couponRes) ) {
 
                 $added_coupon = ApplyCouponByMerchantApp::where('coupon_id',$request->get('coupon_id'))->first();
 

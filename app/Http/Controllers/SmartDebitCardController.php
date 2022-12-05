@@ -83,7 +83,7 @@ class SmartDebitCardController extends Controller {
         if ($find_record) {
             $find_record->delete();
             $response['success'] = true;
-            $response['message'] = "QR Code deleted successfully";
+            $response['message'] = "Record deleted successfully";
         } else {
             $response = array("success" => false, "message" => "Problem while deleting this record");
         }

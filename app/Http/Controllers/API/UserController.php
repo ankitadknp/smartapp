@@ -709,4 +709,38 @@ class UserController extends Controller
             'status'=>200
         ]);
     }
+
+    public function resend_otp(Request $request)
+    {
+        $user = auth()->user();
+
+        $validator = Validator::make($request->all(), [
+            'otp' => 'required',
+        ]);
+
+        if($validator->fails()){
+
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400
+            ];
+    
+            return response()->json($response, 400);
+        }
+
+        $userRes = User::where('id',$user->id)->first();
+
+
+        DB::table('users')->where('id',$user->id)->update
+        ([
+            'verify_otp'=>$request->otp,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' =>'Resent OTP Successfully',
+            'status'=>200
+        ]);
+    }
 }

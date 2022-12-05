@@ -118,7 +118,7 @@ $module_permission = !empty($module_permissions['client']) ? $module_permissions
                     <div class="row">
                         <div class="col-sm-6 form-group">
                             <label>First Name</label>
-                            <input type="text" id="f_name" placeholder="First Name" name="first_name" class="form-control" required="">
+                            <input type="text" id="f_name" placeholder="First Name" name="first_name" class="form-control" required="" value="{{old("f_name")}}" >
                             <span class="text-danger">
                                 <strong id="name_error"></strong>
                             </span>
@@ -126,7 +126,7 @@ $module_permission = !empty($module_permissions['client']) ? $module_permissions
 
                         <div class="col-sm-6 form-group">
                             <label>Last Name</label>
-                            <input type="text" id="l_name" placeholder="Last Name" name="last_name" class="form-control" required="">
+                            <input type="text" id="l_name" placeholder="Last Name" name="last_name" class="form-control" required="" value="{{old("l_name")}}" >
                             <span class="text-danger">
                                 <strong id="last_name_error"></strong>
                             </span>

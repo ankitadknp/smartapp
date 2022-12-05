@@ -12,7 +12,8 @@ class CheckModulePermission {
         'edit' => 'edit',
         'update' => 'edit',
         'create' => 'create',
-        'store' => 'create',
+        'store' => ['create','edit'],
+        // 'store'=>'edit',
         'delete' => 'destroy',
         "load_data_in_table" => "index",
         "change_status" => "change_status",
@@ -38,8 +39,18 @@ class CheckModulePermission {
             $routeName = explode('.', \Request::route()->getName());
             if (!empty($routeName)) {
                 $action = data_get($this->abilities, $routeName[1]);
-                if (!empty($module_permissions[$routeName[0]]) && in_array($action, $module_permissions[$routeName[0]])) {
-                    $authorize = TRUE;
+
+                if (is_string($action)) {
+
+                    if (!empty($module_permissions[$routeName[0]]) && in_array($action, $module_permissions[$routeName[0]])) {
+                        $authorize = TRUE;
+                    }
+                } else {
+                    foreach ($action as $val ) {
+                        if (!empty($module_permissions[$routeName[0]]) && in_array($val, $module_permissions[$routeName[0]])) {
+                            $authorize = TRUE;
+                        }
+                    }
                 }
             }
         }
@@ -48,11 +59,13 @@ class CheckModulePermission {
             return $next($request);
         } else {
             if (!$request->expectsJson()) {
+
                 return redirect()
                                 ->route("dashboard")
                                 ->with("error", "You have not permission to access this functionality");
             } else {
                 return \Response::json(array(
+
                             'success' => FALSE,
                             'message' => "You have not permission to access this functionality"
                 ));
