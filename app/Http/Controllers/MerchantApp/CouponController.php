@@ -12,7 +12,16 @@ use DB;
 class CouponController extends Controller 
 {
     public function create() {
-        return view('MerchantApp.coupon.add');
+        $apply_coupon_res = ApplyCouponByMerchantApp::leftJoin('users', function ($join) {
+                            $join->on('users.id', '=', 'apply_coupon_by_merchant.user_id');
+                        })
+                        ->leftJoin('coupon', function ($join) {
+                            $join->on('coupon.coupon_id', '=', 'apply_coupon_by_merchant.coupon_id');
+                        })
+                        ->select('users.email','coupon.coupon_code')
+                        ->orderby('apply_coupon_by_merchant.id','DESC')
+                        ->first();
+        return view('MerchantApp.coupon.add')->with(['apply_coupon_res'=>$apply_coupon_res]);
     }
 
     public function autocomplete_user(Request $request)
@@ -63,9 +72,7 @@ class CouponController extends Controller
                 $added_coupon = ApplyCouponByMerchantApp::where('coupon_id',$request->get('coupon_id'))->first();
 
                 if ( empty($added_coupon) ) {
-                    $coupon_expired = ApplyCouponByMerchantApp::leftJoin('coupon', function ($join) {
-                                $join->on('coupon.coupon_id', '=', 'apply_coupon_by_merchant.coupon_id');
-                            })
+                        $coupon_expired = Coupon::where('coupon_id',$request->get('coupon_id'))
                             ->whereDate('coupon.expiry_date', '<', $currentDate)
                             ->first();
 

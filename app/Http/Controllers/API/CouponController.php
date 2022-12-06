@@ -32,8 +32,7 @@ class CouponController extends Controller
             'coupon_description' => 'required',
             'category_id' => 'required',
             'qrcode_url' => 'required|url',
-            'coupon_title_ab' => 'required',
-            'coupon_title_he' => 'required',
+            'language_code' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -47,6 +46,25 @@ class CouponController extends Controller
         }
         $input = $request->all();
         $input['user_id'] = $user_id;
+
+        $coupon_title = $request->coupon_title;
+        $language_code = $request->language_code;
+
+        $language = ['ar','he','en'];
+        $remainlanguageRes = array_diff($language, [$language_code]);
+
+        $translateRes = CouponController::translateLanguage($coupon_title,$language_code,$remainlanguageRes);
+
+        if (in_array('ar',$remainlanguageRes)) {
+            $input['coupon_title_ab'] = $translateRes['ar'];
+        }
+        if (in_array('he',$remainlanguageRes)) {
+            $input['coupon_title_he'] = $translateRes['he'];
+        }
+        if (in_array('en',$remainlanguageRes)) {
+            $input['coupon_title'] = $translateRes['en'];
+        }
+
         $couponRes = Coupon::create($input);
 
         $publicPath = public_path('qrcodes/'.time().'.svg');
@@ -98,6 +116,51 @@ class CouponController extends Controller
         ]);
     }
 
+    public   function translateLanguage($coupon_title,$language_code,$remainlanguageRes)
+    {
+        $curl = curl_init();
+
+        $translateRes = array();
+
+        foreach ($remainlanguageRes as $key => $val) {
+            curl_setopt_array($curl, [
+                CURLOPT_URL => "https://deep-translate1.p.rapidapi.com/language/translate/v2",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => "{\r\n    \"q\": \"$coupon_title\",
+                    \r\n    \"source\": \"en\",
+                    \r\n    \"target\": \"$val\"\r\n}",
+                CURLOPT_HTTPHEADER => [
+                    "X-RapidAPI-Host: deep-translate1.p.rapidapi.com",
+                    "X-RapidAPI-Key: 73378b18c9mshfce92a38975152dp1c713ajsnda716e5a2204",
+                    "content-type: application/json"
+                ],
+            ]);
+
+            $response = curl_exec($curl);
+            $result = json_decode($response);
+            $translateRes[$val] = $result->data->translations->translatedText;
+        }
+
+        $err = curl_error($curl);
+
+        curl_close($curl);
+   
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            if ( !empty($response) ) {
+                return $translateRes;
+            }
+        }
+
+    }
+   
     public function coupon_list(Request $request)
     {
         $user_id = Auth::user()->id;
@@ -175,15 +238,15 @@ class CouponController extends Controller
         $validator = Validator::make($request->all(), [
             'coupon_id' => 'required',
             'coupon_code' => 'required|max:20',
+            'coupon_title' => 'required|max:50',
             'discount_amount' => 'required',
             'discount_type' => 'required',
             'location_id' => 'required',
             'expiry_date' => 'required',
             'term_condition' => 'required',
             'category_id' => 'required',
-            'coupon_title_ab' => 'required',
-            'coupon_title_he' => 'required',
             'qrcode_url' => 'required',
+            'language_code' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -231,6 +294,24 @@ class CouponController extends Controller
                     'term_condition' => $val,
                 ]);
             }
+        }
+
+        $coupon_title = $request->coupon_title;
+        $language_code = $request->language_code;
+
+        $language = ['ar','he','en'];
+        $remainlanguageRes = array_diff($language, [$language_code]);
+
+        $translateRes = CouponController::translateLanguage($coupon_title,$language_code,$remainlanguageRes);
+
+        if (in_array('ar',$remainlanguageRes)) {
+            $input['coupon_title_ab'] = $translateRes['ar'];
+        }
+        if (in_array('he',$remainlanguageRes)) {
+            $input['coupon_title_he'] = $translateRes['he'];
+        }
+        if (in_array('en',$remainlanguageRes)) {
+            $input['coupon_title'] = $translateRes['en'];
         }
 
         $coupon->update($input);
