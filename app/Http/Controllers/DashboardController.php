@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Hash;
+use Hash,Session;
 use App\User;
 
 class DashboardController extends Controller 
 {
+    
+    public function index(Request $request)
+    {
 
-    public function index() {
         $total_client = User::where("status", 1)->where("user_status", 0)->get()->count();
         $total_merchant = User::where("status", 1)->where("user_status", 1)->get()->count();
         $total_subadmin = User::where("status", 1)->where("user_status", 4)->get()->count();
@@ -95,8 +97,11 @@ class DashboardController extends Controller
     }
 
     public function logout(Request $request) {
-        $request->session()->flush();
+        // $request->session()->flush();
+        // $request->session()->invalidate();
         \Auth::logout();
+        // Session::flush();
+        // session()->forget('lifetime');
         return redirect('/');
     }
 

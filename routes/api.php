@@ -22,6 +22,7 @@ Route::get('cms_pages_list', [CMSPagesController::class, 'cms_pages_list']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('verify_phone_number', [UserController::class, 'verify_phone_number']);
+    Route::post('resend_otp', [UserController::class, 'resend_otp']);
     Route::post('change_password', [UserController::class, 'change_password']);
     Route::get('get_profile', [UserController::class, 'get_profile']);
     Route::post('update_profile', [UserController::class, 'update_profile']);

@@ -24,6 +24,7 @@ class PermissionTableSeeder extends Seeder {
                     array("name" => "CMS Pages"),
                     array("name" => "Locations"),
                     array("name" => "Language"),
+                    array("name" => "Dashboard"),
                 )
         );
     }

@@ -3,6 +3,13 @@
 @section('title', 'Merchant')
 
 @section('addcss')
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
+<style>
+    select.form-control {
+        height : 42px !important;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -139,10 +146,22 @@
                                 </div>
 
                                 <div class="col-sm-6 form-group">
-                                    <label>Business Hours</label>
-                                    <input type="text" id="business_hours" placeholder="Business Hours" name="business_hours" class="form-control" required="" onkeypress ='return event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)' value="{{old('business_hours')}}">
-                                    @if($errors->has('business_hours'))
-                                        <div class="error">{{ $errors->first('business_hours') }}</div>
+                                    <label>Business Hours From</label>
+                                    <!-- <div class='input-group date' id='TheTime'> -->
+                                        <input type="text" id="business_hours_from" placeholder="Business Hours" name="business_hours_from" class="form-control" required=""  value="{{old('business_hours_from')}}">
+                                        <!-- <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span>
+                                        </span>
+                                    </div> -->
+                                    @if($errors->has('business_hours_from'))
+                                        <div class="error">{{ $errors->first('business_hours_from') }}</div>
+                                    @endif
+                                </div>
+
+                                <div class="col-sm-6 form-group">
+                                    <label>Business Hours To</label>
+                                    <input type="text" id="business_hours_to" placeholder="Business Hours" name="business_hours_to" class="form-control" required=""  value="{{old('business_hours_to')}}">
+                                    @if($errors->has('business_hours_to'))
+                                        <div class="error">{{ $errors->first('business_hours_to') }}</div>
                                     @endif
                                 </div>
 
@@ -189,4 +208,19 @@
         </div>
     </section>
 </div>
+@endsection
+@section('addjs')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+<script>
+    $('#business_hours_from').datetimepicker({
+        format: 'hh:00 A',
+    });
+
+    $('#business_hours_to').datetimepicker({
+        format: 'hh:00 A'
+    });
+</script>
 @endsection

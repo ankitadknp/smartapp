@@ -67,7 +67,7 @@ $module_permission = !empty($module_permissions['cms_pages']) ? $module_permissi
                                 <thead>
                                     <tr>
                                         <th>CMS Pages Title</th>
-                                        <th>Status</th>
+                                        <!-- <th>Status</th> -->
                                         <th>Edit</th>
                                     </tr>
                                 </thead>

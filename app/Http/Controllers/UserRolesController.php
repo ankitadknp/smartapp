@@ -7,6 +7,7 @@ use App\UserRoles;
 use App\User;
 use App\UserPermission;
 use DB,Auth;
+use Illuminate\Support\Facades\Session;
 
 class UserRolesController extends Controller {
 
@@ -137,35 +138,12 @@ class UserRolesController extends Controller {
         $user_role->role_permissions = json_encode($request->get("role_permissions"));
         $added_role = $user_role->save();
         if ($added_role) {
-
-            // if ($request->session()->has("user_access_permission")) {
-            //     // echo 'in';exit;
-            //     $module_permissions = $request->session()->unset();
-            //     // $module_permissions->unset();
-            // }
-            // $session = session()->getId();
-            // echo   print_r($request->session());exit;
-            // $user_role->logout();
-            // if ( $user_role->role_type == 4 ) {
-            //     // echo 'in';exit;
-            //     // $request->session()->invalidate();
-            //     session()->forget('is_model_open_user_id' . $user_role->user_id);
-
-            // }
-            // echo $user_role->role_type;exit;
-            // if(Auth::check() && (in_array($user_role->role_type, ['4'])) ) {
-            //     // echo 'in';exit;
-            //     Auth::logout();
-            // }
-            // echo 'e';exit;
+            // DB::table('sessions')
+            // ->where('user_id', $user_role->user_id)
+            // ->delete();
+            
             return redirect()->route("user-roles.index")->with("success", "User Permission Updated Successfully");
 
-          
-
-            // Session::flushId($sessionId);
-            // $user_role->logout();
-            // session()->forget('is_model_open_user_id' . $user_role->user_id);
-            // session_unset();
         } else {
             return back()->withInput();
         }

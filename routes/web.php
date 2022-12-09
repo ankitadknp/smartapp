@@ -24,7 +24,7 @@ Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->n
 Route::post('password/reset', 'ResetPasswordController@resetPassword')->name('password.update');
 Route::get('/password/success', 'ResetPasswordController@showResetSuccessForm')->name('password.success');
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth','admin']], function () {
     
     Route::get("logout","DashboardController@logout")->name("logout");
     Route::get("dashboard","DashboardController@index")->name("dashboard");
@@ -136,6 +136,20 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post("change_status", "UserRolesController@change_status")->name("user-roles.change_status");
         Route::post("list-roles", "UserRolesController@all_role_list_for_select")->name("user-roles.list-roles");
     });
+
+});
+
+
+Route::group(['middleware' => ['merchant'],  'namespace'=>'MerchantApp','prefix'=>'merchantapp','as'=>'merchantapp.'], function () {
+
+    Route::get("dashboard","DashboardController@index")->name("dashboard");
+    Route::get("logout","DashboardController@logout")->name("logout");
+
+    //apply coupon
+    Route::resource("apply_coupon", "CouponController");
+    Route::get('autocomplete_user', 'CouponController@autocomplete_user')->name('autocomplete_user');
+    Route::get('autocomplete_coupon', 'CouponController@autocomplete_coupon')->name('autocomplete_coupon');
+    
 });
 
 Route::get('/run-migrate-seed', function () {

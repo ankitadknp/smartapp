@@ -208,6 +208,7 @@ class ClientController extends Controller
             'city' => $request->get('city'),
             'status' => 1,
             'user_status' =>0,
+            'verify_otp' =>111111,
         ];
 
         

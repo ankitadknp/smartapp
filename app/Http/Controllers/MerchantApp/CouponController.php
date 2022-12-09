@@ -69,7 +69,7 @@ class CouponController extends Controller
 
             if ( !empty($couponRes) ) {
 
-                $added_coupon = ApplyCouponByMerchantApp::where('coupon_id',$request->get('coupon_id'))->first();
+                $added_coupon = ApplyCouponByMerchantApp::where('coupon_id',$request->get('coupon_id'))->where('user_id',$request->get('user_id'))->first();
 
                 if ( empty($added_coupon) ) {
                         $coupon_expired = Coupon::where('coupon_id',$request->get('coupon_id'))

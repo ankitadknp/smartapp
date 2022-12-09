@@ -187,6 +187,7 @@ class PublicFeedController extends Controller
                         }
                     })
                     ->where('public_feed.status','=',1)
+                    ->orderby('public_feed.public_feed_id','DESC')
                     ->get();
 
         return response()->json([

@@ -29,16 +29,16 @@
                                 <div class="row">
                                     <div class="col-sm-6 form-group">
                                         <label>User</label>
-                                        <input class="typeahead form-control select_user" type="text"  placeholder="User" id="user" name="user" value="{{ $apply_coupon_res->email }}">
-                                        <input  type="hidden" name="user_id"  id="user_id">
+                                        <input class="typeahead form-control select_user" type="text"  placeholder="User" id="user" name="user" value="{{old('user')}}">
+                                        <input  type="hidden" name="user_id"  id="user_id" value="{{old('user_id')}}">
                                         @if($errors->has('user'))
                                             <div class="error">{{ $errors->first('user') }}</div>
                                         @endif
                                     </div>
                                     <div class="col-sm-6 form-group">
                                         <label>Coupon</label>
-                                        <input class="typeahead form-control select_coupon" type="text" name="coupon" placeholder="Coupon" id="coupon" value="{{ $apply_coupon_res->coupon_code }}">
-                                        <input  type="hidden" name="coupon_id"  id="coupon_id">
+                                        <input class="typeahead form-control select_coupon" type="text" name="coupon" placeholder="Coupon" id="coupon"  value="{{old('coupon')}}">
+                                        <input  type="hidden" name="coupon_id"  id="coupon_id" value="{{old('coupon_id')}}">
                                         @if($errors->has('coupon'))
                                             <div class="error">{{ $errors->first('coupon') }}</div>
                                         @endif

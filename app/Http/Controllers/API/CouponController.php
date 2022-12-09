@@ -28,7 +28,11 @@ class CouponController extends Controller
             'location_id' => 'required',
             'expiry_date' => 'required',
             'term_condition' => 'required',
+            'term_condition_ar' => 'required',
+            'term_condition_he' => 'required',
             'coupon_title' => 'required|max:50',
+            'coupon_title_ar' => 'required|max:50',
+            'coupon_title_he' => 'required|max:50',
             'coupon_description' => 'required',
             'category_id' => 'required',
             'qrcode_url' => 'required|url',
@@ -47,23 +51,7 @@ class CouponController extends Controller
         $input = $request->all();
         $input['user_id'] = $user_id;
 
-        $coupon_title = $request->coupon_title;
         $language_code = $request->language_code;
-
-        $language = ['ar','he','en'];
-        $remainlanguageRes = array_diff($language, [$language_code]);
-
-        $translateRes = CouponController::translateLanguage($coupon_title,$language_code,$remainlanguageRes);
-
-        if (in_array('ar',$remainlanguageRes)) {
-            $input['coupon_title_ab'] = $translateRes['ar'];
-        }
-        if (in_array('he',$remainlanguageRes)) {
-            $input['coupon_title_he'] = $translateRes['he'];
-        }
-        if (in_array('en',$remainlanguageRes)) {
-            $input['coupon_title'] = $translateRes['en'];
-        }
 
         $couponRes = Coupon::create($input);
 
@@ -81,13 +69,35 @@ class CouponController extends Controller
                 'qrcode_file' => $basePath,
             ]);
 
-            $term = json_decode($request->term_condition);
-            foreach ($term as $val)
-            {
-                CouponTerm::create([
-                    'coupon_id' => $couponRes->coupon_id,
-                    'term_condition' => $val,
-                ]);
+            if ( !empty ($request->term_condition) ) {
+                $term = json_decode($request->term_condition);
+                foreach ($term as $val)
+                {
+                    CouponTerm::create([
+                        'coupon_id' => $couponRes->coupon_id,
+                        'term_condition' => $val,
+                    ]);
+                }
+            }
+            if ( !empty ($request->term_condition_ar) ) {
+                $term_ar = json_decode($request->term_condition_ar);
+                foreach ($term_ar as $val)
+                {
+                    CouponTerm::create([
+                        'coupon_id' => $couponRes->coupon_id,
+                        'term_condition_ar' => $val,
+                    ]);
+                }
+            }
+            if ( !empty ($request->term_condition_he) ) {
+                $term_he = json_decode($request->term_condition_he);
+                foreach ($term_he as $val)
+                {
+                    CouponTerm::create([
+                        'coupon_id' => $couponRes->coupon_id,
+                        'term_condition_he' => $val,
+                    ]);
+                }
             }
 
             //send notification
@@ -116,50 +126,50 @@ class CouponController extends Controller
         ]);
     }
 
-    public   function translateLanguage($coupon_title,$language_code,$remainlanguageRes)
-    {
-        $curl = curl_init();
+    // public   function translateLanguage($coupon_title,$language_code,$remainlanguageRes)
+    // {
+    //     $curl = curl_init();
 
-        $translateRes = array();
+    //     $translateRes = array();
 
-        foreach ($remainlanguageRes as $key => $val) {
-            curl_setopt_array($curl, [
-                CURLOPT_URL => "https://deep-translate1.p.rapidapi.com/language/translate/v2",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => "{\r\n    \"q\": \"$coupon_title\",
-                    \r\n    \"source\": \"en\",
-                    \r\n    \"target\": \"$val\"\r\n}",
-                CURLOPT_HTTPHEADER => [
-                    "X-RapidAPI-Host: deep-translate1.p.rapidapi.com",
-                    "X-RapidAPI-Key: 73378b18c9mshfce92a38975152dp1c713ajsnda716e5a2204",
-                    "content-type: application/json"
-                ],
-            ]);
+    //     foreach ($remainlanguageRes as $key => $val) {
+    //         curl_setopt_array($curl, [
+    //             CURLOPT_URL => "https://deep-translate1.p.rapidapi.com/language/translate/v2",
+    //             CURLOPT_RETURNTRANSFER => true,
+    //             CURLOPT_FOLLOWLOCATION => true,
+    //             CURLOPT_ENCODING => "",
+    //             CURLOPT_MAXREDIRS => 10,
+    //             CURLOPT_TIMEOUT => 30,
+    //             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    //             CURLOPT_CUSTOMREQUEST => "POST",
+    //             CURLOPT_POSTFIELDS => "{\r\n    \"q\": \"$coupon_title\",
+    //                 \r\n    \"source\": \"en\",
+    //                 \r\n    \"target\": \"$val\"\r\n}",
+    //             CURLOPT_HTTPHEADER => [
+    //                 "X-RapidAPI-Host: deep-translate1.p.rapidapi.com",
+    //                 "X-RapidAPI-Key: 73378b18c9mshfce92a38975152dp1c713ajsnda716e5a2204",
+    //                 "content-type: application/json"
+    //             ],
+    //         ]);
 
-            $response = curl_exec($curl);
-            $result = json_decode($response);
-            $translateRes[$val] = $result->data->translations->translatedText;
-        }
+    //         $response = curl_exec($curl);
+    //         $result = json_decode($response);
+    //         $translateRes[$val] = $result->data->translations->translatedText;
+    //     }
 
-        $err = curl_error($curl);
+    //     $err = curl_error($curl);
 
-        curl_close($curl);
+    //     curl_close($curl);
    
-        if ($err) {
-            echo "cURL Error #:" . $err;
-        } else {
-            if ( !empty($response) ) {
-                return $translateRes;
-            }
-        }
+    //     if ($err) {
+    //         echo "cURL Error #:" . $err;
+    //     } else {
+    //         if ( !empty($response) ) {
+    //             return $translateRes;
+    //         }
+    //     }
 
-    }
+    // }
    
     public function coupon_list(Request $request)
     {
@@ -209,17 +219,31 @@ class CouponController extends Controller
         foreach ($coupon as $key=>$val)
         {
             $term = [];
+            $term_ar = [];
+            $term_he = [];
 
             $coupon_id = $val->coupon_id;
             $termcon = CouponTerm::where('coupon_id',$coupon_id)->get();
-            $term_count = CouponTerm::where('coupon_id',$coupon_id)->count();
 
-            for ($i=0; $i<count($termcon); $i++) 
+            foreach ($termcon as $t_val)
             {
-                $value = $termcon[$i]->term_condition;
-                array_push($term,$value);
+                if ( !empty($t_val->term_condition) ) {
+                    $value = $t_val->term_condition;
+                    array_push($term,$value);
+                }
+                if ( !empty($t_val->term_condition_ar) ) {
+                    $value = $t_val->term_condition_ar;
+                    array_push($term_ar,$value);
+                }
+                if ( !empty($t_val->term_condition_he) ) {
+                    $value = $t_val->term_condition_he;
+                    array_push($term_he,$value);
+                }
             }
+
             $coupon[$key]['term_condition'] = $term;
+            $coupon[$key]['term_condition_ar'] = $term_ar;
+            $coupon[$key]['term_condition_he'] = $term_he;
         }
 
 
@@ -238,7 +262,11 @@ class CouponController extends Controller
         $validator = Validator::make($request->all(), [
             'coupon_id' => 'required',
             'coupon_code' => 'required|max:20',
+            'term_condition_ar' => 'required',
+            'term_condition_he' => 'required',
             'coupon_title' => 'required|max:50',
+            'coupon_title_ar' => 'required|max:50',
+            'coupon_title_he' => 'required|max:50',
             'discount_amount' => 'required',
             'discount_type' => 'required',
             'location_id' => 'required',
@@ -281,10 +309,13 @@ class CouponController extends Controller
             ]);
         } 
 
-        if (!empty($request->term_condition)) 
+        if (!empty($request->term_condition_he) || !empty($request->term_condition_ar) || !empty($request->term_condition_he)) 
         {
             CouponTerm::where('coupon_id',$request->coupon_id)->delete();
+        }
 
+        if (!empty($request->term_condition)) 
+        {
             $term = json_decode($request->term_condition);
 
             foreach ($term as $val)
@@ -296,22 +327,32 @@ class CouponController extends Controller
             }
         }
 
-        $coupon_title = $request->coupon_title;
-        $language_code = $request->language_code;
+        
+        if (!empty($request->term_condition_ar)) 
+        {
+            $term_ar = json_decode($request->term_condition_ar);
 
-        $language = ['ar','he','en'];
-        $remainlanguageRes = array_diff($language, [$language_code]);
-
-        $translateRes = CouponController::translateLanguage($coupon_title,$language_code,$remainlanguageRes);
-
-        if (in_array('ar',$remainlanguageRes)) {
-            $input['coupon_title_ab'] = $translateRes['ar'];
+            foreach ($term_ar as $val)
+            {
+                CouponTerm::create([
+                    'coupon_id' => $request->coupon_id,
+                    'term_condition_ar' => $val,
+                ]);
+            }
         }
-        if (in_array('he',$remainlanguageRes)) {
-            $input['coupon_title_he'] = $translateRes['he'];
-        }
-        if (in_array('en',$remainlanguageRes)) {
-            $input['coupon_title'] = $translateRes['en'];
+
+        
+        if (!empty($request->term_condition_he)) 
+        {
+            $term_he = json_decode($request->term_condition);
+
+            foreach ($term_he as $val)
+            {
+                CouponTerm::create([
+                    'coupon_id' => $request->coupon_id,
+                    'term_condition_he' => $val,
+                ]);
+            }
         }
 
         $coupon->update($input);
@@ -408,22 +449,38 @@ class CouponController extends Controller
         foreach ($active_coupon_list as $key=>$val)
         {
             $term = [];
+            $term_ar = [];
+            $term_he = [];
 
             $coupon_id = $val->coupon_id;
             $termcon = CouponTerm::where('coupon_id',$coupon_id)->get();
-            $term_count = CouponTerm::where('coupon_id',$coupon_id)->count();
 
-            for ($i=0; $i<count($termcon); $i++) 
+            foreach ($termcon as $t_val)
             {
-                $value = $termcon[$i]->term_condition;
-                array_push($term,$value);
+                if ( !empty($t_val->term_condition) ) {
+                    $value = $t_val->term_condition;
+                    array_push($term,$value);
+                }
+                if ( !empty($t_val->term_condition_ar) ) {
+                    $value = $t_val->term_condition_ar;
+                    array_push($term_ar,$value);
+                }
+                if ( !empty($t_val->term_condition_he) ) {
+                    $value = $t_val->term_condition_he;
+                    array_push($term_he,$value);
+                }
             }
+  
             $active_coupon_list[$key]['term_condition'] = $term;
+            $active_coupon_list[$key]['term_condition_ar'] = $term_ar;
+            $active_coupon_list[$key]['term_condition_he'] = $term_he;
         }
 
         foreach ($inactive_coupon_list as $key=>$val)
         {
             $term = [];
+            $term_ar = [];
+            $term_he = [];
 
             $coupon_id = $val->coupon_id;
             $termcon = CouponTerm::where('coupon_id',$coupon_id)->get();
@@ -431,10 +488,23 @@ class CouponController extends Controller
 
             for ($i=0; $i<count($termcon); $i++) 
             {
-                $value = $termcon[$i]->term_condition;
-                array_push($term,$value);
+            
+                if ( !empty($termcon[$i]->term_condition) ) {
+                    $value = $termcon[$i]->term_condition;
+                    array_push($term,$value);
+                }
+                if ( !empty($termcon[$i]->term_condition_ar) ) {
+                    $value = $termcon[$i]->term_condition_ar;
+                    array_push($term_ar,$value);
+                }
+                if ( !empty($termcon[$i]->term_condition_he) ) {
+                    $value = $termcon[$i]->term_condition_he;
+                    array_push($term_he,$value);
+                }
             }
             $inactive_coupon_list[$key]['term_condition'] = $term;
+            $inactive_coupon_list[$key]['term_condition_ar'] = $term_ar;
+            $inactive_coupon_list[$key]['term_condition_he'] = $term_he;
         }
 
         return response()->json([
