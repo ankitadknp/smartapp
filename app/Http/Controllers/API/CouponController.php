@@ -9,7 +9,6 @@ use App\CouponQRcode;
 use App\CouponTerm;
 use App\Http\Controllers\Controller;
 use App\Share;
-use App\UseCoupon;
 use App\User;
 use App\Location;
 use DB,QrCode,URL,Validator,File;
@@ -544,7 +543,7 @@ class CouponController extends Controller
         if ( !empty($coupon) ) {
             $total_coupon = Coupon::where('user_id',$user_id)->count();
             $total_add = ClientMyCoupon::where('coupon_id', $request->coupon_id)->count();
-            $total_use = UseCoupon::where('coupon_id', $request->coupon_id)->count();
+            $total_use = DB::table('apply_coupon_by_merchant')->where('coupon_id', $request->coupon_id)->count();
             $total_share = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->count();
             $total_email = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->where('share_by', 1)->count();
             $total_whatsapp = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->where('share_by', 0)->count();
@@ -583,43 +582,6 @@ class CouponController extends Controller
         }
     }
 
-    public function save_coupon(Request $request)
-    {
-        $user_id = Auth::user()->id;
-
-        $validator = Validator::make($request->all(), [
-            'coupon_id' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            $response = [
-                'success' => false,
-                'message' => $validator->errors()->first(),
-                'status' => 400,
-            ];
-
-            return response()->json($response, 400);
-        }
-
-        $usecoupon = UseCoupon::where('user_id', $user_id)->where('coupon_id', $request->coupon_id)->first();
-
-        $input = $request->all();
-        $input['user_id'] = $user_id;
-
-        if ( empty($usecoupon) || !isset($usecoupon)) {
-            UseCoupon::create($input);
-            $msg = 'Saved Coupon';
-        } else {
-            $msg = 'Coupon already saved';
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => $msg,
-            'status' => 200,
-        ]);
-    }
-
     public function coupon_category_list(Request $request)
     {
         $coupon_res = Category::where('type', '=', 'Coupon')->get();
@@ -652,7 +614,6 @@ class CouponController extends Controller
 
         $mycoupon = ClientMyCoupon::where('coupon_id',$request->coupon_id)->get();
         $qrcode = CouponQRcode::where('coupon_id',$request->coupon_id)->get();
-        $usecoupon = UseCoupon::where('coupon_id',$request->coupon_id)->get();
         $share = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->get();
         $term = CouponTerm::where('coupon_id',$request->coupon_id)->get();
 
@@ -674,10 +635,7 @@ class CouponController extends Controller
             }
             CouponQRcode::where('coupon_id',$request->coupon_id)->delete();
         }
-        if (!empty($usecoupon)) 
-        {
-            UseCoupon::where('coupon_id',$request->coupon_id)->delete();
-        }
+     
         if (!empty($share)) 
         {
             Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->delete();

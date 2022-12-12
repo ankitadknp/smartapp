@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Coupon;
 use App\ApplyCouponByMerchantApp;
-use DB;
+use DB,Auth;
+use App\Http\Controllers\API\NotificationController;
 
 class CouponController extends Controller 
 {
@@ -26,6 +27,7 @@ class CouponController extends Controller
 
     public function autocomplete_user(Request $request)
     {
+        
         $data = User::select("id", DB::raw("CONCAT(first_name, ' ', last_name) as name"),"email as value")
                 ->where('email', 'LIKE', '%'. $request->get('search'). '%')
                 ->where('user_status',0)
@@ -39,8 +41,10 @@ class CouponController extends Controller
 
     public function autocomplete_coupon(Request $request)
     {
+        $user = Auth::user();
         $data = Coupon::select("coupon_id","coupon_code as value")
                 ->where('coupon_code', 'LIKE', '%'. $request->get('search'). '%')
+                ->where('user_id',$user->id)
                 ->limit(10)
                 ->groupBy('coupon_code')
                 ->get();
@@ -86,8 +90,31 @@ class CouponController extends Controller
                             'coupon_id' => $request->get('coupon_id'),
                         ];
 
-                        ApplyCouponByMerchantApp::create($added);
-                        return redirect()->back()->with('success','Apply Coupon Successfully');
+                        $added = ApplyCouponByMerchantApp::create($added);
+
+                        if ($added) 
+                        {
+                            // send notification
+                            $user_device = DB::table('user_device')->leftJoin('users', function($join) {
+                                $join->on('users.id', '=', 'user_device.user_id');
+                                })
+                                ->where('user_device.user_id',$request->get('user_id'))
+                                ->where('users.status',1)
+                                ->where('users.is_verified_mobile_no',1)
+                                ->first();
+
+                            if ( !empty($user_device) ) {
+                                $notification_controller = new NotificationController();
+                                $msgVal  = $couponRes->coupon_code." Coupon has been redeemed";
+                                $title = 'The Coupon has been redeemed';
+                                $type = 3;
+                                $u_id = $request->get('user_id');
+                                $device_token = $user_device->device_token;
+                                $notification_controller->add_notification($msgVal,$title,$u_id,$type);
+                                $notification_controller->send_notification($msgVal,$device_token,$title);
+                            }
+                        }
+                        return redirect()->back()->with('success','Coupon Redeem Successfully');
                     }
                 } else {
                     return redirect()->back()->withInput()->withErrors(['coupon'=> 'Coupon has been already applied']);

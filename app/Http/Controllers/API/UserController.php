@@ -39,8 +39,6 @@ class UserController extends Controller
                 'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
                 'district' => 'required|max:50',
-                // 'device_token' => 'required',
-                // 'device_type' => 'required',
             ]);
 
             if($validator->fails()){
@@ -55,9 +53,8 @@ class UserController extends Controller
             }
 
             $input['user_status'] = $request->user_status;
-            $verify_otp = '111111';
-            $verify_otp_time = Carbon::now()->addMinutes(5);
             $user_status = 1;
+            $name = $request->business_name;
 
         } else {
             
@@ -84,8 +81,6 @@ class UserController extends Controller
                 'house_number' => 'required',
                 'city' => 'required|max:50',
                 'district' => 'required|max:50',
-                // 'device_token' => 'required',
-                // 'device_type' => 'required',
             ]);
 
             if($user_validator->fails()){
@@ -106,15 +101,15 @@ class UserController extends Controller
                 $input['longitude'] = $request->longitude;
             }
 
-            $verify_otp = '111111';
-            $verify_otp_time = Carbon::now()->addMinutes(5);
             $user_status = 0;
+            $name = $request->first_name. ' '.$request->last_name;
 
         }
        
         $input = $request->all();
 
-        $input['verify_otp'] = $verify_otp;
+        $verify_otp_time = Carbon::now()->addMinutes(5);
+
         $input['verify_otp_time'] = $verify_otp_time;
         $input['is_verified_mobile_no'] = 0;
         $input['status'] = 1;
@@ -127,8 +122,6 @@ class UserController extends Controller
             $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
             $destinationPath = public_path().'/uploads/business_logo';
 
-            
-
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
             }
@@ -138,8 +131,12 @@ class UserController extends Controller
             $input['business_logo'] = $pic;
         }
    
-       
+        $controller = new UserController();
+        $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name);
+        
         $input['password'] = Hash::make($input['password']);
+        $input['verify_otp'] = $verify_otp;
+
         $user = User::create($input);
 
         if ( !empty($user) ) {
@@ -181,7 +178,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $success,
-            'message' => 'User Register Successfully',
+            'message' => 'OTP has been sent your mail.Please check your mail',
             'status' => 200
         ]);
     }
@@ -195,8 +192,6 @@ class UserController extends Controller
             'email' => 'required',
             'password' => 'required',
             'user_status' => 'required',
-            // 'device_token' => 'required',
-            // 'device_type' => 'required',
         ]);
     
         if ($validator->fails()){
@@ -213,10 +208,22 @@ class UserController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => ($request->password),'user_status' => ($request->user_status)])){ 
 
             $user = Auth::user(); 
+            if ($user->user_status == 0) {
+                $name = $user->first_name.' '.$user->last_name;
+            } else if ($user->user_status == 1) {
+                $name = $user->business_name;
+            }
+
             if ( $user->status == 1) 
             {
+                $controller = new UserController();
+                $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name);
+                $verify_otp_time = Carbon::now()->addMinutes(5);
+
                 if ( !empty($request->latitude) && !empty($request->longitude) ) {
-                  User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude]);
+                  User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude,'verify_otp'=>$verify_otp,'verify_otp_time'=>$verify_otp_time]);
+                } else {
+                    User::where('id',$user->id)->update(['verify_otp'=>$verify_otp,'verify_otp_time'=>$verify_otp_time]);
                 }
 
                 $user_device = DB::table('user_device')->where('user_id',$user->id)->first();
@@ -268,7 +275,7 @@ class UserController extends Controller
                 return response()->json([
                     'success' => true,
                     'data'    => $success,
-                    'message' => 'Login Successfuly',
+                    'message' => 'OTP has been sent your mail.Please check your mail',
                     'status' => 200
                 ]);
 
@@ -283,7 +290,6 @@ class UserController extends Controller
         } else { 
             return response()->json([
                 'success' => false,
-                // 'message' =>'Your login credentials could not be verified, please try again.',
                 'message' =>'Invalid email or password',
                 'status' => 401
             ]);
@@ -324,8 +330,8 @@ class UserController extends Controller
 
         } else {
 
-            // if ( strtotime($user->verify_otp_time) > strtotime(now()) ) 
-            // {
+            if ( strtotime($user->verify_otp_time) > strtotime(now()) ) 
+            {
                 if ($user->verify_otp == $request->otp) {
 
                     User::where('id',$user->id)->update(['is_verified_mobile_no'=>1]);
@@ -381,16 +387,31 @@ class UserController extends Controller
                     return response()->json($response, 400);
                 }
 
-            // } else {
-            //     $response = [
-            //         'success' => false,
-            //         'message' => 'OTP Is Expired.',
-            //         'status' => 400
-            //     ];
+            } else {
+                $response = [
+                    'success' => false,
+                    'message' => 'OTP Is Expired.',
+                    'status' => 400
+                ];
         
-            //     return response()->json($response, 400);
-            // }
+                return response()->json($response, 400);
+            }
         }
+    }
+
+    public function send_otp_for_verify_phone($email,$name) {
+        			
+        $token = rand(100000, 999999);
+
+        $newdata = array('token' => $token, 'name'=>$name);
+    
+        Mail::send('emails.sentotpforverifyphone', $newdata, function($message) use ($email) {
+            $message->to($email)
+                ->from('test.knptech@gmail.com')
+                ->subject("Send OTP");
+        });
+
+        return $token;
     }
 
     public function change_password(Request $request)
@@ -714,32 +735,29 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        $validator = Validator::make($request->all(), [
-            'otp' => 'required',
-        ]);
-
-        if($validator->fails()){
-
-            $response = [
-                'success' => false,
-                'message' => $validator->errors()->first(),
-                'status' => 400
-            ];
-    
-            return response()->json($response, 400);
+        if ($user->user_status == 0) {
+            $name = $user->first_name.' '.$user->last_name;
+        } else if ($user->user_status == 1) {
+            $name = $user->business_name;
         }
 
-        $userRes = User::where('id',$user->id)->first();
+        $email = $user->email;
 
+        $controller = new UserController();
+        $verify_otp = $controller->send_otp_for_verify_phone($email,$name);
+
+        $userRes = User::where('id',$user->id)->first();
+        $verify_otp_time = Carbon::now()->addMinutes(5);
 
         DB::table('users')->where('id',$user->id)->update
         ([
-            'verify_otp'=>$request->otp,
+            'verify_otp' => $verify_otp,
+            'verify_otp_time' => $verify_otp_time
         ]);
 
         return response()->json([
             'success' => true,
-            'message' =>'Resent OTP Successfully',
+            'message' =>'OTP has been sent your mail.Please check your mail',
             'status'=>200
         ]);
     }

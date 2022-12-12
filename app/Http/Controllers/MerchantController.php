@@ -12,7 +12,6 @@ use App\PublicFeedComment;
 use App\PublicFeedLike;
 use App\PublicFeedCommentLike;
 use App\Share;
-use App\UseCoupon;
 use App\Coupon;
 use App\ClientMyCoupon;
 use App\SmartCards;
@@ -291,7 +290,6 @@ class MerchantController extends Controller
             $feed_comment_like = PublicFeedCommentLike::where('user_id',$id)->get();
 
             $mycoupon = ClientMyCoupon::where('user_id',$id)->get();
-            $usecoupon = UseCoupon::where('user_id',$id)->get();
             $share = Share::where('user_id', $id)->get();
             $Coupon = Coupon::where('user_id',$id)->get();
             $smartcard = SmartCards::where('user_id',$id)->get();
@@ -336,10 +334,7 @@ class MerchantController extends Controller
             {
                 ClientMyCoupon::where('user_id',$id)->delete();
             }     
-            if (!empty($usecoupon)) 
-            {
-                UseCoupon::where('user_id',$id)->delete();
-            }
+       
             if (!empty($share)) 
             {
                 Share::where('user_id', $id)->delete();

@@ -20,7 +20,7 @@
 
             <li class="{{ request()->is('merchantapp/apply_coupon') || request()->is('merchantapp/apply_coupon/*')? 'active' : '' }}">
                 <a class="nav-link" href="{{route('merchantapp.apply_coupon.create')}}">
-                    <i class="fa fa-gift"></i><span>Apply Coupon</span>
+                    <i class="fa fa-gift"></i><span>Coupon Redeem</span>
                 </a>
             </li>
 

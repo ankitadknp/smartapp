@@ -22,7 +22,7 @@ Route::get('cms_pages_list', [CMSPagesController::class, 'cms_pages_list']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('verify_phone_number', [UserController::class, 'verify_phone_number']);
-    Route::post('resend_otp', [UserController::class, 'resend_otp']);
+    Route::get('resend_otp', [UserController::class, 'resend_otp']);
     Route::post('change_password', [UserController::class, 'change_password']);
     Route::get('get_profile', [UserController::class, 'get_profile']);
     Route::post('update_profile', [UserController::class, 'update_profile']);
@@ -52,7 +52,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('add_mycoupon', [CouponController::class, 'add_mycoupon']);
     Route::get('client_mycoupon_list', [CouponController::class, 'client_mycoupon_list']);
     Route::post('coupon_statistics', [CouponController::class, 'coupon_statistics']);
-    Route::post('save_coupon', [CouponController::class, 'save_coupon']);
     Route::post('delete_coupon', [CouponController::class, 'delete_coupon']);
 
     Route::post('share', [ShareController::class, 'share']);
