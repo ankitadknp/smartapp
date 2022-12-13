@@ -17,7 +17,7 @@ function get_all_data() {
         pageLength: 10,
         "columns": [
             {"data": "title"},
-            {"data": "status"},
+            // {"data": "status"},
             {"data": "edit"},
         ],
         columnDefs: [
@@ -32,12 +32,12 @@ function get_all_data() {
                 sortable: false,
                 visible: jQuery.inArray("edit", module_permission) >= 0 ? true : false,
             },
-            {
-                targets: [2],
-                searchable: true,
-                sortable: false,
-                visible: jQuery.inArray("change_status", module_permission) >= 0 ? true : false,
-            }
+            // {
+            //     targets: [2],
+            //     searchable: true,
+            //     sortable: false,
+            //     visible: jQuery.inArray("change_status", module_permission) >= 0 ? true : false,
+            // }
             
         ],
         language: {

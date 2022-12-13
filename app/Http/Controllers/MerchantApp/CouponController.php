@@ -62,8 +62,8 @@ class CouponController extends Controller
             'coupon' => 'required',
         ],
         [
-            'user.required' => 'Please select a user from the dropdown menu',
-            'coupon.required' => 'Please select a coupon from the dropdown menu'
+            'user.required' => 'Please enter user email',
+            'coupon.required' => 'Please enter coupon code'
         ]);
 
         $userRes =  User::where('id',$request->get('user_id'))->first();

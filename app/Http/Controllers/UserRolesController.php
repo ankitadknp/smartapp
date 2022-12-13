@@ -53,7 +53,7 @@ class UserRolesController extends Controller {
             foreach ($list_of_all_user_roles_data as $user_role) {
                 $list_of_all_user_roles_array[$index]['name'] = $user_role->name;
                 $list_of_all_user_roles_array[$index]['edit'] = '
-                    <a href="'.route($this->route_name.'.edit', $user_role->id).'" class="btn btn-light">Edit</a>
+                    <a href="'.route($this->route_name.'.edit', $user_role->id).'" class="btn btn-light">Edit  Permission</a>
                 ';
                 if ($user_role->id == 1) {
                     $list_of_all_user_roles_array[$index]['delete'] = '';
@@ -94,7 +94,6 @@ class UserRolesController extends Controller {
 
         $user_id = $request->get("user");
         $role_permissions = $request->get("role_permissions");
-        // print_r(json_encode($role_permissions));exit;
 
         $add_new_role = array(
             "user_id" => $user_id,

@@ -216,15 +216,23 @@ class UserController extends Controller
 
             if ( $user->status == 1) 
             {
-                $controller = new UserController();
-                $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name);
-                $verify_otp_time = Carbon::now()->addMinutes(5);
+
+                if ( $user->is_verified_mobile_no == 1 ) {
+                    $msg = 'Login Successfully';
+                } else {
+                    $controller = new UserController();
+                    $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name);
+                    $verify_otp_time = Carbon::now()->addMinutes(5);
+
+                    User::where('id',$user->id)->update(['verify_otp'=>$verify_otp,'verify_otp_time'=>$verify_otp_time]);
+
+                    $msg = 'OTP has been sent your mail.Please check your mail';
+                }
+               
 
                 if ( !empty($request->latitude) && !empty($request->longitude) ) {
-                  User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude,'verify_otp'=>$verify_otp,'verify_otp_time'=>$verify_otp_time]);
-                } else {
-                    User::where('id',$user->id)->update(['verify_otp'=>$verify_otp,'verify_otp_time'=>$verify_otp_time]);
-                }
+                  User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude]);
+                } 
 
                 $user_device = DB::table('user_device')->where('user_id',$user->id)->first();
 
@@ -275,7 +283,7 @@ class UserController extends Controller
                 return response()->json([
                     'success' => true,
                     'data'    => $success,
-                    'message' => 'OTP has been sent your mail.Please check your mail',
+                    'message' => $msg,
                     'status' => 200
                 ]);
 

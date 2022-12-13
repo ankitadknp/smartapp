@@ -18,32 +18,18 @@ class BlogController extends Controller
     {
         $user_id = Auth::user()->id;
 
-        $blog_comment_data = BlogComment::where('user_id',$user_id)->where('blog_id',$request->blog_id)->first();
-
         $input = $request->all();
         $input['user_id'] = $user_id;
 
-        if ( empty($blog_comment_data) || !isset($blog_comment_data)) {
+        $blog_comment_res = BlogComment::create($input);
 
-            $blog_comment_res = BlogComment::create($input);
+        return response()->json([
+            'success' => true,
+            'data'    => $blog_comment_res,
+            'message' => 'Added Blog Comment Successfully',
+            'status' => 200
+        ]);
 
-            return response()->json([
-                'success' => true,
-                'data'    => $blog_comment_res,
-                'message' => 'Added Blog Comment Successfully',
-                'status' => 200
-            ]);
-
-        } else {
-
-            $response = [
-                'success' => false,
-                'message' => 'Already Added Comment',
-                'status' => 400
-            ];
-    
-            return response()->json($response, 400);
-        }
     }
 
     public function blog_like(Request $request)

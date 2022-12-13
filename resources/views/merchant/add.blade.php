@@ -92,21 +92,6 @@
                                 </div>
                         
                                 <div class="col-sm-6 form-group" >
-                                    <label>Marital Status</label>
-                                    <select name="marital_status"  id="marital_status" class="form-control" required="" value="{{old('title')}}">
-                                        <option value="" >Select Marital Status</option>
-                                        <option value="Single" @if (old('marital_status') == 'Single') selected="selected" @endif>Single</option>
-                                        <option value="Married" @if (old('marital_status') == 'Married') selected="selected" @endif>Married</option>
-                                        <option value="Widowed" @if (old('marital_status') == 'Widowed') selected="selected" @endif>Widowed</option>
-                                        <option value="Separated" @if (old('marital_status') == 'Separated') selected="selected" @endif>Separated</option>
-                                        <option value="Divorced" @if (old('marital_status') == 'Divorced') selected="selected" @endif>Divorced</option>
-                                    </select>
-                                    @if($errors->has('marital_status'))
-                                        <div class="error">{{ $errors->first('marital_status') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group" >
                                     <label>Business Activity</label>
                                     <select name="business_activity"  id="business_activity" class="form-control" required="">
                                         <option value="" >Select Business Activity</option>

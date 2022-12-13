@@ -46,7 +46,7 @@
                                         <input type="password" name="password" style="display:none">
                                         <div class="form-group">
                                             <label for="email">Email</label>
-                                            <input id="email" type="text" class="form-control" name="email" value="" tabindex="1" required autocomplete="off" autofocus placeholder="Email">
+                                            <input id="email" type="text" class="form-control" name="email" value="" tabindex="1" required autocomplete="on" autofocus placeholder="Email">
                                             <div class="invalid-feedback">
                                                 Please fill in your email
                                             </div>

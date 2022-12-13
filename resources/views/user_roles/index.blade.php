@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css")}}">
 @endsection
 
-@section('title', 'Permission')
+@section('title', 'User Permission')
 
 @section('content')
 @php
@@ -18,7 +18,7 @@ $module_permission = !empty($module_permissions['user-roles']) ? $module_permiss
         <div class="section-header">
             <div class="col-lg-12">
                 <h1>User Permission</h1>
-                <a href="{{route("user-roles.create")}}" class="float-right btn btn-primary">Add New</a>
+                <a href="{{route("user-roles.create")}}" class="float-right btn btn-primary">Assign User Permission</a>
             </div>
         </div>
         <div class="row">
@@ -67,7 +67,7 @@ $module_permission = !empty($module_permissions['user-roles']) ? $module_permiss
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Edit</th>
+                                        <th>Edit Permission</th>
                                         <th>Delete</th>
                                     </tr>
                                 </thead>

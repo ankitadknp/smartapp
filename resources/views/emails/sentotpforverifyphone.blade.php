@@ -13,9 +13,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <h1>Forget Password Email</h1>
-                        You can reset password from bellow link:
-                        <a href="{{ route('password.reset', $token) }}">Reset Password</a>
+                        <h1>Your OTP : {{$token}}</h1>
                     </td>
                 </tr>
                 <tr>

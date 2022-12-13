@@ -18,32 +18,17 @@ class PublicFeedController extends Controller
     {
         $user_id = Auth::user()->id;
 
-        $feed_comment_data = PublicFeedComment::where('user_id',$user_id)->where('public_feed_id',$request->public_feed_id)->first();
-
         $input = $request->all();
         $input['user_id'] = $user_id;
 
-        if ( empty($feed_comment_data) || !isset($feed_comment_data)) {
+        $feed_comment_res = PublicFeedComment::create($input);
 
-            $feed_comment_res = PublicFeedComment::create($input);
-
-            return response()->json([
-                'success' => true,
-                'data'    => $feed_comment_res,
-                'message' => 'Added Public Feed Comment Successfully',
-                'status' => 200
-            ]);
-
-        } else {
-
-            $response = [
-                'success' => false,
-                'message' => 'Already Added Comment',
-                'status' => 400
-            ];
-    
-            return response()->json($response, 400);
-        }
+        return response()->json([
+            'success' => true,
+            'data'    => $feed_comment_res,
+            'message' => 'Added Public Feed Comment Successfully',
+            'status' => 200
+        ]);
     }
 
     public function public_feed_like(Request $request)

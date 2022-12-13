@@ -27,7 +27,8 @@
 
             <li class="{{ request()->is('user-roles') || request()->is('user-roles/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('user-roles.index')}}">
-                <i class="fas fa-users"></i><span>User Roles</span>
+                <i class="fas fa-users"></i><span>User Permission
+                </span>
                 </a>
             </li>
             @endif
@@ -77,7 +78,7 @@
             @if(!empty($role_permission['coupons-qr']))
             <li class="{{ request()->is('coupons-qr') || request()->is('coupons-qr/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('coupons-qr.index')}}">
-                    <i class="fas fa-qrcode"></i><span>Coupons QR Code</span>
+                    <i class="fas fa-qrcode"></i><span>Coupons Management</span>
                 </a>
             </li>
             @endif
@@ -106,13 +107,13 @@
             </li>
             @endif
 
-            @if(!empty($role_permission['language']))
+            <!-- @if(!empty($role_permission['language']))
             <li class="{{ request()->is('language') || request()->is('language/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{route('language.index')}}">
                     <i class="fa fa-language"></i><span>Language</span>
                 </a>
             </li>
-            @endif
+            @endif -->
         @endif
         </ul>
     </aside>

@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 
-@section('title', 'Permission')
+@section('title', 'User Permission')
 
 @section('addcss')
 @endsection
@@ -17,7 +17,7 @@
                 <div class="breadcrumb-item">
                     <a href="{{route("user-roles.index")}}">User Permission</a>
                 </div>
-                <div class="breadcrumb-item">Add New</div>
+                <div class="breadcrumb-item">Assign User Permission</div>
             </div>
         </div>
         <div class="row">
@@ -33,15 +33,15 @@
                             </ul>
                         </div>
                         @endif
-                        <form class="needs-validation" novalidate="" action="{{route("user-roles.store")}}" method="POST">
+                        <form class="needs-validation"  action="{{route("user-roles.store")}}" method="POST">
                             @csrf
                             <div class="card-body">
                                 <div class="form-group">
                                     <label>User</label>
                                     <select name="user" id="user_id" class="form-control select1" required="">
-                                        <option value="" data-type="">Select User</option>
+                                        <option value="">Select User</option>
                                         @foreach($user as $val)
-                                        <option value="{{$val->id}}" >{{$val->name}}</option>
+                                        <option value="{{$val->id}}">{{$val->name}}</option>
                                         @endforeach
                                     </select>
                                     @if($errors->has('user'))

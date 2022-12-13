@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 
-@section('title', 'Coupons QR Code')
+@section('title', 'Coupons Management')
 
 @section('addcss')
 <link rel="stylesheet" href="{{asset("public/assets/modules/datatables/datatables.min.css")}}">
@@ -14,7 +14,7 @@
     <section class="section">
         <div class="section-header">
             <div class="col-lg-12">
-                <h1>Coupons QR Management</h1>
+                <h1>Coupons Management</h1>
             </div>
         </div>
         <div class="row">
@@ -40,6 +40,22 @@
                                             </div>
                                         </div>
 
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                            <div class="form-group">
+                                                <select class="form-control" id="discount_type" name="discount_type">
+                                                    <option value="">Discount Type</option>
+                                                    <option value="Percentage">Percentage</option>
+                                                    <option value="Flat">Flat</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                            <div class="form-group">
+                                                <input type="text" placeholder="Merchant Name" name="business_name" id="business_name" class="form-control">
+                                            </div>
+                                        </div>
+
                                         <div class="col-lg-12">
                                             <input type="button" name="resetfilter" value="Reset Filter" id="reset-filter" class="btn btn-light float-right reset_filter">
                                             <input type="button" name="filter" value="Filter" id="apply-filter" class="btn btn-primary float-right search_filter" style="margin-right: 15px;">
@@ -62,8 +78,10 @@
                                     <tr>
                                         <th>Coupon Code</th>
                                         <th>Coupon Title</th>
+                                        <th>Merchant Name</th>
                                         <th>QR Code url </th>
                                         <th>QR Code</th>
+                                        <th>Coupon Statistics</th>
                                     </tr>
                                 </thead>
                             </table>

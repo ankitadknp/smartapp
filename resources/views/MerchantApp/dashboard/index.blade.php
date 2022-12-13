@@ -23,7 +23,7 @@
                     </div>
                     <div class="card-wrap">
                         <div class="card-header">
-                            <h4>Redeem Coupon</h4>
+                            <h4>Coupon Redeem</h4>
                         </div>
                         <div class="card-body">
                             {{$total_c}}

@@ -70,21 +70,6 @@
                                 </div>
                         
                                 <div class="col-sm-6 form-group" >
-                                    <label>Marital Status</label>
-                                    <select name="marital_status"  id="marital_status" class="form-control" required="">
-                                        <option value="" >Select Marital Status</option>
-                                        <option value="Single" {{ $user->marital_status == 'Single' ? 'selected':'' }}>Single</option>
-                                        <option value="Married" {{ $user->marital_status == 'Married' ? 'selected':'' }}>Married</option>
-                                        <option value="Widowed" {{ $user->marital_status == 'Widowed' ? 'selected':'' }}>Widowed</option>
-                                        <option value="Separated" {{ $user->marital_status == 'Separated' ? 'selected':'' }}>Separated</option>
-                                        <option value="Divorced" {{ $user->marital_status == 'Divorced' ? 'selected':'' }}>Divorced</option>
-                                    </select>
-                                    @if($errors->has('marital_status'))
-                                        <div class="error">{{ $errors->first('marital_status') }}</div>
-                                    @endif
-                                </div>
-
-                                <div class="col-sm-6 form-group" >
                                     <label>Business Activity</label>
                                     <select name="business_activity"  id="business_activity" class="form-control" required="">
                                         <option value="" >Select Business Activity</option>

@@ -15,6 +15,8 @@ use App\Share;
 use App\Coupon;
 use App\ClientMyCoupon;
 use App\SmartCards;
+use App\CouponQRcode;
+use App\CouponTerm;
 use Illuminate\Http\Request;
 use Redirect,Response,DB,Validator,Hash,File;
 use Illuminate\Validation\Rule;
@@ -146,7 +148,6 @@ class MerchantController extends Controller
                 'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
                 'district' => 'required|max:50',
-                'marital_status'=>'required'
             ]);
             
             if ($request->hasFile('business_logo')) {
@@ -188,7 +189,6 @@ class MerchantController extends Controller
                 'street_address_name' => 'required|max:50',
                 'street_number' => 'required',
                 'district' => 'required|max:50',
-                'marital_status'=>'required'
             ]);
 
             $user_data = User::where('id',$user_id)->first();
@@ -216,7 +216,6 @@ class MerchantController extends Controller
             'password' =>$pwd ,
             'phone_number' => $request->get('phone_number'),
             'website' => $request->get('website'),
-            'marital_status' => $request->get('marital_status'),
             'business_activity' => $request->get('business_activity'),
             'business_sector' => $request->get('business_sector'),
             'establishment_year' => $request->get('establishment_year'),
@@ -227,7 +226,6 @@ class MerchantController extends Controller
             'business_logo' => $business_logo,
             'status' => 1,
             'user_status' =>1,
-            'verify_otp' =>111111,
         ];
 
         
@@ -289,8 +287,8 @@ class MerchantController extends Controller
             $feed_comment = PublicFeedComment::where('user_id',$id)->get();
             $feed_comment_like = PublicFeedCommentLike::where('user_id',$id)->get();
 
-            $mycoupon = ClientMyCoupon::where('user_id',$id)->get();
-            $share = Share::where('user_id', $id)->get();
+            // $mycoupon = ClientMyCoupon::where('user_id',$id)->get();
+            // $share = Share::where('user_id', $id)->get();
             $Coupon = Coupon::where('user_id',$id)->get();
             $smartcard = SmartCards::where('user_id',$id)->get();
             $device = DB::table('user_device')->where('user_id',$id)->first();
@@ -330,15 +328,43 @@ class MerchantController extends Controller
             }
 
 
-            if (!empty($mycoupon)) 
+            if (!empty($Coupon)) 
             {
-                ClientMyCoupon::where('user_id',$id)->delete();
+                foreach ($Coupon as $val ) {
+                    Coupon::where('coupon_id',$val->coupon_id)->delete();
+                    
+                    $qrcode = CouponQRcode::where('coupon_id',$val->coupon_id)->first();
+                    $mycoupon = ClientMyCoupon::where('coupon_id',$val->coupon_id)->get();
+                    $share = Share::where('key', 'coupon_id')->where('value', $val->coupon_id)->get();
+                    $term = CouponTerm::where('coupon_id',$val->coupon_id)->get();
+
+                    if ($share != '[]') 
+                    {
+                        Share::where('key', 'coupon_id')->where('value', $val->coupon_id)->delete();
+                    }
+                    if ( $term != '[]') 
+                    {
+                        CouponTerm::where('coupon_id',$val->coupon_id)->delete();
+                    }
+                    if ($mycoupon != '[]') 
+                    {
+                        ClientMyCoupon::where('coupon_id',$val->coupon_id)->delete();
+                    }
+                    if ( !empty($qrcode)) 
+                    {
+                        $destinationPath = public_path("/");
+                        $new_path = substr($qrcode->qrcode_file, strpos($qrcode->qrcode_file, "qrcodes/") );  
+                        $image_path = $destinationPath.$new_path;
+                
+                        if (File::exists($image_path)) {
+                            unlink($image_path);
+                        }
+                        CouponQRcode::where('coupon_id',$val->coupon_id)->delete();
+                    }
+                }
+               
             }     
        
-            if (!empty($share)) 
-            {
-                Share::where('user_id', $id)->delete();
-            }
             if (!empty($smartcard)) 
             {
                 SmartCards::where('user_id', $id)->delete();

@@ -4,6 +4,8 @@ var data_table = '#datatable';
 function get_all_data() {
     var coupon_code = $('#coupon_code').val();
     var coupon_title = $('#coupon_title').val();
+    var discount_type = $('#discount_type').val();
+    var business_name = $('#business_name').val();
     var token = jQuery("#csrf-token").prop("content");
 
     jQuery(data_table).dataTable({
@@ -19,8 +21,10 @@ function get_all_data() {
         "columns": [
             {"data": "coupon_code"},
             {"data": "coupon_title"},
+            {"data": "business_name"},
             {"data": "qrcode_url"},
             {"data": "qrcode_file"},
+            {"data": "view"},
         ],
         columnDefs: [
             {
@@ -30,6 +34,11 @@ function get_all_data() {
             },
             {
                 targets: [1],
+                searchable: true,
+                sortable: true
+            },
+            {
+                targets: [2],
                 searchable: true,
                 sortable: true
             },
@@ -46,7 +55,7 @@ function get_all_data() {
             "url": controller_url + '/list-data',
             "type": "POST",
             "async": false,
-            "data": {'_token': token, 'coupon_code': coupon_code, 'coupon_title': coupon_title},
+            "data": {'_token': token, 'coupon_code': coupon_code, 'coupon_title': coupon_title,'business_name':business_name,'discount_type':discount_type},
         },
         drawCallback: function () {
             jQuery('<li><a onclick="refresh_tab()" style="cursor:pointer" title="Refresh"><i class="ion-refresh" style="font-size:25px"></i></a></li>').prependTo('div.dataTables_paginate ul.pagination');
@@ -135,6 +144,8 @@ jQuery(document).ready(function () {
     jQuery('.reset_filter').click(function () {
         $('#coupon_code').val('');
         $('#coupon_title').val('');
+        $('#business_name').val('');
+        $('#discount_type').val('');
         setTimeout(function () {
             jQuery(data_table).dataTable().fnDestroy();
             get_all_data();

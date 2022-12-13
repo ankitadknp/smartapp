@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 
-@section('title', 'Permission')
+@section('title', 'User Permission')
 
 @section('addcss')
 @endsection
@@ -17,7 +17,7 @@
                 <div class="breadcrumb-item">
                     <a href="{{route("user-roles.index")}}">User Permission</a>
                 </div>
-                <div class="breadcrumb-item">Edit Permission</div>
+                <div class="breadcrumb-item">Edit User Permission</div>
             </div>
         </div>
         <div class="row">
