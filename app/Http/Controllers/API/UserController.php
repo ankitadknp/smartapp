@@ -503,6 +503,7 @@ class UserController extends Controller
             $success['house_number'] =  ($user->house_number != null)?$user->house_number:'';
             $success['city'] =  ($user->city != null)?$user->city:'';
             $success['district'] =  ($user->district != null)?$user->district:'';
+            $success['location_url'] =  ($user->location_url != null)?$user->location_url:'';
 
             $response = [
                 'success' => true,
@@ -596,6 +597,8 @@ class UserController extends Controller
 
         $input = $request->all();
 
+        $input['location_url']  = isset($request->location_url) ? $request->location_url:'';
+
         if ($request->user_status == 1) 
         {
 
@@ -636,6 +639,7 @@ class UserController extends Controller
         $success['city'] =  ($user->city != null)?$user->city:'';
         $success['district'] =  ($user->district != null)?$user->district:'';
         $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
+        $success['location_url'] =($user->location_url != null)?$user->location_url:'';
 
    
         $response = [

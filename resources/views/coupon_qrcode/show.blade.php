@@ -1,10 +1,18 @@
 @extends('layouts.layout')
 @section('title', 'Coupons Management')
+@section('addcss')
+<link rel="stylesheet" href="{{asset("public/css/style.css")}}">
+@endsection
+
 @section('content')
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h1>Coupons Details</h1>
+            <div class="col-lg-12 coupon_back">
+                <h1>Coupons Details</h1>
+                <a href="{{route("coupons-qr.index")}}" class="float-right btn btn-primary">Back</a>
+            </div>
+
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active">
                     <a href="{{route("dashboard")}}">Dashboard</a>
@@ -55,7 +63,7 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-4">
-                                    <label>Total Share Coupons</label> : {{ $coupons->business_hours }} 
+                                    <label>Total Share Coupons</label> : {{ $total_share }} 
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label>Total Coupons Share By Whatsapp</label> : {{ $total_whatsapp }} 

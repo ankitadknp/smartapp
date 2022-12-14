@@ -146,7 +146,11 @@ Route::group(['middleware' => ['merchant'],  'namespace'=>'MerchantApp','prefix'
     Route::get("logout","DashboardController@logout")->name("logout");
 
     //apply coupon
-    Route::resource("apply_coupon", "CouponController");
+    // Route::resource("apply_coupon", "CouponController");
+    Route::resource("coupon_redeem", "CouponController");
+    Route::prefix('coupon_redeem')->group(function () {
+        Route::post("list-data", "CouponController@load_data_in_table")->name("coupon_redeem.load_data_in_table");
+    });
     Route::get('autocomplete_user', 'CouponController@autocomplete_user')->name('autocomplete_user');
     Route::get('autocomplete_coupon', 'CouponController@autocomplete_coupon')->name('autocomplete_coupon');
     

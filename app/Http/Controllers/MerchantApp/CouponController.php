@@ -12,6 +12,87 @@ use App\Http\Controllers\API\NotificationController;
 
 class CouponController extends Controller 
 {
+    public function index()
+    {
+        $user = Auth::user();
+        return view('MerchantApp.coupon.index');
+        // $all_avilable_category = \App\Category::where('status', 1)->where('type','=','Blog')->select('category_id', 'category_name')->get();
+
+        // return view('MerchantApp.coupon.index')->with(['all_avilable_category' => $all_avilable_category]);
+    }
+
+    public function load_data_in_table(Request $request)
+    {
+        $user = Auth::user();
+
+        $page = !empty($request->get('start')) ? $request->get('start') : 0;
+        $rows = !empty($request->get('length')) ? $request->get('length') : 10;
+        $draw = !empty($request->get('draw')) ? $request->get('draw') : 1;
+
+        $sidx = !empty($request->get('order')[0]['column']) ? $request->get('order')[0]['column'] : 0;
+        $sord = !empty($request->get('order')[0]['dir']) ? $request->get('order')[0]['dir'] : 'DESC';
+
+        $email = !empty($request->get('email')) ? $request->get('email') : '';
+        $coupon_code = !empty($request->get('coupon_code')) ? $request->get('coupon_code') : '';
+        $location = !empty($request->get('location')) ? $request->get('location') : '';
+
+        $sidx = 'apply_coupon_by_merchant.id';
+
+        $list_query = ApplyCouponByMerchantApp::leftJoin('users', function ($join) {
+            $join->on('users.id', '=', 'apply_coupon_by_merchant.user_id');
+        })
+        ->leftJoin('coupon', function ($join) {
+            $join->on('coupon.coupon_id', '=', 'apply_coupon_by_merchant.coupon_id');
+        })
+        ->leftJoin('locations', function ($join) {
+            $join->on('coupon.location_id', '=', 'locations.id');
+        })
+        ->select('users.email','coupon.coupon_code','coupon.user_id','locations.city_area',DB::raw('DATE_FORMAT(apply_coupon_by_merchant.created_at, "%Y-%m-%d %H:%i:%s") as redeem_date'))
+        ->where('coupon.user_id',$user->id);
+   
+
+        if (!empty($email)) {
+            $list_query = $list_query->where('email', 'LIKE', '%'.$email.'%');
+        }
+
+        if (!empty($coupon_code)) {
+            $list_query = $list_query->where('coupon_code', 'LIKE', '%'.$coupon_code.'%');
+        }
+        
+        if (!empty($location)) {
+            $list_query = $list_query->where('city_area', 'LIKE', '%'.$location.'%');
+        }
+
+
+        $total_rows = $list_query->count();
+        $all_records = array();
+
+        if ($total_rows > 0) {
+            $list_of_all_data = $list_query->skip($page)
+                ->orderBy($sidx, $sord)
+                ->take($rows)
+                ->get();
+            
+            $index = 0;
+
+            foreach ($list_of_all_data as $value) {
+                $all_records[$index]['email'] = $value->email;
+                $all_records[$index]['coupon_code'] = $value->coupon_code;
+                $all_records[$index]['city_area'] = $value->city_area;
+                $all_records[$index]['created_at'] = $value->redeem_date;
+
+                ++$index;
+            }
+        }
+        $response = [];
+        $response['draw'] = (int) $draw;
+        $response['recordsTotal'] = (int) $total_rows;
+        $response['recordsFiltered'] = (int) $total_rows;
+        $response['data'] = $all_records;
+
+        return $response;
+    }
+
     public function create() {
         $apply_coupon_res = ApplyCouponByMerchantApp::leftJoin('users', function ($join) {
                             $join->on('users.id', '=', 'apply_coupon_by_merchant.user_id');
@@ -27,12 +108,11 @@ class CouponController extends Controller
 
     public function autocomplete_user(Request $request)
     {
-        
         $data = User::select("id", DB::raw("CONCAT(first_name, ' ', last_name) as name"),"email as value")
                 ->where('email', 'LIKE', '%'. $request->get('search'). '%')
                 ->where('user_status',0)
                 ->where('status',1)
-                ->limit(10)
+                // ->limit(10)
                 ->get();
 
    
@@ -45,7 +125,7 @@ class CouponController extends Controller
         $data = Coupon::select("coupon_id","coupon_code as value")
                 ->where('coupon_code', 'LIKE', '%'. $request->get('search'). '%')
                 ->where('user_id',$user->id)
-                ->limit(10)
+                // ->limit(10)
                 ->groupBy('coupon_code')
                 ->get();
 

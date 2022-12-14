@@ -1,6 +1,6 @@
 @extends('MerchantApp.layouts.layout')
 
-@section('title', 'Coupon')
+@section('title', 'Coupon Redeem')
 
 @section('addcss')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
@@ -10,12 +10,15 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h1>Coupon Redeem</h1>
+            <h1>Add Coupon Redeem</h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active">
                     <a href="{{route("merchantapp.dashboard")}}">Dashboard</a>
                 </div>
-                <div class="breadcrumb-item">Coupon Redeem</div>
+                <div class="breadcrumb-item active">
+                    <a href="{{route("merchantapp.coupon_redeem.index")}}">Coupon Redeem</a>
+                </div>
+                <div class="breadcrumb-item">Add Coupon Redeem</div>
             </div>
         </div>
         <div class="row">
@@ -23,7 +26,7 @@
                 <div class="card">
                     <div class="card-body">
                    
-                        <form class=""  novalidate="" action="{{route("merchantapp.apply_coupon.store")}}" enctype="multipart/form-data" method="POST">
+                        <form class=""  novalidate="" action="{{route("merchantapp.coupon_redeem.store")}}" enctype="multipart/form-data" method="POST">
                             @csrf
                             <div class="col-sm-12">
                                 <div class="row">

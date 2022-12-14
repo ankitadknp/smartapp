@@ -119,6 +119,6 @@ class CouponQrController extends Controller
         $total_email = Share::where('key', 'coupon_id')->where('value', $coupons->coupon_id)->where('share_by', 1)->count();
         $total_whatsapp = Share::where('key', 'coupon_id')->where('value', $coupons->coupon_id)->where('share_by', 0)->count();
 
-        return view('coupon_qrcode.show')->with(['coupons' => $coupons,'total_add'=>$total_add,'total_use'=>$total_use,'total_email'=>$total_email,'total_whatsapp'=>$total_whatsapp]);
+        return view('coupon_qrcode.show')->with(['coupons' => $coupons,'total_add'=>$total_add,'total_use'=>$total_use,'total_email'=>$total_email,'total_whatsapp'=>$total_whatsapp,'total_share'=>$total_share]);
     }
 }

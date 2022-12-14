@@ -5,7 +5,7 @@ div#show_hide_password.input-group>.form-control:not(:last-child) {
     border-radius: 0.25rem;
 }
 .password_eye {
-position: absolute;
+    position: absolute;
     top: 50%;
     transform: translateY(-50%);
     right: 12px;
@@ -20,16 +20,16 @@ position: absolute;
     overflow-y: initial !important
 }
 #top-5-scroll{
-height: 420px;
-overflow-y: auto;
+    height: 420px;
+    overflow-y: auto;
 }
 #comment_scroll{
-height: 420px;
-overflow-y: auto;
+    height: 420px;
+    overflow-y: auto;
 }
 #like_scroll{
-height: 420px;
-overflow-y: auto;
+    height: 420px;
+    overflow-y: auto;
 }
 .overlay{
   display: none;
@@ -52,19 +52,19 @@ body.loading .overlay{
 }
 
 .cv-spinner {
-height: 100%;
-display: flex;
-justify-content: center;
-align-items: center;  
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;  
 }
 
 .spinner-new {
-width: 40px;
-height: 40px;
-border: 4px #ddd solid;
-border-top: 4px #2e93e6 solid;
-border-radius: 50%;
-animation: sp-anime 0.8s infinite linear;
+    width: 40px;
+    height: 40px;
+    border: 4px #ddd solid;
+    border-top: 4px #2e93e6 solid;
+    border-radius: 50%;
+    animation: sp-anime 0.8s infinite linear;
 }
 
 #map{
@@ -103,6 +103,10 @@ div#show_hide_cpassword.input-group>.form-control:not(:last-child) {
     transform: translateY(-50%);
     right: 12px;
     z-index: 999;
+}
+
+.section-header .coupon_back {
+    flex: 1;
 }
 
 @keyframes sp-anime {

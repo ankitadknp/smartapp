@@ -287,8 +287,6 @@ class MerchantController extends Controller
             $feed_comment = PublicFeedComment::where('user_id',$id)->get();
             $feed_comment_like = PublicFeedCommentLike::where('user_id',$id)->get();
 
-            // $mycoupon = ClientMyCoupon::where('user_id',$id)->get();
-            // $share = Share::where('user_id', $id)->get();
             $Coupon = Coupon::where('user_id',$id)->get();
             $smartcard = SmartCards::where('user_id',$id)->get();
             $device = DB::table('user_device')->where('user_id',$id)->first();
