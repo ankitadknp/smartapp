@@ -49,6 +49,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-right">
+                                <a href="{{route("merchantapp.coupon_redeem.index")}}" class="btn btn-primary">Back</a>
                                 <button class="btn btn-primary">Apply</button>
                             </div>
                         </form>

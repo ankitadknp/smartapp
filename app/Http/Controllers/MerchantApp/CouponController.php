@@ -194,7 +194,7 @@ class CouponController extends Controller
                                 $notification_controller->send_notification($msgVal,$device_token,$title);
                             }
                         }
-                        return redirect()->back()->with('success','Coupon Redeem Successfully');
+                        return redirect()->route('merchantapp.coupon_redeem.index')->with('success','Coupon Redeem Successfully');
                     }
                 } else {
                     return redirect()->back()->withInput()->withErrors(['coupon'=> 'Coupon has been already applied']);

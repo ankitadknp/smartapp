@@ -180,7 +180,7 @@ class CouponController extends Controller
 
         $user = User::find($user_id);
 
-        $coupon = Coupon::select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url')
+        $coupon = Coupon::select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url','users.website','users.location_url')
                 ->leftJoin('users', function ($join) {
                     $join->on('users.id', '=', 'coupon.user_id');
                 })
@@ -427,7 +427,7 @@ class CouponController extends Controller
                     ->leftJoin('users', function ($join) {
                         $join->on('users.id', '=', 'coupon.user_id');
                     })
-                    ->select('coupon.*', 'users.business_logo')
+                    ->select('coupon.*', 'users.business_logo','users.website','users.location_url')
                     ->where('client_my_coupon.user_id', $user_id)
                     ->whereDate('coupon.expiry_date', '>=', $currentDate)
                     ->orderby('client_my_coupon.client_my_coupon_id','DESC')
@@ -439,7 +439,7 @@ class CouponController extends Controller
                     ->leftJoin('users', function ($join) {
                         $join->on('users.id', '=', 'coupon.user_id');
                     })
-                    ->select('coupon.*', 'users.business_logo')
+                    ->select('coupon.*', 'users.business_logo','users.website','users.location_url')
                     ->where('client_my_coupon.user_id', $user_id)
                     ->whereDate('coupon.expiry_date', '<', $currentDate)
                     ->orderby('client_my_coupon.client_my_coupon_id','DESC')

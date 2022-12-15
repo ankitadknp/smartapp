@@ -8,11 +8,7 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <div class="col-lg-12 coupon_back">
-                <h1>Coupons Details</h1>
-                <a href="{{route("coupons-qr.index")}}" class="float-right btn btn-primary">Back</a>
-            </div>
-
+            <h1>Coupons Details</h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active">
                     <a href="{{route("dashboard")}}">Dashboard</a>
@@ -73,6 +69,9 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-lg-12 coupon_back">
+                        <a href="{{route("coupons-qr.index")}}" class="float-right btn btn-primary">Back</a>
                     </div>
                 </div>
             </div>

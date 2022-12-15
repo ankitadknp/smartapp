@@ -40,7 +40,9 @@ class NotificationController extends Controller
     }
 
     public function send_notification($msgVal,$device_token,$title) {
-        $server_key = 'AAAAnqpM3rU:APA91bEgxavRy82K9zuZoxjGzwpdtwDXfIhXj_MCWj9_irDPm7sU2Sg4AGg_VSPIMkBD3uOsDIhSe2LXP3psn71M5QDlKPgrNwfC7wXtGz0y-3NIra-5RtPtP1QVpLAE1QN8zfA3kU3f';
+        // $server_key = 'AAAAnqpM3rU:APA91bEgxavRy82K9zuZoxjGzwpdtwDXfIhXj_MCWj9_irDPm7sU2Sg4AGg_VSPIMkBD3uOsDIhSe2LXP3psn71M5QDlKPgrNwfC7wXtGz0y-3NIra-5RtPtP1QVpLAE1QN8zfA3kU3f';
+
+        $server_key = 'AAAAy6Q_iZI:APA91bFDxpaLVOuVukK8dfiFzFkDhfH67REqZfafSc-RAG2qbPHc63I4V2iXUIeCocEHyD0GyrlgsFZ_L7N4em3P9brwPk3sf9-EvEDunzJ29pV8clVDHLHguRdts4scZJ4-AolBz0yS';
 
         $headers = array(
             'Authorization:key='.$server_key,
@@ -63,7 +65,6 @@ class NotificationController extends Controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         $result = curl_exec($ch);
-        // print_r($result);exit;
 
         if ( $result === FALSE) {
             die('FCM Send Error:'.curl_error($ch));

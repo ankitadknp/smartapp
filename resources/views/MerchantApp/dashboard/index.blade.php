@@ -16,7 +16,7 @@
         </div>
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <a href="{{route('merchant.index')}}">
+                <a href="{{route('merchantapp.coupon_redeem.index')}}">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-danger">
                         <i class="fas fa-users"></i>
