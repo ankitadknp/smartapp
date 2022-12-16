@@ -37,15 +37,6 @@ $module_permission = !empty($module_permissions['cms_pages']) ? $module_permissi
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                            <div class="form-group">
-                                                <select class="form-control" id="status" name="status">
-                                                    <option value="">Status (All)</option>
-                                                    <option value="1">Active</option>
-                                                    <option value="2">In Active</option>
-                                                </select>
-                                            </div>
-                                        </div>
                                         <div class="col-lg-12">
                                             <input type="button" name="resetfilter" value="Reset Filter" id="reset-filter" class="btn btn-light float-right reset_filter">
                                             <input type="button" name="filter" value="Filter" id="apply-filter" class="btn btn-primary float-right search_filter" style="margin-right: 15px;">

@@ -16,7 +16,7 @@ function get_all_data() {
         scrollY: '50vh',
         scrollCollapse: true,
         searching: false,
-        order: [0, 'ASC'],
+        order: [0, 'DESC'],
         pageLength: 10,
         "columns": [
             {"data": "email"},

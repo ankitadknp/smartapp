@@ -191,7 +191,7 @@ class CouponController extends Controller
                     if (!empty($search)) {
                         $query->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
-                            ->orWhere('coupon.coupon_title_ab', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.coupon_title_ar', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
                             //->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%');
@@ -366,7 +366,7 @@ class CouponController extends Controller
         $success['location_he'] = $coupon->city_area_he;
         $success['expiry_date'] = $coupon->expiry_date;
         $success['category_id'] = $coupon->category_id;
-        $success['coupon_title_ab'] = $coupon->coupon_title_ab;
+        $success['coupon_title_ar'] = $coupon->coupon_title_ar;
         $success['coupon_title_he'] = $coupon->coupon_title_he;
 
         return response()->json([

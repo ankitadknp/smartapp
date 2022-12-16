@@ -20,7 +20,7 @@ class User extends Authenticatable
     protected $table = 'users';
 
     protected $fillable = [
-        'first_name', 'email', 'password','last_name','phone_number','id_number','marital_status','no_of_child','occupation','education_level','business_name','registration_number','website','business_activity','business_sector','establishment_year','business_logo','business_hours','user_status','verify_otp','is_verified_mobile_no','verify_otp_time','street_address_name','street_number','house_number','city','district','status','longitude','latitude','location_url'
+        'first_name', 'email', 'password','last_name','phone_number','id_number','marital_status','no_of_child','occupation','education_level','business_name','registration_number','website','business_activity','business_sector','establishment_year','business_logo','business_hours','user_status','verify_otp','is_verified_mobile_no','verify_otp_time','street_address_name','street_number','house_number','city','district','status','longitude','latitude','location_url','profile_pic'
     ];
 
     /**

@@ -215,7 +215,11 @@ class PublicFeedController extends Controller
                         ->select ('public_feed_comment.*',DB::raw('(CASE 
                         WHEN users.user_status = "0" THEN CONCAT(first_name, " ",last_name ) 
                         WHEN users.status = "1" THEN users.business_name 
-                        END) AS name'),DB::raw('IFNULL( public_feed_comment_like.is_like, 2) as is_like')
+                        END) AS name'),DB::raw('IFNULL( public_feed_comment_like.is_like, 2) as is_like'),
+                        DB::raw('(CASE 
+                            WHEN users.user_status = "0" THEN users.profile_pic
+                            WHEN users.status = "1" THEN users.business_logo 
+                            END) AS profile_pic')
                         )
                         ->where('public_feed_comment.public_feed_id',$request->public_feed_id)
                         ->where('public_feed.status','=',1)

@@ -172,13 +172,12 @@ class BlogController extends Controller
                     ->where('blog.status','=',1)
                     ->where(function ($query) use ($search,$category_id) {
                         if(!empty($search)) {
-                            $query->orWhere('blog.blog_title_ab', 'LIKE', '%'.$search.'%')
+                            $query->orWhere('blog.blog_title', 'LIKE', '%'.$search.'%')
                             ->orWhere('blog.blog_title_ab', 'LIKE', '%'.$search.'%')
                             ->orWhere('blog.blog_title_he', 'LIKE', '%'.$search.'%')
                             ->orWhere('blog.blog_content', 'LIKE', '%'.$search.'%')
                             ->orWhere('blog.blog_content_ab', 'LIKE', '%'.$search.'%')
-                            ->orWhere('blog.blog_content_he', 'LIKE', '%'.$search.'%')
-                            ->orWhere('blog.blog_content', 'LIKE', '%'.$search.'%');
+                            ->orWhere('blog.blog_content_he', 'LIKE', '%'.$search.'%');
                         }
                         if(!empty($category_id)) {
                             $query->where('blog.category_id', $category_id);
@@ -227,7 +226,11 @@ class BlogController extends Controller
                         ->select ('blog_comment.*',DB::raw('(CASE 
                             WHEN users.user_status = "0" THEN CONCAT(first_name, " ",last_name ) 
                             WHEN users.status = "1" THEN users.business_name 
-                            END) AS name'),DB::raw('IFNULL( blog_comment_like.is_like, 2) as is_like')
+                            END) AS name'),DB::raw('IFNULL( blog_comment_like.is_like, 2) as is_like'),
+                            DB::raw('(CASE 
+                            WHEN users.user_status = "0" THEN users.profile_pic
+                            WHEN users.status = "1" THEN users.business_logo 
+                            END) AS profile_pic')
                         )
                         ->where('blog_comment.blog_id',$request->blog_id)
                         ->where('blog.status','=',1)

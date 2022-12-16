@@ -1,3 +1,4 @@
+
 CKEDITOR.replace('ckeditor_he', {
     filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
     filebrowserUploadMethod: 'form'

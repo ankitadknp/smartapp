@@ -123,11 +123,36 @@
 @section('addjs')
 <script type="text/javascript">
     var controller_url = "{{route('blog.index')}}";
-    var selected_user = "";
 </script>
 
 <!-- Editor Js-->
 <script type="text/javascript" src="{{asset("public/assets/js/plugins/ckeditor/ckeditor.js")}}"></script>
-<script src="{{asset("public/assets/pages-js/blog/add.js")}}"></script>
+<!-- <script src="{{asset("public/assets/pages-js/blog/add.js")}}"></script> -->
+<script>
+    CKEDITOR.replace('ckeditor_he', {
+    filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+    filebrowserUploadMethod: 'form'
+});
+CKEDITOR.replace('ckeditor_ab', {
+    filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+    filebrowserUploadMethod: 'form'
+});
+CKEDITOR.replace('ckeditor', {
+    filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
+    filebrowserUploadMethod: 'form'
+});
 
+CKEDITOR.on("instanceReady", function(event) {
+    event.editor.on("beforeCommandExec", function(event) {
+        // Show the paste dialog for the paste buttons and right-click paste
+        if (event.data.name == "paste") {
+            event.editor._.forcePasteDialog = true;
+        }
+        // Don't show the paste dialog for Ctrl+Shift+V
+        if (event.data.name == "pastetext" && event.data.commandData.from == "keystrokeHandler") {
+            event.cancel();
+        }
+    })
+});
+</script>
 @endsection

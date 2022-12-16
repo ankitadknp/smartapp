@@ -504,6 +504,7 @@ class UserController extends Controller
             $success['city'] =  ($user->city != null)?$user->city:'';
             $success['district'] =  ($user->district != null)?$user->district:'';
             $success['location_url'] =  ($user->location_url != null)?$user->location_url:'';
+            $success['profile_pic'] =($user->profile_pic != null)?$user->profile_pic:'';
 
             $response = [
                 'success' => true,
@@ -594,6 +595,7 @@ class UserController extends Controller
         }
 
 		$STORE_IMGAE_URL = Config::get('constants.BUSINESS_LOGO_URL');
+        $PROFILE_PIC = Config::get('constants.PROFILE_PIC');
 
         $input = $request->all();
 
@@ -611,6 +613,20 @@ class UserController extends Controller
                 $input['business_logo']  = $pic;
             }
         }
+
+        if ($request->user_status == 0) 
+        {
+
+            if ($request->hasFile('profile_pic')) {
+                $image = $request->file('profile_pic');
+                $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path().'/uploads/profile_pic';
+                $image->move($destinationPath, $cover_image_name);
+                $pic = $PROFILE_PIC.$cover_image_name;
+                $input['profile_pic']  = $pic;
+            }
+        }
+
     
         $user = User::find($id);
         $user->update($input);
@@ -640,6 +656,7 @@ class UserController extends Controller
         $success['district'] =  ($user->district != null)?$user->district:'';
         $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
         $success['location_url'] =($user->location_url != null)?$user->location_url:'';
+        $success['profile_pic'] =($user->profile_pic != null)?$user->profile_pic:'';
 
    
         $response = [

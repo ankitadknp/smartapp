@@ -16,9 +16,7 @@ class CouponController extends Controller
     {
         $user = Auth::user();
         return view('MerchantApp.coupon.index');
-        // $all_avilable_category = \App\Category::where('status', 1)->where('type','=','Blog')->select('category_id', 'category_name')->get();
 
-        // return view('MerchantApp.coupon.index')->with(['all_avilable_category' => $all_avilable_category]);
     }
 
     public function load_data_in_table(Request $request)
