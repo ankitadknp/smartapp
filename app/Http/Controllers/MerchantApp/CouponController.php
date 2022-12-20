@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
 use App\Coupon;
+use App\ClientMyCoupon;
 use App\ApplyCouponByMerchantApp;
 use DB,Auth;
 use App\Http\Controllers\API\NotificationController;
@@ -163,36 +164,43 @@ class CouponController extends Controller
                         return redirect()->back()->withInput()->withErrors(['coupon'=> 'Coupon has been expired']);
 
                     } else {
-                        $added = [
-                            'user_id' => $request->get('user_id'),
-                            'coupon_id' => $request->get('coupon_id'),
-                        ];
 
-                        $added = ApplyCouponByMerchantApp::create($added);
+                        $client_mylist = ClientMyCoupon::where('coupon_id',$request->get('coupon_id'))->where('user_id',$request->get('user_id'))->first();
 
-                        if ($added) 
-                        {
-                            // send notification
-                            $user_device = DB::table('user_device')->leftJoin('users', function($join) {
-                                $join->on('users.id', '=', 'user_device.user_id');
-                                })
-                                ->where('user_device.user_id',$request->get('user_id'))
-                                ->where('users.status',1)
-                                ->where('users.is_verified_mobile_no',1)
-                                ->first();
+                        if ( !empty ($client_mylist) ) {
+                            $added = [
+                                'user_id' => $request->get('user_id'),
+                                'coupon_id' => $request->get('coupon_id'),
+                            ];
 
-                            if ( !empty($user_device) ) {
-                                $notification_controller = new NotificationController();
-                                $msgVal  = $couponRes->coupon_code." Coupon has been redeemed";
-                                $title = 'The Coupon has been redeemed';
-                                $type = 3;
-                                $u_id = $request->get('user_id');
-                                $device_token = $user_device->device_token;
-                                $notification_controller->add_notification($msgVal,$title,$u_id,$type);
-                                $notification_controller->send_notification($msgVal,$device_token,$title);
+                            $added = ApplyCouponByMerchantApp::create($added);
+
+                            if ($added) 
+                            {
+                                // send notification
+                                $user_device = DB::table('user_device')->leftJoin('users', function($join) {
+                                    $join->on('users.id', '=', 'user_device.user_id');
+                                    })
+                                    ->where('user_device.user_id',$request->get('user_id'))
+                                    ->where('users.status',1)
+                                    ->where('users.is_verified_mobile_no',1)
+                                    ->first();
+
+                                if ( !empty($user_device) ) {
+                                    $notification_controller = new NotificationController();
+                                    $msgVal  = $couponRes->coupon_code." Coupon has been redeemed";
+                                    $title = 'The Coupon has been redeemed';
+                                    $type = 3;
+                                    $u_id = $request->get('user_id');
+                                    $device_token = $user_device->device_token;
+                                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
+                                    $notification_controller->send_notification($msgVal,$device_token,$title);
+                                }
                             }
+                            return redirect()->route('merchantapp.coupon_redeem.index')->with('success','Coupon Redeem Successfully');
+                        } else {
+                            return redirect()->back()->withInput()->withErrors(['coupon'=> "This coupon has not been added to this user's my list of coupons"]);
                         }
-                        return redirect()->route('merchantapp.coupon_redeem.index')->with('success','Coupon Redeem Successfully');
                     }
                 } else {
                     return redirect()->back()->withInput()->withErrors(['coupon'=> 'Coupon has been already applied']);

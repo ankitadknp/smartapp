@@ -104,7 +104,7 @@
                                         @if(!empty($feed_images))
                                         @foreach($feed_images as $gallery)
                                           <?php $ext = substr($gallery->image, strrpos($gallery->image, '.') + 1);
-                                            if ($ext == 'mp4') { ?>
+                                            if ($ext == 'mp4' || $ext == 'MOV') { ?>
                                                 <div class="avatar-item mb-0">
                                                         <video height="100" width="100" class="embed-responsive-item" controls>
                                                             <source src="{{$gallery->image}}" type="video/mp4">
@@ -148,11 +148,13 @@
 <script>
     CKEDITOR.replace('ckeditor_he', {
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
+        filebrowserUploadMethod: 'form',
+        contentsLangDirection: 'rtl',
     });
     CKEDITOR.replace('ckeditor_ab', {
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
+        filebrowserUploadMethod: 'form',
+        contentsLangDirection: 'rtl',
     });
     CKEDITOR.replace('ckeditor', {
         filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",

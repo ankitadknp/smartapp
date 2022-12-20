@@ -109,6 +109,8 @@ class CMSPagesController extends Controller {
             return back()->with(['errors' => $validator->errors()]);
         }
 
+        // dd('<p>'.$request->get("content_he").'</p>');
+
         $add_new_cms = array(
             "title" => $request->get("title"),
             "title_ab" => $request->get("title_ab"),

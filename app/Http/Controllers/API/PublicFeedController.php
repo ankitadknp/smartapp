@@ -11,6 +11,7 @@ use App\PublicFeedLike;
 use App\PublicFeedReport;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 
 class PublicFeedController extends Controller
 {
@@ -20,6 +21,17 @@ class PublicFeedController extends Controller
 
         $input = $request->all();
         $input['user_id'] = $user_id;
+
+        $FEED_COMMENT_PIC = Config::get('constants.FEED_COMMENT_PIC');
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path().'/uploads/feed_comment_img';
+            $image->move($destinationPath, $cover_image_name);
+            $pic = $FEED_COMMENT_PIC.$cover_image_name;
+            $input['image']  = $pic;
+        }
 
         $feed_comment_res = PublicFeedComment::create($input);
 

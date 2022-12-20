@@ -51,7 +51,7 @@
                                     <label>Location</label> : {{ $coupons->city_area }} 
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label>Total Coupons In MyCouponList</label> : {{ $total_add }} 
+                                    <label>MyCouponList Total Coupons</label> : {{ $total_add }} 
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label>Total Used Coupon</label> : {{ $total_use }} 

@@ -1,8 +1,10 @@
 CKEDITOR.replace('content_he', {
-    removeButtons: 'Image'
+    removeButtons: 'Image',
+    contentsLangDirection: 'rtl',
 });
 CKEDITOR.replace('content_ab', {
-    removeButtons: 'Image'
+    removeButtons: 'Image',
+    contentsLangDirection: 'rtl',
 });
 CKEDITOR.replace('content', {
     removeButtons: 'Image'

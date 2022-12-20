@@ -131,11 +131,13 @@
 <script>
     CKEDITOR.replace('ckeditor_he', {
     filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
-    filebrowserUploadMethod: 'form'
+    filebrowserUploadMethod: 'form',
+    contentsLangDirection: 'rtl',
 });
 CKEDITOR.replace('ckeditor_ab', {
     filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",
-    filebrowserUploadMethod: 'form'
+    filebrowserUploadMethod: 'form',
+    contentsLangDirection: 'rtl',
 });
 CKEDITOR.replace('ckeditor', {
     filebrowserUploadUrl: "{{route('ck.upload', ['_token' => csrf_token() ])}}",

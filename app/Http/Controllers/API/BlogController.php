@@ -11,6 +11,7 @@ use App\User;
 use App\BlogCommentLike;
 use App\BlogReport;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 
 class BlogController extends Controller
 {
@@ -20,6 +21,17 @@ class BlogController extends Controller
 
         $input = $request->all();
         $input['user_id'] = $user_id;
+
+        $BLOG_COMMENT_PIC = Config::get('constants.BLOG_COMMENT_PIC');
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path().'/uploads/blog_comment_img';
+            $image->move($destinationPath, $cover_image_name);
+            $pic = $BLOG_COMMENT_PIC.$cover_image_name;
+            $input['image']  = $pic;
+        }
 
         $blog_comment_res = BlogComment::create($input);
 
