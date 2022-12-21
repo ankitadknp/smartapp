@@ -66,9 +66,19 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-4">
+                                    <label>Profile Photo</label> : 
+                                    @if ($user->profile_pic != null)
+                                    <img alt="image" src="{{$user->profile_pic}}" class="rounded-circle mr-1" width="100" height="100">
+                                    @else
+                                    <img alt="image" src="{{$NO_PROFILE_PIC}}" class="rounded-circle mr-1" width="100" height="100">
+                                    @endif
+                                </div>
+
+                                <div class="form-group col-md-4">
                                     <label>District</label> : {{ $user->district }} 
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

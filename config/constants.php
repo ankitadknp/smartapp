@@ -7,4 +7,5 @@ return [
     'PROFILE_PIC' 	=> 'http://15.207.152.121/smartapp/public/uploads/profile_pic/',
     'BLOG_COMMENT_PIC' 	=> 'http://15.207.152.121/smartapp/public/uploads/blog_comment_img/',
     'FEED_COMMENT_PIC' 	=> 'http://15.207.152.121/smartapp/public/uploads/feed_comment_img/',
+    'NO_PROFILE_PIC' 	=> 'http://15.207.152.121/smartapp/public/assets/img/avatar/avatar-1.png',
 ];

@@ -21,7 +21,7 @@ $module_permission = !empty($module_permissions['client']) ? $module_permissions
                 <?php 
                 $pemission = in_array("create", $module_permission)  ? 'true' : 'false';
                 if($pemission == 'true') { ?>
-                    <a href="#" class="float-right btn btn-primary add_client">Add New</a>
+                    <a href="{{route("client.create")}}" class="float-right btn btn-primary add_client">Add New</a>
                 <?php }?>
             </div>
         </div>
@@ -101,7 +101,7 @@ $module_permission = !empty($module_permissions['client']) ? $module_permissions
 </div>
 
 <!-- add client -->
-<div class="modal fade" id="add_client" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+<!-- <div class="modal fade" id="add_client" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -267,7 +267,7 @@ $module_permission = !empty($module_permissions['client']) ? $module_permissions
             </div>
         </div>
     </div>
-</div>
+</div> -->
 @endsection
 
 @section('addjs')

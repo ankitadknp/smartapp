@@ -122,11 +122,11 @@ class ClientController extends Controller
     {
         
         $user_id  = $request->user_id ;
-        $STORE_IMGAE_URL =  Config::get('constants.BUSINESS_LOGO_URL');
+        $PROFILE_PIC =  Config::get('constants.PROFILE_PIC');
 
         if ( empty($user_id) )
         {
-            $validator = Validator::make($request->all(),[
+            $request->validate([
                 'email' => [
                     'required',
                     'email',
@@ -152,9 +152,20 @@ class ClientController extends Controller
             ]);
             $pwd = Hash::make($request->get('password'));
             $msg = 'Client Added Successfully.';
+
+            $pic = '';
+
+            if ($request->hasFile('profile_pic')) {
+                $image = $request->file('profile_pic');
+                $cover_image_name = time() . '_' . rand(0, 999999) . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path().'/uploads/profile_pic';
+                $image->move($destinationPath, $cover_image_name);
+                $pic = $PROFILE_PIC.$cover_image_name;
+            }
+
         } else 
         {
-            $validator = Validator::make($request->all(),[
+            $request->validate([
                 'email' => [
                     'required',
                     'email',
@@ -184,10 +195,10 @@ class ClientController extends Controller
             $msg = 'Client Update Successfully';
         }
 
-        if($validator->fails())
-        {
-            return Response::json(['errors' => $validator->errors()]);
-        }
+        // if($validator->fails())
+        // {
+        //     return Response::json(['errors' => $validator->errors()]);
+        // }
 
         $add_new = [
             'first_name' => $request->get('first_name'),
@@ -207,17 +218,14 @@ class ClientController extends Controller
             'city' => $request->get('city'),
             'status' => 1,
             'user_status' =>0,
+            'profile_pic' => $pic
         ];
 
         
         User::updateOrCreate(['id' => $user_id ],$add_new);
 
-        return response()->json(
-            [
-                'success' => true,
-                'message' => $msg
-            ]
-        );
+   
+        return redirect()->route($this->route_name.'.index')->with('success', $msg);
 
     }
 
@@ -249,8 +257,9 @@ class ClientController extends Controller
 
     public function show($id)
     {
+        $NO_PROFILE_PIC = Config::get('constants.NO_PROFILE_PIC');
         $user = User::where('id',$id)->first();
-        return view($this->route_name.'.show')->with(['user' => $user]);
+        return view($this->route_name.'.show')->with(['user' => $user,'NO_PROFILE_PIC'=>$NO_PROFILE_PIC]);
     }
 
     public function edit($id)
