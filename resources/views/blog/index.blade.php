@@ -195,5 +195,24 @@ var module_permission = {!! json_encode(array_values($module_permission)) !!};
 </script>
 
 <!-- Page Specific JS File -->
+<!-- <script>
+  var videoPlayer = document.getElementById('videoPlayer');
+
+// Auto play, half volume.
+videoPlayer.play()
+videoPlayer.volume = 0.5;
+
+// Play / pause.
+videoPlayer.addEventListener('click', function () {
+    if (videoPlayer.paused == false) {
+        videoPlayer.pause();
+        videoPlayer.firstChild.nodeValue = 'Play';
+    } else {
+        videoPlayer.play();
+        videoPlayer.firstChild.nodeValue = 'Pause';
+    }
+});
+</script> -->
 <script src="{{asset("public/assets/pages-js/blog/index.js?v1")}}"></script>
+
 @endsection

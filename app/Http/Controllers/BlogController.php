@@ -345,9 +345,21 @@ class BlogController extends Controller
                     $u_name = $user['business_name'];
                 }
                 $comment = $val->comment;
+                $image = $val->image;
+                $ext = substr($image, strrpos($image, '.') + 1);
                 $date = date_format($val->created_at, 'Y-m-d');
 
-                $all_comment .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$comment.'</div></div><div class="budget-price"></div></div></div></li>';
+                $all_comment .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$comment;
+
+                if ($ext == 'mp4' || $ext == 'MOV' || $ext == 'mov')  {
+                    $all_comment .='<a href="'.$image.'" target="_blank" rel="noopener noreferrer"><video height="15" width="15" class="embed-responsive-item" controls id="videoPlayer">
+                        <source src="'.$image.'" type="video/mp4">
+                        </video></a>';
+                } else if ( $image != null && $image != "undefined" ){
+                    $all_comment .='<img class="mr-3 rounded" width="15" src="'.$image.'">';
+                }
+
+                $all_comment .= '</div></div><div class="budget-price"></div></div></div></li>';
             }
             $all_comment .= '</ul></div>';
             $blog_comment = $all_comment;
