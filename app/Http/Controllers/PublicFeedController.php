@@ -482,31 +482,4 @@ class PublicFeedController extends Controller {
 
     } 
 
-   
-
-    public function image_delete(Request $request) 
-    {
-        $id = $request->get("id");
-
-        $find_record = PublicFeedImage::find($id);
-
-        $response = array("success" => false, "message" => "Problem while deleting this record");
-
-        if ($find_record) {
-            $destinationPath = public_path("/uploads/");
-            $new_path = substr($find_record->image, strpos($find_record->image, "public_feed/") );  
-            $image_path = $destinationPath.$new_path;
-
-            if (File::exists($image_path)) {
-                unlink($image_path);
-            }
-
-            $find_record->delete();
-
-            $response['success'] = true;
-            $response['message'] = "image deleted successfully";
-        }
-        return $response;
-    }
-   
 }

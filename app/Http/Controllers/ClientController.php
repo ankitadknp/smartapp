@@ -52,7 +52,7 @@ class ClientController extends Controller
 
         $sidx = 'id';
 
-        $list_query = User::select("*")->where('user_status',0);
+        $list_query = User::select("*")->where('user_status',0)->where('is_account_delete',0);
 
         if (!empty($name)) {
             $list_query = $list_query->where(DB::raw("CONCAT(first_name,' ',last_name)"), "LIKE", "%" . $name . "%");

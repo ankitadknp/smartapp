@@ -54,7 +54,7 @@ class MerchantController extends Controller
 
         $sidx = 'id';
 
-        $list_query = User::select("*")->where('user_status','=','1');
+        $list_query = User::select("*")->where('user_status','=','1')->where('is_account_delete',0);
 
         if (!empty($business_name)) {
             $list_query = $list_query->where('business_name', 'LIKE', '%'.$business_name.'%');

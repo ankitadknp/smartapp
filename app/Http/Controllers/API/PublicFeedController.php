@@ -12,9 +12,11 @@ use App\PublicFeedReport;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Pagination\Paginator;
 
 class PublicFeedController extends Controller
 {
+
     public function public_feed_comment(Request $request)
     {
         $user_id = Auth::user()->id;
@@ -194,6 +196,43 @@ class PublicFeedController extends Controller
             'status' => 200
         ]);
     }
+
+    // public function public_feed_list(Request $request)
+    // {
+    //     $search = $request->search;
+
+    //     $user_id = Auth::user()->id;
+
+    //     $feedobj = PublicFeed::with('images')
+    //                 ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 2) as is_like'))
+    //                 ->leftJoin('public_feed_like', function($join) use($user_id) {
+    //                     $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
+    //                     ->where('public_feed_like.user_id',$user_id);
+    //                 })
+    //                 ->where(function ($query) use ($search) {
+    //                     if(!empty($search)) {
+    //                         $query->where('public_feed.public_feed_title', 'LIKE', '%'.$search.'%')
+    //                         ->orWhere('public_feed.public_feed_title_ab', 'LIKE', '%'.$search.'%')
+    //                         ->orWhere('public_feed.public_feed_title_he', 'LIKE', '%'.$search.'%')
+    //                         ->orWhere('public_feed.content', 'LIKE', '%'.$search.'%')
+    //                         ->orWhere('public_feed.content_he', 'LIKE', '%'.$search.'%')
+    //                         ->orWhere('public_feed.content_ab', 'LIKE', '%'.$search.'%');
+    //                     }
+    //                 })
+    //                 ->where('public_feed.status','=',1)
+    //                 ->skip($request->offset) //offset
+    //                 ->take($request->limit) //limit
+    //                 ->orderby('public_feed.public_feed_id','DESC')
+    //                 ->get();
+
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data'    => $feedobj,
+    //         'message' => 'Public Feed List',
+    //         'status' => 200
+    //     ]);
+    // }
 
     public function recent_feed_comment_list(Request $request)
     {

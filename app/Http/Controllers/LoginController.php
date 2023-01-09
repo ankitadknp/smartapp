@@ -42,12 +42,12 @@ class LoginController extends Controller {
             $user = User::where('email',$email)->whereIn('user_status',[3,4,1])->first();
             if ($user->status == 1)
             { 
-                // session(['user' => $user, 'lifetime' => 1]);
-
-                // Session::put('user',$user);
-
                 if ($user->user_status == 1) {
-                    return redirect()->route('merchantapp.dashboard');
+                    if ($user->is_account_delete == 0) {
+                        return redirect()->route('merchantapp.dashboard');
+                    } else {
+                        return \Redirect::back()->withErrors(["User is not found"]);
+                    }
                 } else {
                     $user_roles_data = $user->getUserRole;
 

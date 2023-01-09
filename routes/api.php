@@ -26,6 +26,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('change_password', [UserController::class, 'change_password']);
     Route::get('get_profile', [UserController::class, 'get_profile']);
     Route::post('update_profile', [UserController::class, 'update_profile']);
+    Route::get('delete_account', [UserController::class, 'delete_account']);
 
     Route::get('language_list', [LanguageController::class, 'language_list']);
     Route::post('language_setting', [LanguageController::class, 'language_setting']);

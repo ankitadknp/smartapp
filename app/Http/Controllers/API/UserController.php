@@ -26,8 +26,9 @@ class UserController extends Controller
                     'max:50',
                     Rule::unique('users')
                         ->where('user_status', $request->user_status)
+                        ->where('is_account_delete','=',0)
                 ],
-                'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
+                // 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
                 'password' => 'min:6|required_with:password_confirmation|same:password_confirmation',
                 'password_confirmation' => 'min:6',
                 'website' => 'required|max:50',
@@ -65,13 +66,14 @@ class UserController extends Controller
                     'max:50',
                     Rule::unique('users')
                         ->where('user_status', $request->user_status)
+                        ->where('is_account_delete','=',0)
                 ],
                 'password' => 'min:6|required_with:password_confirmation|same:password_confirmation',
                 'password_confirmation' => 'min:6',
                 'first_name' => 'required|string|max:50',
                 'last_name' => 'required|string|max:50',
-                'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
-                'id_number' => 'required|max:20',
+                // 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
+                // 'id_number' => 'required|max:20',
                 'marital_status' => 'required',
                 'no_of_child' => 'required',
                 'occupation' => 'required|max:50',
@@ -214,83 +216,91 @@ class UserController extends Controller
                 $name = $user->business_name;
             }
 
-            if ( $user->status == 1) 
-            {
+            if ( $user->is_account_delete == 0) {
+                if ( $user->status == 1) 
+                {
 
-                if ( $user->is_verified_mobile_no == 1 ) {
-                    $msg = 'Login Successfully';
-                } else {
-                    $controller = new UserController();
-                    $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name);
-                    $verify_otp_time = Carbon::now()->addMinutes(5);
+                    if ( $user->is_verified_mobile_no == 1 ) {
+                        $msg = 'Login Successfully';
+                    } else {
+                        $controller = new UserController();
+                        $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name);
+                        $verify_otp_time = Carbon::now()->addMinutes(5);
 
-                    User::where('id',$user->id)->update(['verify_otp'=>$verify_otp,'verify_otp_time'=>$verify_otp_time]);
+                        User::where('id',$user->id)->update(['verify_otp'=>$verify_otp,'verify_otp_time'=>$verify_otp_time]);
 
-                    $msg = 'OTP has been sent your mail.Please check your mail';
-                }
-               
-
-                if ( !empty($request->latitude) && !empty($request->longitude) ) {
-                  User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude]);
-                } 
-
-                $user_device = DB::table('user_device')->where('user_id',$user->id)->first();
-
-                if ( !empty($user_device) ) {
-
-                    DB::table('user_device')->where('user_id',$user->id)->update
-                    ([
-                        'device_token'=>$request->device_token,
-                        'device_type'=>$request->device_type,
-                    ]);
-
-                } else {
-                    DB::table('user_device')->insert
-                    ([
-                        'user_id' =>$user->id,
-                        'device_token'=>$request->device_token,
-                        'device_type'=>$request->device_type,
-                    ]);
-                }
-                    
-                $success['token'] =  $user->createToken('SmartApp')->accessToken;
-                $success['user_id'] =  $user->id;
-                $success['email'] =  $user->email;
-                $success['first_name'] =  ($user->first_name != null)?$user->first_name:'';
-                $success['last_name'] =  ($user->last_name != null)?$user->last_name:'';
-                $success['phone_number'] = ($user->phone_number != null)?$user->phone_number:'';
-                $success['id_number'] =($user->id_number != null)?$user->id_number:'';
-                $success['marital_status'] =  ($user->marital_status != null)?$user->marital_status:'';
-                $success['no_of_child'] =  $user->no_of_child;
-                $success['occupation'] =  ($user->occupation != null || $user->occupation == 0)?$user->occupation:'';
-                $success['education_level'] =  ($user->education_level != null)?$user->education_level:'';
-                $success['business_name'] =  ($user->business_name != null)?$user->business_name:'';
-                $success['registration_number'] =  ($user->registration_number != null)?$user->registration_number:'';
-                $success['website'] =  ($user->website != null)?$user->website:'';
-                $success['business_activity'] =  ($user->business_activity != null)?$user->business_activity:'';
-                $success['business_sector'] =  ($user->business_sector != null)?$user->business_sector:'';
-                $success['establishment_year'] =  ($user->establishment_year != null)?$user->establishment_year:'';
-                $success['business_logo'] =  ($user->user_status == 1)?$user->business_logo:'';
-                $success['business_hours'] =  ($user->business_hours != null)?$user->business_hours:'';
-                $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
-                $success['street_address_name'] =  ($user->street_address_name != null)?$user->street_address_name:'';
-                $success['street_number'] =  ($user->street_number != null)?$user->street_number:'';
-                $success['house_number'] =  ($user->house_number != null)?$user->house_number:'';
-                $success['city'] =  ($user->city != null)?$user->city:'';
-                $success['district'] =  ($user->district != null)?$user->district:'';
-                $success['user_status'] =  $user->user_status;
+                        $msg = 'OTP has been sent your mail.Please check your mail';
+                    }
                 
-                return response()->json([
-                    'success' => true,
-                    'data'    => $success,
-                    'message' => $msg,
-                    'status' => 200
-                ]);
 
+                    if ( !empty($request->latitude) && !empty($request->longitude) ) {
+                    User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude]);
+                    } 
+
+                    $user_device = DB::table('user_device')->where('user_id',$user->id)->first();
+
+                    if ( !empty($user_device) ) {
+
+                        DB::table('user_device')->where('user_id',$user->id)->update
+                        ([
+                            'device_token'=>$request->device_token,
+                            'device_type'=>$request->device_type,
+                        ]);
+
+                    } else {
+                        DB::table('user_device')->insert
+                        ([
+                            'user_id' =>$user->id,
+                            'device_token'=>$request->device_token,
+                            'device_type'=>$request->device_type,
+                        ]);
+                    }
+                        
+                    $success['token'] =  $user->createToken('SmartApp')->accessToken;
+                    $success['user_id'] =  $user->id;
+                    $success['email'] =  $user->email;
+                    $success['first_name'] =  ($user->first_name != null)?$user->first_name:'';
+                    $success['last_name'] =  ($user->last_name != null)?$user->last_name:'';
+                    $success['phone_number'] = ($user->phone_number != null)?$user->phone_number:'';
+                    $success['id_number'] =($user->id_number != null)?$user->id_number:'';
+                    $success['marital_status'] =  ($user->marital_status != null)?$user->marital_status:'';
+                    $success['no_of_child'] =  $user->no_of_child;
+                    $success['occupation'] =  ($user->occupation != null || $user->occupation == 0)?$user->occupation:'';
+                    $success['education_level'] =  ($user->education_level != null)?$user->education_level:'';
+                    $success['business_name'] =  ($user->business_name != null)?$user->business_name:'';
+                    $success['registration_number'] =  ($user->registration_number != null)?$user->registration_number:'';
+                    $success['website'] =  ($user->website != null)?$user->website:'';
+                    $success['business_activity'] =  ($user->business_activity != null)?$user->business_activity:'';
+                    $success['business_sector'] =  ($user->business_sector != null)?$user->business_sector:'';
+                    $success['establishment_year'] =  ($user->establishment_year != null)?$user->establishment_year:'';
+                    $success['business_logo'] =  ($user->user_status == 1)?$user->business_logo:'';
+                    $success['business_hours'] =  ($user->business_hours != null)?$user->business_hours:'';
+                    $success['is_verified_mobile_no'] = $user->is_verified_mobile_no;
+                    $success['street_address_name'] =  ($user->street_address_name != null)?$user->street_address_name:'';
+                    $success['street_number'] =  ($user->street_number != null)?$user->street_number:'';
+                    $success['house_number'] =  ($user->house_number != null)?$user->house_number:'';
+                    $success['city'] =  ($user->city != null)?$user->city:'';
+                    $success['district'] =  ($user->district != null)?$user->district:'';
+                    $success['user_status'] =  $user->user_status;
+                    
+                    return response()->json([
+                        'success' => true,
+                        'data'    => $success,
+                        'message' => $msg,
+                        'status' => 200
+                    ]);
+
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' =>'User is blocked',
+                        'status' => 401
+                    ]);
+                }
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' =>'User is blocked',
+                    'message' =>'User is not found',
                     'status' => 401
                 ]);
             }
@@ -533,8 +543,9 @@ class UserController extends Controller
                     'max:50',
                     Rule::unique('users')->ignore($id)
                         ->where('user_status', $request->user_status)
+                        ->where('is_account_delete','=',0)
                 ],
-                'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
+                // 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
                 'website' => 'required|max:50',
                 'business_activity' => 'required',
                 'business_sector' => 'required',
@@ -566,11 +577,12 @@ class UserController extends Controller
                     'max:50',
                     Rule::unique('users')->ignore($id)
                         ->where('user_status', $request->user_status)
+                        ->where('is_account_delete','=',0)
                 ],
                 'first_name' => 'required|string|max:50',
                 'last_name' => 'required|string|max:50',
-                'phone_number' =>'required|string|min:10|max:15|regex:/[0-9]{9}/',
-                'id_number' => 'required|max:20',
+                // 'phone_number' =>'required|string|min:10|max:15|regex:/[0-9]{9}/',
+                // 'id_number' => 'required|max:20',
                 'marital_status' => 'required',
                 'no_of_child' => 'required',
                 'occupation' => 'required|max:50',
@@ -787,6 +799,22 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' =>'OTP has been sent your mail.Please check your mail',
+            'status'=>200
+        ]);
+    }
+
+    public function delete_account(Request $request)
+    {
+        $user = auth()->user();
+
+        DB::table('users')->where('id',$user->id)->update
+        ([
+            'is_account_delete' => 1,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' =>'User account is delete successfully',
             'status'=>200
         ]);
     }
