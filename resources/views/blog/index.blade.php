@@ -87,7 +87,7 @@ $module_permission = !empty($module_permissions['blog']) ? $module_permissions['
                                         <th>Category</th>
                                         <th>Blog Title</th>
                                         <th>Status</th>
-                                        <th>Report</th>
+                                        <th>Comment Report</th>
                                         <th>Comment</th>
                                         <th>Like</th>
                                         <th>Edit</th>
@@ -194,25 +194,70 @@ var controller_url = "{{route('blog.index')}}";
 var module_permission = {!! json_encode(array_values($module_permission)) !!};
 </script>
 
-<!-- Page Specific JS File -->
-<!-- <script>
-  var videoPlayer = document.getElementById('videoPlayer');
+<script>
+    //block user
+    jQuery(document).on('click', '.block_user', function () 
+    {
+        var id = jQuery(this).attr('data-id');
 
-// Auto play, half volume.
-videoPlayer.play()
-videoPlayer.volume = 0.5;
+        var block_flag = jQuery(this).attr('data-flag');
 
-// Play / pause.
-videoPlayer.addEventListener('click', function () {
-    if (videoPlayer.paused == false) {
-        videoPlayer.pause();
-        videoPlayer.firstChild.nodeValue = 'Play';
-    } else {
-        videoPlayer.play();
-        videoPlayer.firstChild.nodeValue = 'Pause';
-    }
-});
-</script> -->
+        var target = $(this).attr("href");
+        var token = jQuery("#csrf-token").prop("content");
+
+        if (block_flag == 1) {
+            var block_title = 'Are you sure you want to block this record?';
+            var block_text = 'Once blocked, you will not be able to recover this data!';
+        } else {
+            var block_title = 'Are you sure you want to unblock this record?';
+            var block_text = 'Once unblocked, you will not be able to recover this data!';
+        }
+
+        if (!isNaN(id)) {
+            swal({
+                title: block_title,
+                text: block_text,
+                icon: 'warning',
+                buttons: true,
+                dangerMode: true,
+            }).then(function(willDelete) {
+                if (willDelete) {
+                    jQuery.ajax({
+                        "url": controller_url + '/block_user',
+                        type: "POST",
+                        data: {
+                            'id': id,
+                            '_token': token,
+                            'block_flag':block_flag,
+                        },
+                        dataType: 'json',
+                        cache: false,
+                        
+                        success: function (response) {
+                            if (response.success == true) {
+                                iziToast.success({
+                                    message: response.message,
+                                    position: 'topRight'
+                                });
+                            } else {
+                                iziToast.error({
+                                    message: response.message,
+                                    position: 'topRight'
+                                });
+                            }
+                            $("#myModal").modal("hide"); 
+                            // location.reload();
+                            // $('#comment').reload();
+                            // $("#comment .modal-body").load(target, function() { 
+                            //     $("#comment").modal("hide"); 
+                            // });
+                        }
+                    })
+                }
+            });
+        }
+    });
+</script>
+
 <script src="{{asset("public/assets/pages-js/blog/index.js?v1")}}"></script>
-
 @endsection

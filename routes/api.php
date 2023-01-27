@@ -38,6 +38,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('blog_comment_list', [BlogController::class, 'blog_comment_list']);
     Route::post('blog_report', [BlogController::class, 'blog_report']);
     Route::post('blog_details', [BlogController::class, 'blog_details']);
+    Route::post('remove_comment', [BlogController::class, 'remove_comment']);
 
     Route::post('public_feed_list', [PublicFeedController::class, 'public_feed_list']);
     Route::post('public_feed_comment', [PublicFeedController::class, 'public_feed_comment']);
@@ -67,6 +68,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('add_notification', [NotificationController::class, 'add_notification']);
     Route::get('notification_list', [NotificationController::class, 'notification_list']);
+    Route::get('clear_notification', [NotificationController::class, 'clear_notification']);
 
     Route::get('logout', [UserController::class, 'logout']);
     

@@ -215,6 +215,7 @@ jQuery(document).ready(function () {
         }
     });
 
+  
     jQuery('.search_filter').click(function () {
         jQuery(data_table).dataTable().fnDestroy();
         get_all_data();
@@ -250,7 +251,7 @@ jQuery(document).ready(function () {
             },
             success: function (response) {
                 $('#view-comments').html(response.blog_comment);
-                $('#comment_title').html('Blog Comments ('+response.comment_count+')');
+                $('#comment_title').html('Blog Comment ('+response.comment_count+')');
                 $("body").removeClass("loading");
             }
         })
@@ -276,7 +277,7 @@ jQuery(document).ready(function () {
             },
             success: function (response) {
                 $('#view-reports').html(response.blog_report);
-                $('#report_title').html('Blog Reports ('+response.report_count+')');
+                $('#report_title').html('Blog Comment Report ('+response.report_count+')');
                 $("body").removeClass("loading");
             }
         })
@@ -303,11 +304,12 @@ jQuery(document).ready(function () {
             },
             success: function (response) {
                 $('#view-like').html(response.blog_like);
-                $('#like_title').html('Blog Likes ('+response.like_count+')');
+                $('#like_title').html('Blog Like ('+response.like_count+')');
                 $("body").removeClass("loading");
             }
         })
     });
+    
 
     //close modal
     $('.close').click(function (){

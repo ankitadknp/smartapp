@@ -65,7 +65,12 @@ class PublicFeedController extends Controller {
 
             foreach ($list_of_all_data as $value) {
 
-                $report_count = PublicFeedReport::where('public_feed_id',$value->public_feed_id)->count();
+                // $report_count = FeedCommentReport::leftJoin('public_feed_comment', function($join) {
+                //     $join->on('public_feed_comment.public_feed_comment_id', '=', 'feed_comment_report.public_feed_comment_id');
+                //     })->where('public_feed_comment.public_feed_id',$value->public_feed_id)->where('public_feed_comment.is_remove_comment','=',1)->count();
+
+                $report_count = PublicFeedComment::where('public_feed_comment.public_feed_id',$value->public_feed_id)->where('public_feed_comment.is_remove_comment','=',1)->count();
+
                 $comment_count = PublicFeedComment::where('public_feed_id',$value->public_feed_id)->count();
                 $like_count = PublicFeedLike::where('public_feed_id',$value->public_feed_id)->count();
 
@@ -156,9 +161,12 @@ class PublicFeedController extends Controller {
                         $title = 'The Public Feed has been added';
                         $type = 2;
                         $u_id = $val->user_id;
+                        $coupon_id =0;
+                        $feed_id = $added->public_feed_id ;
+                        $blog_id =  0;
                         $device_token = $val->device_token;
-                        $notification_controller->add_notification($msgVal,$title,$u_id,$type);
-                        $notification_controller->send_notification($msgVal,$device_token,$title);
+                        $notification_controller->add_notification($msgVal,$title,$u_id,$type,$coupon_id,$feed_id,$blog_id);
+                        $notification_controller->send_notification($msgVal,$device_token,$title,$feed_id, $type);
                     }
                 }
             }
@@ -356,46 +364,68 @@ class PublicFeedController extends Controller {
     public function show(Request $request) 
     {
         $id = $request->get("id");
-        $feed = PublicFeedReport::where('public_feed_id','=',$id)->get();
-        $report_count = PublicFeedReport::where('public_feed_id',$id)->count();
+
+        $report_count = PublicFeedComment::where('public_feed_comment.public_feed_id',$id)->where('public_feed_comment.is_remove_comment','=',1)->count();
+
+        $feed = PublicFeedComment::where('public_feed_comment.public_feed_id',$id)->where('public_feed_comment.is_remove_comment','=',1)->get();
 
         $feed_report = [];
         $path = Config::get('constants.USER_ICON');
 
         if ( $feed != '[]') 
         {
-            $all_report = '<div class="card-body" id="top-5-scroll"><ul class="list-unstyled list-unstyled-border">';
+            $all_comment = '<div class="card-body" id="feed-scroll"><ul class="list-unstyled list-unstyled-border">';
             foreach ($feed as $val)
             {
                 $user = User::find($val->user_id);
+
                 if ($user['user_status'] == 0 ) {
                     $u_name = $user['first_name'].' '.$user['last_name'];
                 } else if ($user['user_status'] == 1 ) {
                     $u_name = $user['business_name'];
                 }
-                $report = $val->report;
                 $date =  date_format($val->created_at,"Y-m-d");
-                $report = $val->report;
+                $comment = $val->comment;
+                $image = $val->image;
+                $ext = substr($image, strrpos($image, '.') + 1);
 
-                $all_report .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$report.'</div></div><div class="budget-price"></div></div></div></li></ul></div>';
+                if ($user['is_block'] == 0 ) {
+                    $block_flag = 'Block';
+                    $is_block = 1 ;
+                } else {
+                    $block_flag = 'Unblock';
+                    $is_block = 0 ;
+                }
+
+                $all_comment .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right comment_report"><div class="media-title">'.$u_name.'</div><div class="font-weight-600 text-muted text-small comment_date">'.$date.'<a href="#" class="badge badge-pill badge-primary mb-1 block_user" data-id="'.$val->user_id.'" data-flag="'.$is_block.'">'.$block_flag.'</a></div></div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$comment;
+
+                if ($ext == 'mp4' || $ext == 'MOV' || $ext == 'mov')  {
+                    $all_comment .='<a href="'.$image.'" target="_blank" rel="noopener noreferrer"><video height="15" width="15" class="embed-responsive-item" controls >
+                        <source src="'.$image.'" type="video/mp4">
+                        </video></a>';
+                } else if ( $image != null && $image != "undefined" ){
+                    $all_comment .='<img class="mr-3 rounded" width="15" src="'.$image.'">';
+                }
+
+                $all_comment .='</div></div><div class="budget-price"></div></div></div></li>';
             }
 
-            $all_report .= '</ul></div>';
-            $feed_report = $all_report;
+            $all_comment .= '</ul></div>';
+            $feed_report = $all_comment;
 
         } else {
-            $feed_report = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Reports Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li>';
+            $feed_report = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Report Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
         }
 
         return json_encode(['feed_report'=>$feed_report,'report_count'=>$report_count]);
 
-    }   
+    } 
 
     public function comment(Request $request) 
     {
         $id = $request->get("id");
+
         $feed = PublicFeedComment::where('public_feed_id','=',$id)->get();
-        
         $comment_count = PublicFeedComment::where('public_feed_id',$id)->count();
 
         $feed_comment = [];
@@ -407,6 +437,7 @@ class PublicFeedController extends Controller {
             foreach ($feed as $val)
             {
                 $user = User::find($val->user_id);
+
                 if ($user['user_status'] == 0 ) {
                     $u_name = $user['first_name'].' '.$user['last_name'];
                 } else if ($user['user_status'] == 1 ) {
@@ -417,6 +448,7 @@ class PublicFeedController extends Controller {
                 $image = $val->image;
                 $ext = substr($image, strrpos($image, '.') + 1);
 
+           
                 $all_comment .= '<li class="media"><img class="mr-3 rounded" width="55" src="'.$path.'/assets/img/avatar/avatar-1.png"><div class="media-body"><div class="float-right"><div class="font-weight-600 text-muted text-small">'.$date.'</div></div><div class="media-title">'.$u_name.'</div><div class="mt-1"><div class="budget-price"><div class="budget-price-label">'.$comment;
 
                 if ($ext == 'mp4' || $ext == 'MOV' || $ext == 'mov')  {
@@ -434,7 +466,7 @@ class PublicFeedController extends Controller {
             $feed_comment = $all_comment;
 
         } else {
-            $feed_comment = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Comments Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+            $feed_comment = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Comment Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
         }
 
         return json_encode(['feed_comment'=>$feed_comment,'comment_count'=>$comment_count]);
@@ -475,7 +507,7 @@ class PublicFeedController extends Controller {
             $feed_like = $all_like;
 
         } else {
-            $feed_like = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Likes Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
+            $feed_like = '<div class="card-body"><ul class="list-unstyled list-unstyled-border"><li class="media"><img class="mr-3 rounded" width="25" src="'.$path.'/assets/img/download (5).jpg"><div class="media-body"><div class="media-title">No Like Found</div><div class="mt-1"></div><div class="budget-price"></div></div></div></li></ul></div>';
         }
 
         return json_encode(['feed_like'=>$feed_like,'like_count'=>$like_count]);

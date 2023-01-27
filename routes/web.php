@@ -25,6 +25,9 @@ Route::post('password/reset', 'ResetPasswordController@resetPassword')->name('pa
 Route::get('/password/success', 'ResetPasswordController@showResetSuccessForm')->name('password.success');
 
 Route::post('ck/upload','CKImageUploadController@uploadImage')->name('ck.upload');
+Route::post("public_feed/image_delete", "CKImageUploadController@image_delete")->name("public_feed.image_delete");
+Route::post('blog/block_user','CKImageUploadController@block_user')->name('blog.block_user');
+Route::post('public_feed/block_user','CKImageUploadController@block_user')->name('public_feed.block_user');
 
 Route::group(['middleware' => 'prevent-back-history'],function(){
 
@@ -65,7 +68,6 @@ Route::group(['middleware' => 'prevent-back-history'],function(){
             Route::post("show", "PublicFeedController@show")->name("public_feed.show");
             Route::post("comment", "PublicFeedController@comment")->name("public_feed.comment");
             Route::post("like", "PublicFeedController@like")->name("public_feed.like");
-            Route::post("image_delete", "PublicFeedController@image_delete")->name("public_feed.image_delete");
         });
 
         //Sub Admin Module Routing

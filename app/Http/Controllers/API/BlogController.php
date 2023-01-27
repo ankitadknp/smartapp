@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use Validator,DB;
 use App\Blog;
 use App\BlogComment;
+use App\PublicFeedComment;
 use App\BlogLike;
 use App\User;
+use App\BlogCommentReport;
+use App\FeedCommentReport;
 use App\BlogCommentLike;
 use App\BlogReport;
 use Illuminate\Support\Facades\Auth;
@@ -75,22 +78,34 @@ class BlogController extends Controller
 
         }
 
-        if ($request->is_like == 1) {
-            $like_count = $b_list->blog_like_count + 1 ;
-            $unlike_count = ( $b_list->blog_unlike_count != 0 ) ? $b_list->blog_unlike_count - 1  : 0;
-        } else {
-            $unlike_count = $b_list->blog_unlike_count + 1 ;
-            $like_count = ($b_list->blog_like_count != 0 ) ? $b_list->blog_like_count - 1 : 0 ;
-        }
+        if ( !empty($b_list)) {
 
-        Blog::where('blog_id',$request->blog_id)->update(['blog_like_count'=>$like_count,'blog_unlike_count'=>$unlike_count]);
-        
-        return response()->json([
-            'success' => true,
-            'data'    => $success,
-            'message' => $msg,
-            'status' => 200
-        ]);
+            if ($request->is_like == 1) {
+                $like_count = $b_list->blog_like_count + 1 ;
+                $unlike_count = ( $b_list->blog_unlike_count != 0 ) ? $b_list->blog_unlike_count - 1  : 0;
+            } else {
+                $unlike_count = $b_list->blog_unlike_count + 1 ;
+                $like_count = ($b_list->blog_like_count != 0 ) ? $b_list->blog_like_count - 1 : 0 ;
+            }
+
+
+
+            Blog::where('blog_id',$request->blog_id)->update(['blog_like_count'=>$like_count,'blog_unlike_count'=>$unlike_count]);
+            
+            return response()->json([
+                'success' => true,
+                'data'    => $success,
+                'message' => $msg,
+                'status' => 200
+            ]);
+        } else {
+                 
+            return response()->json([
+                'success' => false,
+                'message' => 'Data not found!',
+                'status' => 201,
+            ]);
+        }
     }
 
     public function blog_comment_like(Request $request)
@@ -120,10 +135,13 @@ class BlogController extends Controller
                     $msgVal  = $u_name." liked your comment on '$blog->blog_title' Blog";
                     $title = 'Like The Blog Comment';
                     $type = 1;
+                    $coupon_id =0;
+                    $feed_id = 0;
+                    $blog_id =  $request->blog_id;
                     $u_id = $blog_comment_data->user_id;
                     $device_token = $user_device->device_token;
-                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
-                    $notification_controller->send_notification($msgVal,$device_token,$title);
+                    $notification_controller->add_notification($msgVal,$title,$u_id,$type,$coupon_id,$feed_id,$blog_id);
+                    $notification_controller->send_notification($msgVal,$device_token,$title,$blog_id,$type);
                 }
             }
 
@@ -195,6 +213,7 @@ class BlogController extends Controller
                             $query->where('blog.category_id', $category_id);
                         }
                     })
+                    ->where('blog.is_report','=',0)
                     ->orderby('blog.blog_id','DESC')
                     ->get();
     
@@ -246,6 +265,8 @@ class BlogController extends Controller
                         )
                         ->where('blog_comment.blog_id',$request->blog_id)
                         ->where('blog.status','=',1)
+                        ->where('users.is_block','=',0)
+                        ->where('blog_comment.is_remove_comment','=',0)
                         ->orderby('blog_comment.blog_comment_id','DESC')
                         ->get();
 
@@ -265,7 +286,6 @@ class BlogController extends Controller
 
         $validator = Validator::make($request->all(), [
             'blog_id' => 'required',
-            'report' => 'required',
         ]);
     
         if($validator->fails()){
@@ -283,6 +303,9 @@ class BlogController extends Controller
         $input['user_id'] = $user_id;
 
         $feed_comment = BlogReport::create($input);
+        Blog::where('blog_id',$request->blog_id)->update([
+            'is_report' => 1,
+        ]);
 
         return response()->json([
             'success' => true,
@@ -329,5 +352,57 @@ class BlogController extends Controller
             'status' => 200
         ]);
 
+    }
+
+    public function remove_comment(Request $request)
+    {
+        $user_id = Auth::user()->id;
+
+        $validator = Validator::make($request->all(), [
+            'is_remove_comment' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400,
+            ];
+
+            return response()->json($response, 400);
+        }
+
+        if ( !empty($request->blog_comment_id) )
+        {
+            BlogComment::where('blog_comment_id',$request->blog_comment_id)->update([
+                'is_remove_comment' => $request->is_remove_comment,
+            ]);
+
+            $data = [
+                'blog_comment_id' =>$request->blog_comment_id,
+                'user_id' =>$user_id
+            ];
+
+            BlogCommentReport::create($data);
+
+        } else {
+            PublicFeedComment::where('public_feed_comment_id',$request->public_feed_comment_id )->update([
+                'is_remove_comment' => $request->is_remove_comment,
+            ]);
+
+            $data = [
+                'public_feed_comment_id' =>$request->public_feed_comment_id,
+                'user_id' =>$user_id
+            ];
+
+            FeedCommentReport::create($data);
+        }
+        
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment Remove Successfully',
+            'status' => 200
+        ]);
     }
 }

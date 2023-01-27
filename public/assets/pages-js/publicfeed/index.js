@@ -246,7 +246,7 @@ jQuery(document).ready(function () {
             },
             success: function (response) {
                 $('#view-reports').html(response.feed_report);
-                $('#report_title').html('Public Feed Reports ('+response.report_count+')');
+                $('#report_title').html('Public Feed Comment Report ('+response.report_count+')');
                 $("body").removeClass("loading");
             }
         })
@@ -271,7 +271,7 @@ jQuery(document).ready(function () {
             },
             success: function (response) {
                 $('#view-comments').html(response.feed_comment);
-                $('#comment_title').html('Public Feed Comments ('+response.comment_count+')');
+                $('#comment_title').html('Public Feed Comment ('+response.comment_count+')');
                 $("body").removeClass("loading");
             }
         })
@@ -296,7 +296,7 @@ jQuery(document).ready(function () {
             },
             success: function (response) {
                 $('#view-likes').html(response.feed_like);
-                $('#like_title').html('Public Feed Likes ('+response.like_count+')');
+                $('#like_title').html('Public Feed Like ('+response.like_count+')');
                 $("body").removeClass("loading");
             }
         })

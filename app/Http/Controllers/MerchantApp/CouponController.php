@@ -191,10 +191,13 @@ class CouponController extends Controller
                                     $msgVal  = $couponRes->coupon_code." Coupon has been redeemed";
                                     $title = 'The Coupon has been redeemed';
                                     $type = 3;
+                                    $coupon_id = $request->get('coupon_id');
+                                    $feed_id = 0;
+                                    $blog_id =  0;
                                     $u_id = $request->get('user_id');
                                     $device_token = $user_device->device_token;
-                                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
-                                    $notification_controller->send_notification($msgVal,$device_token,$title);
+                                    $notification_controller->add_notification($msgVal,$title,$u_id,$type,$coupon_id,$feed_id,$blog_id);
+                                    $notification_controller->send_notification($msgVal,$device_token,$title,$coupon_id, $type);
                                 }
                             }
                             return redirect()->route('merchantapp.coupon_redeem.index')->with('success','Coupon Redeem Successfully');

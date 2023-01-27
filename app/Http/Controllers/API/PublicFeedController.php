@@ -121,9 +121,12 @@ class PublicFeedController extends Controller
                     $title = 'Like The Public Feed Comment';
                     $u_id = $feed_comment_data->user_id;
                     $type = 2;
+                    $coupon_id =0;
+                    $feed_id = $request->public_feed_id;
+                    $blog_id = 0;
                     $device_token = $user_device->device_token;
-                    $notification_controller->add_notification($msgVal,$title,$u_id,$type);
-                    $notification_controller->send_notification($msgVal,$device_token,$title);
+                    $notification_controller->add_notification($msgVal,$title,$u_id,$type,$coupon_id,$feed_id,$blog_id);
+                    $notification_controller->send_notification($msgVal,$device_token,$title,$feed_id,$type);
                 }
             }
 
@@ -186,6 +189,7 @@ class PublicFeedController extends Controller
                         }
                     })
                     ->where('public_feed.status','=',1)
+                    ->where('public_feed.is_report','=',0)
                     ->orderby('public_feed.public_feed_id','DESC')
                     ->get();
 
@@ -196,43 +200,6 @@ class PublicFeedController extends Controller
             'status' => 200
         ]);
     }
-
-    // public function public_feed_list(Request $request)
-    // {
-    //     $search = $request->search;
-
-    //     $user_id = Auth::user()->id;
-
-    //     $feedobj = PublicFeed::with('images')
-    //                 ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 2) as is_like'))
-    //                 ->leftJoin('public_feed_like', function($join) use($user_id) {
-    //                     $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
-    //                     ->where('public_feed_like.user_id',$user_id);
-    //                 })
-    //                 ->where(function ($query) use ($search) {
-    //                     if(!empty($search)) {
-    //                         $query->where('public_feed.public_feed_title', 'LIKE', '%'.$search.'%')
-    //                         ->orWhere('public_feed.public_feed_title_ab', 'LIKE', '%'.$search.'%')
-    //                         ->orWhere('public_feed.public_feed_title_he', 'LIKE', '%'.$search.'%')
-    //                         ->orWhere('public_feed.content', 'LIKE', '%'.$search.'%')
-    //                         ->orWhere('public_feed.content_he', 'LIKE', '%'.$search.'%')
-    //                         ->orWhere('public_feed.content_ab', 'LIKE', '%'.$search.'%');
-    //                     }
-    //                 })
-    //                 ->where('public_feed.status','=',1)
-    //                 ->skip($request->offset) //offset
-    //                 ->take($request->limit) //limit
-    //                 ->orderby('public_feed.public_feed_id','DESC')
-    //                 ->get();
-
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'data'    => $feedobj,
-    //         'message' => 'Public Feed List',
-    //         'status' => 200
-    //     ]);
-    // }
 
     public function recent_feed_comment_list(Request $request)
     {
@@ -274,6 +241,8 @@ class PublicFeedController extends Controller
                         )
                         ->where('public_feed_comment.public_feed_id',$request->public_feed_id)
                         ->where('public_feed.status','=',1)
+                        ->where('users.is_block','=',0)
+                        ->where('public_feed_comment.is_remove_comment','=',0)
                         ->orderby('public_feed_comment.public_feed_comment_id','DESC')
                         ->get();
 
@@ -292,7 +261,6 @@ class PublicFeedController extends Controller
 
         $validator = Validator::make($request->all(), [
             'public_feed_id' => 'required',
-            'report' => 'required',
         ]);
     
         if($validator->fails()){
@@ -310,6 +278,9 @@ class PublicFeedController extends Controller
         $input['user_id'] = $user_id;
 
         $feed_comment = PublicFeedReport::create($input);
+        PublicFeed::where('public_feed_id',$request->public_feed_id)->update([
+            'is_report' => 1,
+        ]);
 
         return response()->json([
             'success' => true,

@@ -110,11 +110,9 @@ class CouponController extends Controller
                         $type = 3;
                         $u_id = $u_val->id;
                         $coupon_id = $couponRes->coupon_id;
-                        $feed_id = 0;
-                        $blog_id = 0;
                         $device_token = $user_device->device_token;
-                        $notification_controller->add_notification($msgVal,$title,$u_id,$type,$coupon_id,$feed_id,$blog_id);
-                        $notification_controller->send_notification($msgVal,$device_token,$title,$coupon_id,$type);
+                        $notification_controller->add_notification($msgVal,$title,$u_id,$type);
+                        $notification_controller->send_notification($msgVal,$device_token,$title,$coupon_id);
                     }
                 }
             }
@@ -128,6 +126,51 @@ class CouponController extends Controller
         ]);
     }
 
+    // public   function translateLanguage($coupon_title,$language_code,$remainlanguageRes)
+    // {
+    //     $curl = curl_init();
+
+    //     $translateRes = array();
+
+    //     foreach ($remainlanguageRes as $key => $val) {
+    //         curl_setopt_array($curl, [
+    //             CURLOPT_URL => "https://deep-translate1.p.rapidapi.com/language/translate/v2",
+    //             CURLOPT_RETURNTRANSFER => true,
+    //             CURLOPT_FOLLOWLOCATION => true,
+    //             CURLOPT_ENCODING => "",
+    //             CURLOPT_MAXREDIRS => 10,
+    //             CURLOPT_TIMEOUT => 30,
+    //             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    //             CURLOPT_CUSTOMREQUEST => "POST",
+    //             CURLOPT_POSTFIELDS => "{\r\n    \"q\": \"$coupon_title\",
+    //                 \r\n    \"source\": \"en\",
+    //                 \r\n    \"target\": \"$val\"\r\n}",
+    //             CURLOPT_HTTPHEADER => [
+    //                 "X-RapidAPI-Host: deep-translate1.p.rapidapi.com",
+    //                 "X-RapidAPI-Key: 73378b18c9mshfce92a38975152dp1c713ajsnda716e5a2204",
+    //                 "content-type: application/json"
+    //             ],
+    //         ]);
+
+    //         $response = curl_exec($curl);
+    //         $result = json_decode($response);
+    //         $translateRes[$val] = $result->data->translations->translatedText;
+    //     }
+
+    //     $err = curl_error($curl);
+
+    //     curl_close($curl);
+   
+    //     if ($err) {
+    //         echo "cURL Error #:" . $err;
+    //     } else {
+    //         if ( !empty($response) ) {
+    //             return $translateRes;
+    //         }
+    //     }
+
+    // }
+   
     public function coupon_list(Request $request)
     {
         $user_id = Auth::user()->id;
@@ -151,18 +194,17 @@ class CouponController extends Controller
                             ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title_ar', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
+                            //->orWhere('coupon.location', 'LIKE', '%'.$search.'%')
                             ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%');
                     }
                     if ( !empty($locationId) ) {
-                        // $query->where('coupon.location_id', $locationId);
-                        $query->whereIn('coupon.location_id', $locationId);
+                        $query->where('coupon.location_id', $locationId);
                     }
                     if ( !empty($discount_type) ) {
                         $query->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%');
                     }
                     if ( !empty($category_id) ) {
-                        // $query->where('coupon.category_id', $category_id);
-                        $query->whereIn('coupon.category_id', $category_id);
+                        $query->where('coupon.category_id', $category_id);
                     }
                 })
                 ->where(function ($query) use ($user,$user_id) { 

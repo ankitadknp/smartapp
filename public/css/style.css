@@ -109,6 +109,28 @@ div#show_hide_cpassword.input-group>.form-control:not(:last-child) {
     flex: 1;
 }
 
+.comment_date a.badge.badge-pill {
+    margin: 0 !important;
+    position: absolute;
+    right: 0;
+    top: -5px;
+}
+
+.comment_report {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+.media .media-title {
+    margin-bottom: 2px;
+}
+
+.comment_report .comment_date {
+    margin-left: auto;
+    padding-right: 80px;
+    position: relative;
+}
+
 @keyframes sp-anime {
 100% { 
   transform: rotate(360deg); 

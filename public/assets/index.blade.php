@@ -74,7 +74,7 @@ $module_permission = !empty($module_permissions['public_feed']) ? $module_permis
                                     <tr>
                                         <th>Title</th>
                                         <th>Status</th>
-                                        <th>Comment Report</th>
+                                        <th>Report</th>
                                         <th>Comment</th>
                                         <th>Like</th>
                                         <th>Edit</th>
@@ -184,60 +184,53 @@ var module_permission = {!! json_encode(array_values($module_permission)) !!};
 <script src="{{asset("public/assets/pages-js/publicfeed/index.js")}}"></script>
 
 <script>
-    //block user
-    jQuery(document).on('click', '.block_user', function () 
-    {
-      var id = jQuery(this).attr('data-id');
-      var block_flag = jQuery(this).attr('data-flag');
-      var target = $(this).attr("href");
-      var token = jQuery("#csrf-token").prop("content");
-
-      if (block_flag == 1) {
-          var block_title = 'Are you sure you want to block this record?';
-          var block_text = 'Once blocked, you will not be able to recover this data!';
-      } else {
-          var block_title = 'Are you sure you want to unblock this record?';
-          var block_text = 'Once unblocked, you will not be able to recover this data!';
-      }
-
-      if (!isNaN(id)) {
-          swal({
-              title: block_title,
-              text: block_text,
-              icon: 'warning',
-              buttons: true,
-              dangerMode: true,
-          }).then(function(willDelete) {
-              if (willDelete) {
-                  jQuery.ajax({
-                      "url": controller_url + '/block_user',
-                      type: "POST",
-                      data: {
-                          'id': id,
-                          '_token': token,
-                          'block_flag':block_flag,
-                      },
-                      dataType: 'json',
-                      cache: false,
-                      
-                      success: function (response) {
-                          if (response.success == true) {
-                              iziToast.success({
-                                  message: response.message,
-                                  position: 'topRight'
-                              });
-                          } else {
-                              iziToast.error({
-                                  message: response.message,
-                                  position: 'topRight'
-                              });
-                          }
-                          $("#myModal").modal("hide"); 
-                      }
-                  })
-              }
-          });
-      }
+     //block user
+    jQuery(document).on('click', '.block_user', function () {
+        alert('hi');
+        var status;
+        var id;
+        if (jQuery(this).is(':checked')) {
+            status = 1;
+        } else {
+            status = 2;
+        }
+        id = jQuery(this).attr('data-id');
+        if (!isNaN(id)) {
+            jQuery.ajax({
+                "url": controller_url + '/change_status',
+                type: "POST",
+                data: {
+                    'id': id,
+                    'status': status,
+                },
+                dataType: 'json',
+                cache: false,
+                success: function (response) {
+                    if (response.success == true) {
+                        iziToast.success({
+                            message: response.message,
+                            position: 'topRight'
+                        });
+                    } else {
+                        iziToast.error({
+                            message: response.message,
+                            position: 'topRight'
+                        });
+                    }
+                },
+                error: function () {
+                    iziToast.error({
+                        message: "Problem in performing your action",
+                        position: 'topRight'
+                    });
+                }
+            });
+        } else {
+            iziToast.error({
+                message: "Problem in performing your action",
+                position: 'topRight'
+            });
+        }
     });
 </script>
 @endsection

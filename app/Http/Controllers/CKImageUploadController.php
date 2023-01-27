@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use File,DB;
 use App\PublicFeedImage;
+use App\User;
 
 class CKImageUploadController extends Controller {
 
@@ -47,6 +48,28 @@ class CKImageUploadController extends Controller {
             $response['success'] = true;
             $response['message'] = "image deleted successfully";
         }
+        return $response;
+    }
+
+    public function block_user(Request $request)
+    {
+        $id = $request->get('id');
+        $block_flag = $request->get('block_flag');
+
+        $userRes = User::where('id',$id)->update([
+            'is_block' => $block_flag,
+        ]);
+
+
+        if ($block_flag == 1) {
+            $message = 'User Block Successfully';
+        } else {
+            $message = 'User Unblock Successfully';
+        }
+
+        $response['success'] = true;
+        $response['message'] = $message;
+
         return $response;
     }
 }

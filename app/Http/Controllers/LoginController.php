@@ -42,36 +42,41 @@ class LoginController extends Controller {
             $user = User::where('email',$email)->whereIn('user_status',[3,4,1])->first();
             if ($user->status == 1)
             { 
-                if ($user->user_status == 1) {
-                    if ($user->is_account_delete == 0) {
-                        return redirect()->route('merchantapp.dashboard');
+                if ($user->is_block == 0) {
+                    if ($user->user_status == 1) {
+                        if ($user->is_account_delete == 0) {
+                            return redirect()->route('merchantapp.dashboard');
+                        } else {
+                            return \Redirect::back()->withErrors(["User is not found"]);
+                        }
                     } else {
-                        return \Redirect::back()->withErrors(["User is not found"]);
-                    }
-                } else {
-                    $user_roles_data = $user->getUserRole;
+                        $user_roles_data = $user->getUserRole;
 
-                    if (!empty($user_roles_data)) {
+                        if (!empty($user_roles_data)) {
 
-                        $role_permissions = json_decode($user_roles_data->role_permissions, true);
-                        $role_types_ids = array();
+                            $role_permissions = json_decode($user_roles_data->role_permissions, true);
+                            $role_types_ids = array();
 
-                        foreach ($role_permissions as $key => $value) {
-                            $role_types_ids[] = $key;
+                            foreach ($role_permissions as $key => $value) {
+                                $role_types_ids[] = $key;
+                            }
+                            
+                            //GET USER PERMISSION
+                            $get_all_permissions_controller_names = \App\UserRolePermission::whereIn("id", $role_types_ids)
+                            ->select("id", "controller_name","module_list")
+                            ->get();
+                            $role_permissions_array = array();
+                            foreach ($get_all_permissions_controller_names as $sinlge_value) {
+                                $role_permissions_array[$sinlge_value->controller_name] = $role_permissions[$sinlge_value->id];
+                            }
+
+                            $request->session()->put("user_access_permission", $role_permissions_array);
                         }
-                        
-                        //GET USER PERMISSION
-                        $get_all_permissions_controller_names = \App\UserRolePermission::whereIn("id", $role_types_ids)
-                        ->select("id", "controller_name","module_list")
-                        ->get();
-                        $role_permissions_array = array();
-                        foreach ($get_all_permissions_controller_names as $sinlge_value) {
-                            $role_permissions_array[$sinlge_value->controller_name] = $role_permissions[$sinlge_value->id];
-                        }
-
-                        $request->session()->put("user_access_permission", $role_permissions_array);
+                        return redirect()->route('dashboard');
                     }
-                    return redirect()->route('dashboard');
+                } else 
+                {
+                    return redirect('/')->withErrors('Your account is blocked. Please unblock first.');
                 }
             } else if ($user->status == 2)
             {

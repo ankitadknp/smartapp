@@ -207,7 +207,7 @@ class UserController extends Controller
             return response()->json($response, 400);
         }
 
-        if (Auth::attempt(['email' => $request->email, 'password' => ($request->password),'user_status' => ($request->user_status)])){ 
+        if (Auth::attempt(['email' => $request->email, 'password' => ($request->password),'user_status' => ($request->user_status),'is_account_delete' =>0])){ 
 
             $user = Auth::user(); 
             if ($user->user_status == 0) {
@@ -216,8 +216,8 @@ class UserController extends Controller
                 $name = $user->business_name;
             }
 
-            if ( $user->is_account_delete == 0) {
-                if ( $user->status == 1) 
+            if ( $user->status == 1) {
+                if ( $user->is_block == 0) 
                 {
 
                     if ( $user->is_verified_mobile_no == 1 ) {
@@ -293,18 +293,17 @@ class UserController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' =>'User is blocked',
+                        'message' =>'User is block',
                         'status' => 401
                     ]);
                 }
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' =>'User is not found',
+                    'message' =>'User is not active',
                     'status' => 401
                 ]);
             }
-
         } else { 
             return response()->json([
                 'success' => false,
@@ -319,8 +318,9 @@ class UserController extends Controller
         $user_id = Auth::user()->id;
         
         $validator = Validator::make($request->all(), [
-            'phone_number' => 'required',
+            // 'phone_number' => 'required',
             'otp' => 'required',
+            'email' =>'required',
         ]);
     
         if($validator->fails()){
@@ -334,13 +334,13 @@ class UserController extends Controller
             return response()->json($response, 400);
         }
 
-        $user = User::select('*')->where('phone_number',$request->phone_number)->where('id',$user_id)->first();
+        $user = User::select('*')->where('email',$request->email)->where('id',$user_id)->whereIn('user_status',[0,1])->first();
 
         if ( empty($user) ) {
 
             $response = [
                 'success' => false,
-                'message' => 'Please Enter Valid Phone Number',
+                'message' => 'Please Enter Valid email',
                 'status' => 400
             ];
     
@@ -388,7 +388,7 @@ class UserController extends Controller
                     $response = [
                         'success' => true,
                         'data'=>$success,
-                        'message' => 'Phone number verified successfully.',
+                        'message' => 'Email verified successfully.',
                         'status' => 200
                     ];
             
