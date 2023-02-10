@@ -105,8 +105,16 @@ class CouponController extends Controller
                     $user_device= DB::table('user_device')->where('user_id',$u_val->id)->first();
                     if ( !empty($user_device) ) {
                         $notification_controller = new NotificationController();
-                        $msgVal  = "Coupon '$request->coupon_code' is available";
-                        $title = 'Add Coupon';
+                        if ($u_val->language_code == 'en') {
+                            $title = 'Coupon added';
+                            $msgVal  = "Coupon '$request->coupon_code' is available";
+                        } else  if ($u_val->language_code == 'he') {
+                            $title = 'עודכן קופון ';
+                            $msgVal  = "הקופון '$request->coupon_code' זמין כעת";
+                        }else  if ($u_val->language_code == 'ar') {
+                            $title = 'قسيمة محدثة';
+                            $msgVal  = "القسيمة '$request->coupon_code' متاحة الآن";
+                        }
                         $type = 3;
                         $u_id = $u_val->id;
                         $coupon_id = $couponRes->coupon_id;
@@ -123,7 +131,7 @@ class CouponController extends Controller
         return response()->json([
             'success' => true,
             'data' => $couponRes,
-            'message' => 'Added Coupon Successfully',
+            'message' =>  trans('message.coupon_add'),
             'status' => 200,
         ]);
     }
@@ -208,10 +216,155 @@ class CouponController extends Controller
         return response()->json([
             'success' => true,
             'data' => $coupon,
-            'message' => 'Coupon List',
+            'message' =>trans('message.coupon'),
             'status' => 200,
         ]);
     }
+
+    public function coupon_list_pagination(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        $search = $request->search;
+        $locationId = $request->location_id;
+        $discount_type = $request->discount_type;
+        $category_id = $request->category_id;
+        $start_from = $request->offset;
+        $limit = $request->limit;
+
+        $user = User::find($user_id);
+
+        $coupon = Coupon::select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url','users.website','users.location_url')
+                ->leftJoin('users', function ($join) {
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
+                ->leftJoin('coupon_qrcode', function ($join) {
+                    $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
+                })
+                ->where(function ($query) use ($search,$locationId,$discount_type,$category_id) { 
+                    if (!empty($search)) {
+                        $query->where('coupon.coupon_code', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.coupon_title', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.coupon_title_ar', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.coupon_title_he', 'LIKE', '%'.$search.'%')
+                            ->orWhere('coupon.discount_type', 'LIKE', '%'.$search.'%');
+                    }
+                    if ( !empty($locationId) ) {
+                        // $query->where('coupon.location_id', $locationId);
+                        $query->whereIn('coupon.location_id', $locationId);
+                    }
+                    if ( !empty($discount_type) ) {
+                        $query->where('coupon.discount_type', 'LIKE', '%'.$discount_type.'%');
+                    }
+                    if ( !empty($category_id) ) {
+                        // $query->where('coupon.category_id', $category_id);
+                        $query->whereIn('coupon.category_id', $category_id);
+                    }
+                })
+                ->where(function ($query) use ($user,$user_id) { 
+                    if ($user->user_status == 1) {
+                        $query->where('coupon.user_id',$user_id);
+                    }
+                })
+                ->offset($start_from)
+                ->limit($limit)
+                ->orderby('coupon.coupon_id', 'DESC')
+                ->get();
+        
+
+        foreach ($coupon as $key=>$val)
+        {
+            $term = [];
+            $term_ar = [];
+            $term_he = [];
+
+            $coupon_id = $val->coupon_id;
+            $termcon = CouponTerm::where('coupon_id',$coupon_id)->get();
+
+            foreach ($termcon as $t_val)
+            {
+                if ( !empty($t_val->term_condition) ) {
+                    $value = $t_val->term_condition;
+                    array_push($term,$value);
+                }
+                if ( !empty($t_val->term_condition_ar) ) {
+                    $value = $t_val->term_condition_ar;
+                    array_push($term_ar,$value);
+                }
+                if ( !empty($t_val->term_condition_he) ) {
+                    $value = $t_val->term_condition_he;
+                    array_push($term_he,$value);
+                }
+            }
+
+            $coupon[$key]['term_condition'] = $term;
+            $coupon[$key]['term_condition_ar'] = $term_ar;
+            $coupon[$key]['term_condition_he'] = $term_he;
+        }
+
+
+        return response()->json([
+            'success' => true,
+            'data' => $coupon,
+            'message' => trans('message.coupon'),
+            'status' => 200,
+        ]);
+    }
+
+    // public function coupon_details(Request $request)
+    // {
+    //     $user_id = Auth::user()->id;
+    //     $validator = Validator::make($request->all(), [
+    //         'coupon_id' => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         $response = [
+    //             'success' => false,
+    //             'message' => $validator->errors()->first(),
+    //             'status' => 400,
+    //         ];
+    //         return response()->json($response, 400);
+    //     }
+
+    //     $coupon = Coupon::select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url','users.website','users.location_url')
+    //             ->leftJoin('users', function ($join) {
+    //                 $join->on('users.id', '=', 'coupon.user_id');
+    //             })
+    //             ->leftJoin('coupon_qrcode', function ($join) {
+    //                 $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
+    //             })
+    //             ->where('coupon.coupon_id',$request->coupon_id)
+    //             ->first();
+        
+    //     $termcon = CouponTerm::where('coupon_id',$request->coupon_id)->get();
+    //     $term = [];
+    //     $term_ar = [];
+    //     $term_he = [];
+    //     foreach ($termcon as $t_val) {
+    //         if ( !empty($t_val->term_condition) ) {
+    //             $value = $t_val->term_condition;
+    //             array_push($term,$value);
+    //         }
+    //         if ( !empty($t_val->term_condition_ar) ) {
+    //             $value = $t_val->term_condition_ar;
+    //             array_push($term_ar,$value);
+    //         }
+    //         if ( !empty($t_val->term_condition_he) ) {
+    //             $value = $t_val->term_condition_he;
+    //             array_push($term_he,$value);
+    //         }
+    //     }
+
+    //     $coupon['term_condition'] = $term;
+    //     $coupon['term_condition_ar'] = $term_ar;
+    //     $coupon['term_condition_he'] = $term_he;
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data'    => $coupon,
+    //         'message' => trans('message.coupon_detail'),
+    //         'status' => 200
+    //     ]);
+    // }
 
     public function update_coupon(Request $request)
     {
@@ -331,7 +484,7 @@ class CouponController extends Controller
         return response()->json([
             'success' => true,
             'data' => $success,
-            'message' => 'Update Coupon Successfully',
+            'message' => trans('message.coupon_update'),
             'status' => 200,
         ]);
     }
@@ -363,9 +516,9 @@ class CouponController extends Controller
         if ( empty($added_coupon) || !isset($added_coupon)) 
         {
             ClientMyCoupon::create($input);
-            $msg = 'Added Coupon in mycoupon list';
+            $msg = trans('message.mycoupon_add');
         } else {
-            $msg = 'Coupon already added';
+            $msg = trans('message.coupon_already');
         }
 
         return response()->json([
@@ -469,8 +622,64 @@ class CouponController extends Controller
             'success' => true,
             'active_coupon_list' => $active_coupon_list,
             'inactive_coupon_list' => $inactive_coupon_list,
-            'message' => 'My Coupon List',
+            'message' => trans('message.mycoupon'),
             'status' => 200,
+        ]);
+    }
+
+    public function coupon_details(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        $validator = Validator::make($request->all(), [
+            'coupon_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400,
+            ];
+            return response()->json($response, 400);
+        }
+
+        $coupon = Coupon::select('coupon.*', 'users.business_logo','coupon_qrcode.qrcode_url','users.website','users.location_url')
+                ->leftJoin('users', function ($join) {
+                    $join->on('users.id', '=', 'coupon.user_id');
+                })
+                ->leftJoin('coupon_qrcode', function ($join) {
+                    $join->on('coupon_qrcode.coupon_id', '=', 'coupon.coupon_id');
+                })
+                ->where('coupon.coupon_id',$request->coupon_id)
+                ->first();
+        
+        $termcon = CouponTerm::where('coupon_id',$request->coupon_id)->get();
+        $term = [];
+        $term_ar = [];
+        $term_he = [];
+        foreach ($termcon as $t_val) {
+            if ( !empty($t_val->term_condition) ) {
+                $value = $t_val->term_condition;
+                array_push($term,$value);
+            }
+            if ( !empty($t_val->term_condition_ar) ) {
+                $value = $t_val->term_condition_ar;
+                array_push($term_ar,$value);
+            }
+            if ( !empty($t_val->term_condition_he) ) {
+                $value = $t_val->term_condition_he;
+                array_push($term_he,$value);
+            }
+        }
+
+        $coupon['term_condition'] = $term;
+        $coupon['term_condition_ar'] = $term_ar;
+        $coupon['term_condition_he'] = $term_he;
+
+        return response()->json([
+            'success' => true,
+            'data'    => $coupon,
+            'message' => trans('message.coupon_detail'),
+            'status' => 200
         ]);
     }
 
@@ -528,14 +737,14 @@ class CouponController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $success,
-                'message' => 'Coupon Statistics',
+                'message' =>trans('message.coupon_statistic'),
                 'status' => 200,
             ]);
         } else {
             
             return response()->json([
                 'success' => false,
-                'message' => 'Coupon id not found',
+                'message' => trans('message.coupon_id'),
                 'status' => 400,
             ]);
         }
@@ -548,7 +757,7 @@ class CouponController extends Controller
         return response()->json([
             'success' => true,
             'data' => $coupon_res,
-            'message' => 'Coupon Category List',
+            'message' => trans('message.coupon_category'),
             'status' => 200,
         ]);
     }
@@ -576,11 +785,11 @@ class CouponController extends Controller
         $share = Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->get();
         $term = CouponTerm::where('coupon_id',$request->coupon_id)->get();
 
-        if (!empty($mycoupon)) 
+        if ( $mycoupon != '[]') 
         {
             ClientMyCoupon::where('coupon_id',$request->coupon_id)->delete();
         }
-        if (!empty($qrcode)) 
+        if ($qrcode != '[]') 
         {
             foreach ($qrcode as $img_val) 
             {
@@ -595,11 +804,11 @@ class CouponController extends Controller
             CouponQRcode::where('coupon_id',$request->coupon_id)->delete();
         }
      
-        if (!empty($share)) 
+        if ($share != '[]') 
         {
             Share::where('key', 'coupon_id')->where('value', $request->coupon_id)->delete();
         }
-        if (!empty($term)) 
+        if ($term != '[]') 
         {
             CouponTerm::where('coupon_id',$request->coupon_id)->delete();
         }
@@ -608,7 +817,7 @@ class CouponController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Coupon Delete Successfully',
+            'message' => trans('message.coupon_delete'),
             'status' => 200,
         ]);
 
@@ -621,7 +830,7 @@ class CouponController extends Controller
         return response()->json([
             'success' => true,
             'data' =>  $location,
-            'message' => 'Location List',
+            'message' => trans('message.location'),
             'status' => 200,
         ]);
     }

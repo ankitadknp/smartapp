@@ -33,7 +33,7 @@ class QrCodeController extends Controller
         return response()->json([
             'success' => true,
             'data' => $QrRes,
-            'message' => 'Coupon QR Code',
+            'message' =>  trans('message.qr_code'),
             'status' => 200,
         ]);
     }

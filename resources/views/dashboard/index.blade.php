@@ -49,23 +49,25 @@
                 </div>
                 </a>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <a href="{{route('sub_admin.index')}}">
-                <div class="card card-statistic-1">
-                    <div class="card-icon bg-success">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="card-wrap">
-                        <div class="card-header">
-                            <h4>Sub Admin</h4>
+            @if(Auth::user()->user_status  == 3)
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <a href="{{route('sub_admin.index')}}">
+                    <div class="card card-statistic-1">
+                        <div class="card-icon bg-success">
+                            <i class="fas fa-users"></i>
                         </div>
-                        <div class="card-body">
-                            {{$total_subadmin}}
+                        <div class="card-wrap">
+                            <div class="card-header">
+                                <h4>Sub Admin</h4>
+                            </div>
+                            <div class="card-body">
+                                {{$total_subadmin}}
+                            </div>
                         </div>
                     </div>
+                    </a>
                 </div>
-                </a>
-            </div>
+            @endif
             <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                 <a href="{{route('categories.index')}}">
                 <div class="card card-statistic-1">

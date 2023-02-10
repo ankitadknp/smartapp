@@ -37,42 +37,42 @@ class LoginController extends Controller {
         $email = $request->get("email");
         $password = $request->get("password");
 
-        if(Auth::attempt(['email' => $email, 'password' => ($password),'user_status' => [3,4,1]]))
+        if(Auth::attempt(['email' => $email, 'password' => ($password),'user_status' => [3,4,1], 'is_account_delete' => 0]))
         { 
-            $user = User::where('email',$email)->whereIn('user_status',[3,4,1])->first();
+            $user = User::where('email',$email)->where('is_account_delete', '!=', 1)->whereIn('user_status',[3,4,1])->first();
             if ($user->status == 1)
             { 
                 if ($user->is_block == 0) {
-                    if ($user->user_status == 1) {
-                        if ($user->is_account_delete == 0) {
+                    if ($user->is_account_delete == 0) {
+                        if ($user->user_status == 1) {
                             return redirect()->route('merchantapp.dashboard');
                         } else {
-                            return \Redirect::back()->withErrors(["User is not found"]);
+                            $user_roles_data = $user->getUserRole;
+
+                            if (!empty($user_roles_data)) {
+
+                                $role_permissions = json_decode($user_roles_data->role_permissions, true);
+                                $role_types_ids = array();
+
+                                foreach ($role_permissions as $key => $value) {
+                                    $role_types_ids[] = $key;
+                                }
+                                
+                                //GET USER PERMISSION
+                                $get_all_permissions_controller_names = \App\UserRolePermission::whereIn("id", $role_types_ids)
+                                ->select("id", "controller_name","module_list")
+                                ->get();
+                                $role_permissions_array = array();
+                                foreach ($get_all_permissions_controller_names as $sinlge_value) {
+                                    $role_permissions_array[$sinlge_value->controller_name] = $role_permissions[$sinlge_value->id];
+                                }
+
+                                $request->session()->put("user_access_permission", $role_permissions_array);
+                            }
+                            return redirect()->route('dashboard');
                         }
                     } else {
-                        $user_roles_data = $user->getUserRole;
-
-                        if (!empty($user_roles_data)) {
-
-                            $role_permissions = json_decode($user_roles_data->role_permissions, true);
-                            $role_types_ids = array();
-
-                            foreach ($role_permissions as $key => $value) {
-                                $role_types_ids[] = $key;
-                            }
-                            
-                            //GET USER PERMISSION
-                            $get_all_permissions_controller_names = \App\UserRolePermission::whereIn("id", $role_types_ids)
-                            ->select("id", "controller_name","module_list")
-                            ->get();
-                            $role_permissions_array = array();
-                            foreach ($get_all_permissions_controller_names as $sinlge_value) {
-                                $role_permissions_array[$sinlge_value->controller_name] = $role_permissions[$sinlge_value->id];
-                            }
-
-                            $request->session()->put("user_access_permission", $role_permissions_array);
-                        }
-                        return redirect()->route('dashboard');
+                        return \Redirect::back()->withErrors(["User is not found"]);
                     }
                 } else 
                 {

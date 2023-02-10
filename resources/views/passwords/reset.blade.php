@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>Forgot Password &mdash; Smart Citizen App</title>
+  <title>Reset Password &mdash; {{ Config::get('constants.TITLE') }}</title>
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="{{asset("public/assets/modules/bootstrap/css/bootstrap.min.css")}}">
@@ -28,11 +28,40 @@
                         </div>
                         <div class="card card-primary">
                             <div class="card-header"><h4>{{ __('Reset Password') }}</h4></div>
+
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul style="margin-bottom: 0px">
+                                        @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            @if(session()->has('message'))
+                                <div class="alert alert-success">
+                                    {{ session()->get('message') }}
+                                </div>
+                            @endif
                             <div class="card-body">
                                 <form method="POST" action="{{ route('password.update') }}">
                                     @csrf
 
-                                    <input type="hidden" name="token" value="{{ $token }}">
+                                    <div class="form-group row">
+                                        <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('One Time Password (OTP)') }}</label>
+
+                                        <div class="col-md-8">
+                                            <div class="input-group" >
+                                                <input id="OTP" type="text" class="form-control" name="token" required>
+                                            </div>
+
+                                            @if ($errors->has('OTP'))
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $errors->first('OTP') }}</strong>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
 
                                     <div class="form-group row">
                                         <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>

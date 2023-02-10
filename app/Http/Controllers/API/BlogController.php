@@ -41,7 +41,7 @@ class BlogController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $blog_comment_res,
-            'message' => 'Added Blog Comment Successfully',
+            'message' =>  trans('message.blog_comment'),
             'status' => 200
         ]);
 
@@ -59,9 +59,9 @@ class BlogController extends Controller
         $input['user_id'] = $user_id;
 
         if ($request->is_like == 1) {
-            $msg = 'Blog Like Succesfully';
+            $msg = trans('message.blog_like');
         } else {
-            $msg = 'Blog Unlike Succesfully';
+            $msg = trans('message.blog_unlike');
         }
 
         if ( empty($blog_like_data) || !isset($blog_like_data)) {
@@ -102,7 +102,7 @@ class BlogController extends Controller
                  
             return response()->json([
                 'success' => false,
-                'message' => 'Data not found!',
+                'message' =>trans('message.data_not'),
                 'status' => 201,
             ]);
         }
@@ -117,6 +117,7 @@ class BlogController extends Controller
         $blog_comment_data = BlogComment::where('blog_comment_id',$request->blog_comment_id)->first();
         $user_data = User::where('id',$user_id)->where('is_verified_mobile_no',1)->where('status',1)->first();
         $blog = Blog::where('blog_id',$request->blog_id)->first();
+        $comment_user_data = User::where('id',$blog_comment_data->user_id)->first();
 
         $input = $request->all();
         $input['user_id'] = $user_id;
@@ -132,8 +133,18 @@ class BlogController extends Controller
                 $user_device = DB::table('user_device')->where('user_id',$blog_comment_data->user_id)->first();
                 if ( !empty($user_device) ) {
                     $notification_controller = new NotificationController();
-                    $msgVal  = $u_name." liked your comment on '$blog->blog_title' Blog";
-                    $title = 'Like The Blog Comment';
+                    
+                    if ($comment_user_data->language_code == 'en') {
+                        $msgVal  = $u_name." liked your comment on '$blog->blog_title' Blog";
+                        $title = 'Blog comment liked';
+                    } else  if ($comment_user_data->language_code == 'he') {
+                        $msgVal  = $u_name." סימן 'חכם' על תגובה שלך ב ".$blog->blog_title_he." בבלוג ";
+                        $title = "חכם' נוסף בבלוג";
+                    }else  if ($comment_user_data->language_code == 'ar') {
+                        $msgVal  =  'تم وضع علامة "ذكي" على "'.$u_name.'"  على تعليقك على مدونة "'.$blog->blog_title_ab.'" ';
+                        $title = "الذكي مضاف في المدونة";
+                    }
+               
                     $type = 1;
                     $coupon_id =0;
                     $feed_id = 0;
@@ -145,7 +156,7 @@ class BlogController extends Controller
                 }
             }
 
-            $msg = 'Blog Comment Like Succesfully';
+            $msg = trans('message.blog_comment_like');
         } else {
             $msg = 'Blog Comment Unlike Succesfully';
         }
@@ -220,7 +231,54 @@ class BlogController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $blogObj,
-            'message' => 'Blog List',
+            'message' =>trans('message.blog'),
+            'status' => 200
+        ]);
+    }
+
+    public function blog_list_pagination(Request $request)
+    {
+        $user_id = Auth::user()->id;
+    
+        $search = $request->search;
+        $category_id = $request->category_id;
+        $start_from = $request->offset;
+        $limit = $request->limit;
+    
+    
+        $blogObj = Blog::select('blog.*','category.category_name','category.category_name_ab','category.category_name_he',DB::raw('IFNULL( blog_like.is_like, 2) as is_like'))
+                        ->leftJoin('category', function($join) {
+                            $join->on('blog.category_id', '=', 'category.category_id')
+                            ->where('category.type','=','Blog');
+                        })
+                        ->leftJoin('blog_like', function($join) use($user_id){
+                            $join->on('blog.blog_id', '=', 'blog_like.blog_id')
+                            ->where('blog_like.user_id',$user_id);
+                        })
+                    ->where('blog.status','=',1)
+                    ->where(function ($query) use ($search,$category_id) {
+                        if(!empty($search)) {
+                            $query->orWhere('blog.blog_title', 'LIKE', '%'.$search.'%')
+                            ->orWhere('blog.blog_title_ab', 'LIKE', '%'.$search.'%')
+                            ->orWhere('blog.blog_title_he', 'LIKE', '%'.$search.'%')
+                            ->orWhere('blog.blog_content', 'LIKE', '%'.$search.'%')
+                            ->orWhere('blog.blog_content_ab', 'LIKE', '%'.$search.'%')
+                            ->orWhere('blog.blog_content_he', 'LIKE', '%'.$search.'%');
+                        }
+                        if(!empty($category_id)) {
+                            $query->where('blog.category_id', $category_id);
+                        }
+                    })
+                    ->where('blog.is_report','=',0)
+                    ->offset($start_from)
+                    ->limit($limit)
+                    ->orderby('blog.blog_id','DESC')
+                    ->get();
+    
+        return response()->json([
+            'success' => true,
+            'data'    => $blogObj,
+            'message' => trans('message.blog'),
             'status' => 200
         ]);
     }
@@ -273,12 +331,69 @@ class BlogController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $blog_comment_res,
-            'message' => 'Recent Blog Comment List',
+            'message' => trans('message.blog_recent_comment'),
             'status' => 200
         ]);
 
     }
 
+    public function blog_comment_list_pagination(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        $start_from = $request->offset;
+        $limit = $request->limit;
+
+        $validator = Validator::make($request->all(), [
+            'blog_id' => 'required',
+        ]);
+    
+        if($validator->fails()){
+
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400
+            ];
+    
+            return response()->json($response, 400);
+        }
+
+        $blog_comment_res = BlogComment::leftJoin('users', function($join) {
+                            $join->on('users.id', '=', 'blog_comment.user_id');
+                        })
+                        ->leftJoin('blog_comment_like', function($join) use($user_id){
+                            $join->on('blog_comment.blog_comment_id', '=', 'blog_comment_like.blog_comment_id')
+                            ->where('blog_comment_like.user_id',$user_id);
+                        })
+                        ->leftJoin('blog', function($join) {
+                            $join->on('blog.blog_id', '=', 'blog_comment.blog_id');
+                        })
+                        ->select ('blog_comment.*',DB::raw('(CASE 
+                            WHEN users.user_status = "0" THEN CONCAT(first_name, " ",last_name ) 
+                            WHEN users.status = "1" THEN users.business_name 
+                            END) AS name'),DB::raw('IFNULL( blog_comment_like.is_like, 2) as is_like'),
+                            DB::raw('(CASE 
+                            WHEN users.user_status = "0" THEN users.profile_pic
+                            WHEN users.status = "1" THEN users.business_logo 
+                            END) AS profile_pic')
+                        )
+                        ->where('blog_comment.blog_id',$request->blog_id)
+                        ->where('blog.status','=',1)
+                        ->where('users.is_block','=',0)
+                        ->where('blog_comment.is_remove_comment','=',0)
+                        ->offset($start_from)
+                        ->limit($limit)
+                        ->orderby('blog_comment.blog_comment_id','DESC')
+                        ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $blog_comment_res,
+            'message' => trans('message.blog_recent_comment'),
+            'status' => 200
+        ]);
+
+    }
 
     public function blog_report(Request $request)
     {
@@ -309,7 +424,7 @@ class BlogController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Added Blog Report Successfully',
+            'message' =>  trans('message.comment_report'),
             'status' => 200
         ]);
     }
@@ -348,7 +463,7 @@ class BlogController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $blog_res,
-            'message' => 'Blog List',
+            'message' =>  trans('message.blog'),
             'status' => 200
         ]);
 
@@ -401,7 +516,7 @@ class BlogController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Comment Remove Successfully',
+            'message' =>  trans('message.comment_remove'),
             'status' => 200
         ]);
     }

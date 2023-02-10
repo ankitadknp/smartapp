@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>Forgot Password &mdash; Smart Citizen App</title>
+  <title>Forgot Password &mdash; {{ Config::get('constants.TITLE') }}</title>
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="{{asset("public/assets/modules/bootstrap/css/bootstrap.min.css")}}">
@@ -44,8 +44,8 @@
                 </div>
               @endif
               <div class="card-body">
-                <p class="text-muted">We will send a link to reset your password</p>
                 <form method="POST" action="{{route('password.email')}}">
+                <input type="hidden" name="language_code" value="en" />
                 @csrf
                   <div class="form-group">
                     <label for="email">Email</label>

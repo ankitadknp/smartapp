@@ -68,6 +68,11 @@
                                     <label>Total Coupons Share By Email</label> : {{ $total_email }} 
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label>Business Logo</label> : <img src="{{ $coupons->business_logo }}" height="35" width="35"> 
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-12 coupon_back">

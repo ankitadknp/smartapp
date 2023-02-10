@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>Smart Citizen App</title>
+        <title>{{ Config::get('constants.TITLE') }}</title>
     </head>
     <style>
         html, body {

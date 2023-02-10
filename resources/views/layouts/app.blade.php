@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="{{asset('public/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{asset('public/favicon.ico')}}" type="image/x-icon">
 
-    <title>{{ config('app.name') }}</title>
+    <title>{{ Config::get('constants.TITLE') }}</title>
 
     <!-- Scripts -->
     <script src="{{ asset('public/js/app.js') }}" defer></script>

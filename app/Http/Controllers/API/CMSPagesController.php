@@ -16,7 +16,7 @@ class CMSPagesController extends Controller
         return response()->json([
             'success' => true,
             'data' => $cmsRes,
-            'message' => 'CMS Pages List Successfully',
+            'message' =>  trans('message.cms'),
             'status' => 200
         ]);
     }

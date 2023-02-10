@@ -31,15 +31,15 @@ class UserController extends Controller
                 // 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
                 'password' => 'min:6|required_with:password_confirmation|same:password_confirmation',
                 'password_confirmation' => 'min:6',
-                'website' => 'required|max:50',
-                'business_activity' => 'required',
-                'business_sector' => 'required',
-                'establishment_year' => 'required',
-                'business_logo' => 'required',
-                'business_hours' => 'required',
-                'street_address_name' => 'required|max:50',
-                'street_number' => 'required',
-                'district' => 'required|max:50',
+                // 'website' => 'required|max:50',
+                //'business_activity' => 'required',
+                //'business_sector' => 'required',
+                //'establishment_year' => 'required',
+                //'business_logo' => 'required',
+                //'business_hours' => 'required',
+                //'street_address_name' => 'required|max:50',
+                //'street_number' => 'required',
+                //'district' => 'required|max:50',
             ]);
 
             if($validator->fails()){
@@ -74,15 +74,15 @@ class UserController extends Controller
                 'last_name' => 'required|string|max:50',
                 // 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
                 // 'id_number' => 'required|max:20',
-                'marital_status' => 'required',
-                'no_of_child' => 'required',
-                'occupation' => 'required|max:50',
-                'education_level' => 'required',
-                'street_address_name' => 'required|max:50',
-                'street_number' => 'required',
-                'house_number' => 'required',
-                'city' => 'required|max:50',
-                'district' => 'required|max:50',
+                //'marital_status' => 'required',
+                //'no_of_child' => 'required',
+                //'occupation' => 'required|max:50',
+                //'education_level' => 'required',
+                //'street_address_name' => 'required|max:50',
+                //'street_number' => 'required',
+                //'house_number' => 'required',
+                //'city' => 'required|max:50',
+                //'district' => 'required|max:50',
             ]);
 
             if($user_validator->fails()){
@@ -134,7 +134,8 @@ class UserController extends Controller
         }
    
         $controller = new UserController();
-        $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name);
+        $language_code = $request->language_code ? $request->language_code : 'he';
+        $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name,$language_code);
         
         $input['password'] = Hash::make($input['password']);
         $input['verify_otp'] = $verify_otp;
@@ -175,12 +176,19 @@ class UserController extends Controller
         $success['city'] =  ($user->city != null)?$user->city:'';
         $success['district'] =  ($user->district != null)?$user->district:'';
         $success['user_status'] =  $user_status;
-   
 
+        if ($language_code == 'en') {
+            $send_otp = 'We have sent you One Time Password (OTP) to your registered email address! If you have not received an email please check your Spam or Junk mail folder.';
+        }else if($language_code == 'he') {
+            $send_otp = 'שלחנו לך לכתובת המייל המעודכנת קוד אימות לסיסמא זמנית!  אם לא קיבלת את האימייל תבדוק בבקשה בשאר התיבות הנכנסות.';
+        }else if($language_code == 'ar') {
+            $send_otp = 'لقد أرسلنا لك رمز التحقق الخاص بكلمة مرور مؤقتة إلى عنوان البريد الإلكتروني المحدث! إذا لم تستلم البريد الإلكتروني، فيرجى التحقق من صناديق البريد الوارد الأخرى.';
+        }
+   
         return response()->json([
             'success' => true,
             'data'    => $success,
-            'message' => 'OTP has been sent your mail.Please check your mail',
+            'message' => $send_otp,
             'status' => 200
         ]);
     }
@@ -206,7 +214,27 @@ class UserController extends Controller
     
             return response()->json($response, 400);
         }
+        $language_code = $request->language_code ? $request->language_code : 'he';
 
+        if ($language_code == 'en') {
+            $login = 'Login Successfully';
+            $send_otp = 'We have sent you One Time Password (OTP) to your registered email address! If you have not received an email please check your Spam or Junk mail folder.';
+            $user_block = 'User account is blocked';
+            $user_active = 'User is not active';
+            $invalid_login = 'Invalid email or password';
+        }else if($language_code == 'he') {
+            $login = 'התחברת בהצלחה';
+            $send_otp = 'שלחנו לך לכתובת המייל המעודכנת קוד אימות לסיסמא זמנית!  אם לא קיבלת את האימייל תבדוק בבקשה בשאר התיבות הנכנסות.';
+            $user_block = 'חשבון המשתמש חסום';
+            $user_active = 'משתמש לא פעיל';
+            $invalid_login = 'שגיאה באימייל או בסיסמא';
+        }else if($language_code == 'ar') {
+            $login = 'لقد قمت بتسجيل الدخول بنجاح';
+            $send_otp = 'لقد أرسلنا لك رمز التحقق الخاص بكلمة مرور مؤقتة إلى عنوان البريد الإلكتروني المحدث! إذا لم تستلم البريد الإلكتروني، فيرجى التحقق من صناديق البريد الوارد الأخرى.';
+            $user_block = 'تم حظر حساب المستخدم';
+            $user_active = 'مستخدم غير نشط';
+            $invalid_login = 'خطأ في البريد الإلكتروني أو كلمة المرور';
+        }
         if (Auth::attempt(['email' => $request->email, 'password' => ($request->password),'user_status' => ($request->user_status),'is_account_delete' =>0])){ 
 
             $user = Auth::user(); 
@@ -219,19 +247,15 @@ class UserController extends Controller
             if ( $user->status == 1) {
                 if ( $user->is_block == 0) 
                 {
-
                     if ( $user->is_verified_mobile_no == 1 ) {
-                        $msg = 'Login Successfully';
+                        $msg = $login;
                     } else {
                         $controller = new UserController();
-                        $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name);
+                        $verify_otp = $controller->send_otp_for_verify_phone($request->email,$name,$language_code);
                         $verify_otp_time = Carbon::now()->addMinutes(5);
-
                         User::where('id',$user->id)->update(['verify_otp'=>$verify_otp,'verify_otp_time'=>$verify_otp_time]);
-
-                        $msg = 'OTP has been sent your mail.Please check your mail';
+                        $msg = $send_otp;
                     }
-                
 
                     if ( !empty($request->latitude) && !empty($request->longitude) ) {
                     User::where('id',$user->id)->update(['latitude'=>$request->latitude,'longitude'=>$request->longitude]);
@@ -293,21 +317,21 @@ class UserController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' =>'User is block',
+                        'message' =>$user_block,
                         'status' => 401
                     ]);
                 }
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' =>'User is not active',
+                    'message' =>$user_active,
                     'status' => 401
                 ]);
             }
         } else { 
             return response()->json([
                 'success' => false,
-                'message' =>'Invalid email or password',
+                'message' =>$invalid_login,
                 'status' => 401
             ]);
         } 
@@ -340,7 +364,7 @@ class UserController extends Controller
 
             $response = [
                 'success' => false,
-                'message' => 'Please Enter Valid email',
+                'message' => trans('message.valid_email'),
                 'status' => 400
             ];
     
@@ -388,7 +412,7 @@ class UserController extends Controller
                     $response = [
                         'success' => true,
                         'data'=>$success,
-                        'message' => 'Email verified successfully.',
+                        'message' => trans('message.email_verified'),
                         'status' => 200
                     ];
             
@@ -398,7 +422,7 @@ class UserController extends Controller
 
                     $response = [
                         'success' => false,
-                        'message' => 'OTP Is Incorrect.',
+                        'message' => trans('message.OTP_incorrect'),
                         'status' => 400
                     ];
             
@@ -408,7 +432,7 @@ class UserController extends Controller
             } else {
                 $response = [
                     'success' => false,
-                    'message' => 'OTP Is Expired.',
+                    'message' => trans('message.OTP_expired'),
                     'status' => 400
                 ];
         
@@ -417,24 +441,31 @@ class UserController extends Controller
         }
     }
 
-    public function send_otp_for_verify_phone($email,$name) {
+    public function send_otp_for_verify_phone($email,$name,$language_code) {
+
+        $title =  Config::get('constants.TITLE');
         			
         $token = rand(100000, 999999);
+        $newdata = array('token' => $token, 'name'=>$name, 'language_code' => $language_code);
+        if($language_code == 'ar') {
+            $subject = "ارجو تاكيد الايميل الخاص بك - مقيم ذكي";
+        } else if($language_code == 'he') {
+            $subject = "תושב חכם - אשר כתובת אימייל .";
+        } else {
+            $subject = "Please confirm your email - $title";
+        }
 
-        $newdata = array('token' => $token, 'name'=>$name);
-    
-        Mail::send('emails.sentotpforverifyphone', $newdata, function($message) use ($email) {
+        // $env_email = env('MAIL_USERNAME');
+        Mail::send('emails.sentotpforverifyphone', $newdata, function($message) use ($email, $subject) {
             $message->to($email)
-                ->from('test.knptech@gmail.com')
-                ->subject("Send OTP");
+                ->from('support@toshavhaham.co.il', 'Support -Toshav Haham')
+                ->subject($subject);
         });
-
         return $token;
     }
 
     public function change_password(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|min:6',
             'new_password' => 'min:6|required_with:new_password_confirmation|same:new_password_confirmation',
@@ -450,7 +481,6 @@ class UserController extends Controller
             ];
     
             return response()->json($response, 400);
-
         }
 
         $id = Auth::user()->id;
@@ -467,7 +497,7 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Password Change Successfully",
+                'message' => trans('message.password_change'),
                 'status' => 200
             ]);
 
@@ -475,7 +505,7 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => "Old Password Doesn't Match",
+                'message' => trans('message.not_match'),
                 'status' => 400
             ]);
 
@@ -519,7 +549,7 @@ class UserController extends Controller
             $response = [
                 'success' => true,
                 'data'    => $success,
-                'message' => "User Profile",
+                'message' => trans('message.user_profile'),
                 'status' => 200
             ];
     
@@ -546,15 +576,15 @@ class UserController extends Controller
                         ->where('is_account_delete','=',0)
                 ],
                 // 'phone_number' => 'required|string|min:10|max:15|regex:/[0-9]{9}/',
-                'website' => 'required|max:50',
-                'business_activity' => 'required',
-                'business_sector' => 'required',
-                'establishment_year' => 'required',
-                'business_logo' => 'required',
-                'business_hours' => 'required',
-                'street_address_name' => 'required|max:50',
-                'street_number' => 'required',
-                'district' => 'required|max:50',
+                // 'website' => 'required|max:50',
+                //'business_activity' => 'required',
+                //'business_sector' => 'required',
+                //'establishment_year' => 'required',
+                //'business_logo' => 'required',
+                //'business_hours' => 'required',
+                //'street_address_name' => 'required|max:50',
+                //'street_number' => 'required',
+                //'district' => 'required|max:50',
             ]);
 
             if ($validator->fails() ) {
@@ -583,15 +613,15 @@ class UserController extends Controller
                 'last_name' => 'required|string|max:50',
                 // 'phone_number' =>'required|string|min:10|max:15|regex:/[0-9]{9}/',
                 // 'id_number' => 'required|max:20',
-                'marital_status' => 'required',
-                'no_of_child' => 'required',
-                'occupation' => 'required|max:50',
-                'education_level' => 'required',
-                'street_address_name' => 'required|max:50',
-                'street_number' => 'required',
-                'house_number' => 'required',
-                'city' => 'required|max:50',
-                'district' => 'required|max:50',
+                //'marital_status' => 'required',
+                //'no_of_child' => 'required',
+                //'occupation' => 'required|max:50',
+                //'education_level' => 'required',
+                //'street_address_name' => 'required|max:50',
+                //'street_number' => 'required',
+                //'house_number' => 'required',
+                //'city' => 'required|max:50',
+                //'district' => 'required|max:50',
             ]);
 
             if ($user_validator->fails() ) {
@@ -674,7 +704,7 @@ class UserController extends Controller
         $response = [
             'success' => true,
             'data'    => $success,
-            'message' => "Update Profile Successfully",
+            'message' => trans('message.profile_update'),
             'status' => 200
         ];
 
@@ -684,6 +714,8 @@ class UserController extends Controller
 
     public function forgot_password(Request $request)
     {
+        $title =  Config::get('constants.TITLE');
+
         $validator = Validator::make($request->all(), [
             'email' => 'required',
             'user_status' =>'required',
@@ -700,13 +732,32 @@ class UserController extends Controller
             return response()->json($response, 400);
         }
 
-        $check_email = User::where('email',$request->email)->first();
+        $check_email = User::where('email',$request->email)->where('is_account_delete', 0)->first();
+        $language_code = $request->language_code ? $request->language_code : 'en';
+
+        if($language_code == 'ar') {
+            $subject = "عادة تعيين كلمة المرور الخاصة بك - لمقيم ذكي";
+            $no_data = 'المعلومات غير متوفرة!';
+            $block = 'تم حظر حساب المستخدم';
+            $send_otp = 'لقد أرسلنا لك رمز التحقق الخاص بكلمة مرور مؤقتة إلى عنوان البريد الإلكتروني المحدث! إذا لم تستلم البريد الإلكتروني، فيرجى التحقق من صناديق البريد الوارد الأخرى.';
+            
+        } else if($language_code == 'he') {
+            $subject = "תושב חכם - אפס סיסמא";
+            $no_data = 'המידע לא זמין !';
+            $block = 'חשבון המשתמש חסום';
+            $send_otp = 'שלחנו לך לכתובת המייל המעודכנת קוד אימות לסיסמא זמנית!  אם לא קיבלת את האימייל תבדוק בבקשה בשאר התיבות הנכנסות.';
+        } else {
+            $subject = "Reset your password - Toshav Haham";
+            $no_data = 'Data not found!';
+            $block = 'User Account is blocked';
+            $send_otp = 'We have sent you One Time Password (OTP) to your registered email address! If you have not received an email please check your Spam or Junk mail folder.';
+        }
 
         if ( empty($check_email) ) {
 			
             return response()->json([
                 'success' => false,
-                'message' => "User isn't found",
+                'message' => $no_data,
                 'status' => 400
                 ]);
         } else {
@@ -718,31 +769,33 @@ class UserController extends Controller
 				
                 return response()->json([
                     'success' => false,
-                    'message' => 'User Account is blocked',
+                    'message' => $block,
                     'status' => 400
                     ]);
 					
             } else {
 				
-                $token = Str::random(6);
+                $token = random_int(0, 999999);
+                //$token = Str::random(6);
+                //$token = substr(number_format(time() * rand(),0,'',''),0,6);
 
                 $data=[	'email' =>$request->email,
 						'token' =>$token,
 						'created_at' =>date('Y-m-d H:i:s') ];
         
                 DB::table('password_resets')->insert($data);
-
-                $newdata = array('token' => $token, 'name'=>$check_email_deleted->name);
-            
-                Mail::send('emails.forgotpassword', $newdata, function($message) use ($request) {
+                $newdata = array('token' => $token, 'name'=>$check_email_deleted->name, 'language_code' => $language_code);
+             
+                // $env_email = env('MAIL_USERNAME');
+                Mail::send('emails.forgotpassword', $newdata, function($message) use ($request, $subject) {
                     $message->to($request->email)
-                        ->from('test.knptech@gmail.com')
-                        ->subject("Password Reset");
+                        ->from('support@toshavhaham.co.il', 'Support -Toshav Haham')
+                        ->subject($subject);
                 });
 
                 return response()->json([
                     'success' => true,
-                    'message' =>'We have e-mailed your password reset link!',
+                    'message' => $send_otp,
                     'status'=>200
                 ]);
             }
@@ -767,7 +820,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' =>'Logout Succefully',
+            'message' =>trans('message.logout'),
             'status'=>200
         ]);
     }
@@ -798,7 +851,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' =>'OTP has been sent your mail.Please check your mail',
+            'message' =>trans('message.OTP_send'),
             'status'=>200
         ]);
     }
@@ -814,7 +867,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' =>'User account is delete successfully',
+            'message' =>trans('message.user_delete'),
             'status'=>200
         ]);
     }

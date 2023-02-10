@@ -21,7 +21,7 @@ class CKImageUploadController extends Controller {
         }
         $file->move(public_path('uploads/blog/'), $new_name);
         $CKEditorFuncNum = $request->input('CKEditorFuncNum');
-        $msg = 'Image uploaded successfully';
+        $msg = 'File uploaded successfully';
         $url = asset('public/uploads/blog/'.$new_name); 
         $response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
         echo  $response;

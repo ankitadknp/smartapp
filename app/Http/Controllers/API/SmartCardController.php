@@ -31,7 +31,7 @@ class SmartCardController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Card has been applied',
+            'message' => trans('message.card_applie'),
             'status' => 200,
         ]);
     }
@@ -62,13 +62,13 @@ class SmartCardController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $checkCardRes,
-                'message' => 'Card has been Cancelled!',
+                'message' => trans('message.card_cancel'),
                 'status' => 200,
             ]);
         } else {
             return response()->json([
                 'success' => true,
-                'message' => 'Card not found!',
+                'message' => trans('message.card_not'),
                 'status' => 201,
             ]);
         }
@@ -80,10 +80,18 @@ class SmartCardController extends Controller
 
         $checkCardRes = SmartCards::where('user_id', $user_id)->first();
 
+        if ( $checkCardRes->status == 'Applied') {
+            $checkCardRes['status'] = trans('message.applied');
+        } else if ( $checkCardRes->status == 'Cancelled') {
+            $checkCardRes['status'] = trans('message.cancel');
+        }else if ( $checkCardRes->status == 'Verified') {
+            $checkCardRes['status'] = trans('message.verified');
+        }
+
         return response()->json([
             'success' => true,
             'data' => $checkCardRes,
-            'message' => 'Card Details',
+            'message' => trans('message.card_details'),
             'status' => 200,
         ]);
     }

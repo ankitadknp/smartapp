@@ -157,8 +157,16 @@ class PublicFeedController extends Controller {
                 foreach ( $user_device as $key=>$val) {
                     if ( !empty($user_device) ) {
                         $notification_controller = new NotificationController();
-                        $msgVal  = $added->public_feed_title." Public Feed has been added";
-                        $title = 'The Public Feed has been added';
+                        if ($val->language_code == 'en') {
+                            $msgVal  = 'Public Feed '.$added->public_feed_title.' has been added';
+                            $title = 'The Public Feed has been added';
+                        } else  if ($val->language_code == 'he') {
+                            $msgVal  = '"'.$added->public_feed_title_he.'" נוסף לפרופיל הציבורי';
+                            $title = 'הועלה תוכן חדש בפרופיל הציבורי';
+                        }else  if ($val->language_code == 'ar') {
+                            $msgVal  = 'تمت إضافة "'.$added->public_feed_title_ab.'" إلى الملف الشخصي العام';
+                            $title = 'تم تحميل محتوى جديد إلى الملف الشخصي العام';
+                        }
                         $type = 2;
                         $u_id = $val->user_id;
                         $coupon_id =0;

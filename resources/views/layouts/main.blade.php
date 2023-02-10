@@ -7,7 +7,7 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
         
-        <title>@yield('title') &mdash; Smart Citizen App</title>
+        <title>@yield('title') &mdash; {{ Config::get('constants.TITLE') }}</title>
 
         <link rel="shortcut icon" href="{{asset('public/favicon.ico')}}" type="image/x-icon">
         <link rel="icon" href="{{asset('public/favicon.ico')}}" type="image/x-icon">

@@ -37,11 +37,14 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\LanguageManager::class,
+
         ],
 
         'api' => [
             'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
         ],
     ];
 
@@ -66,6 +69,7 @@ class Kernel extends HttpKernel
         'checkmodulepermission' => \App\Http\Middleware\CheckModulePermission::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'merchant' => \App\Http\Middleware\MerchantMiddleware::class,
+        'prevent-back-history' => \App\Http\Middleware\PreventBackHistory::class,
 
     ];
 }

@@ -172,8 +172,17 @@ class BlogController extends Controller
                 foreach ( $user_device as $key=>$val) {
                     if ( !empty($user_device) ) {
                         $notification_controller = new NotificationController();
-                        $msgVal  = $added_blog->blog_title." Blog has been added";
-                        $title = 'The Blog has been added';
+                      
+                        if ($val->language_code == 'en') {
+                            $msgVal  = 'Blog "'.$added_blog->blog_title.'" has been added';
+                            $title = 'The Blog has been added';
+                        } else  if ($val->language_code == 'he') {
+                            $msgVal  = '"'.$added_blog->blog_title_he.'" נוסף בבלוגים';
+                            $title = 'הועלה תוכן חדש בפורום הציבורי';
+                        }else  if ($val->language_code == 'ar') {
+                            $msgVal  = 'تمت إضافة "'.$added_blog->blog_title_ab.'" إلى المدونات';
+                            $title = 'تم تحميل محتوى جديد إلى المنتدى العام';
+                        }
                         $type = 1;
                         $u_id = $val->user_id;
                         $coupon_id =0;

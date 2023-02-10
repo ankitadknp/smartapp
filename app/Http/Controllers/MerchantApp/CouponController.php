@@ -111,6 +111,7 @@ class CouponController extends Controller
                 ->where('email', 'LIKE', '%'. $request->get('search'). '%')
                 ->where('user_status',0)
                 ->where('status',1)
+                ->where('is_account_delete',0)
                 // ->limit(10)
                 ->get();
 
@@ -188,8 +189,16 @@ class CouponController extends Controller
 
                                 if ( !empty($user_device) ) {
                                     $notification_controller = new NotificationController();
-                                    $msgVal  = $couponRes->coupon_code." Coupon has been redeemed";
-                                    $title = 'The Coupon has been redeemed';
+                                    if ($user_device->language_code == 'en') {
+                                        $msgVal  = $couponRes->coupon_code." Coupon has been redeemed";
+                                        $title = 'The Coupon has been redeemed';
+                                    } else  if ($user_device->language_code == 'he') {
+                                        $msgVal  = ' הקופון "'.$couponRes->coupon_code.'" נפדה';
+                                        $title = 'הקופון נפדה';
+                                    }else  if ($user_device->language_code == 'ar') {
+                                        $msgVal  = 'تم استرداد القسيمة "'.$couponRes->coupon_code.'"';
+                                        $title = 'تم استرداد القسيمة';
+                                    }
                                     $type = 3;
                                     $coupon_id = $request->get('coupon_id');
                                     $feed_id = 0;

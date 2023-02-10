@@ -107,7 +107,7 @@ class CouponQrController extends Controller
 
     public function show($id)
     {
-        $coupons = CouponQRcode::select('coupon_qrcode.id', 'coupon_qrcode.qrcode_url', 'coupon_qrcode.qrcode_file', 'coupon.*', 'users.business_name','locations.city_area')
+        $coupons = CouponQRcode::select('coupon_qrcode.id', 'coupon_qrcode.qrcode_url', 'coupon_qrcode.qrcode_file', 'coupon.*', 'users.business_name','locations.city_area','users.business_logo')
         ->leftjoin('coupon', 'coupon.coupon_id', 'coupon_qrcode.coupon_id')
         ->leftjoin('users', 'users.id', 'coupon.user_id')
         ->leftjoin('locations', 'locations.id', 'coupon.location_id')

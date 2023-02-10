@@ -40,7 +40,7 @@ class PublicFeedController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $feed_comment_res,
-            'message' => 'Added Public Feed Comment Successfully',
+            'message' => trans('message.feed_comment'),
             'status' => 200
         ]);
     }
@@ -57,9 +57,9 @@ class PublicFeedController extends Controller
         $input['user_id'] = $user_id;
 
         if ($request->is_like == 1) {
-            $msg = 'Public Feed Like Succesfully';
+            $msg = trans('message.feed_like');
         } else {
-            $msg = 'Public Feed Unlike Succesfully';
+            $msg = trans('message.feed_unlike');
         }
 
         if ( empty($feed_like_data) || !isset($feed_like_data)) {
@@ -102,6 +102,7 @@ class PublicFeedController extends Controller
         $feed_comment_data = PublicFeedComment::where('public_feed_comment_id',$request->public_feed_comment_id)->first();
         $user_data = User::where('id',$user_id)->where('is_verified_mobile_no',1)->where('status',1)->first();
         $feed = PublicFeed::where('public_feed_id',$request->public_feed_id)->first();
+        $comment_user_data = User::where('id',$feed_comment_data->user_id)->first();
 
         $input = $request->all();
         $input['user_id'] = $user_id;
@@ -117,8 +118,18 @@ class PublicFeedController extends Controller
                 $user_device = DB::table('user_device')->where('user_id',$feed_comment_data->user_id)->first();
                 if ( !empty($user_device) ) {
                     $notification_controller = new NotificationController();
-                    $msgVal  = $u_name." liked your comment on '$feed->public_feed_title' Public Feed";
-                    $title = 'Like The Public Feed Comment';
+
+                    if ($comment_user_data->language_code == 'en') {
+                        $msgVal  = $u_name." liked your comment on '$feed->public_feed_title' Public Feed";
+                        $title = 'Public Feed comment liked';
+                    } else  if ($comment_user_data->language_code == 'he') {
+                        $msgVal  = $u_name." סימן 'חכם' על תגובה שלך ב  ".$feed->public_feed_title_he." בפרופיל הציבורי";
+                        $title = "חכם' נוסף בפרופיל הציבורי";
+                    }else  if ($comment_user_data->language_code == 'ar') {
+                        $msgVal  =  "وضعت '$u_name' علامة ' ذكية' على تعليقك على '$feed->public_feed_title_ab' في الملف الشخصي العام";
+                        $title = 'تمت إضافة "ذكي" في الملف الشخصي العام';
+                    }
+
                     $u_id = $feed_comment_data->user_id;
                     $type = 2;
                     $coupon_id =0;
@@ -130,7 +141,7 @@ class PublicFeedController extends Controller
                 }
             }
 
-            $msg = 'Public Feed Comment Like Succesfully';
+            $msg = trans('message.feed_comment_like');
         } else {
             $msg = 'Public Feed Comment Unlike Succesfully';
         }
@@ -196,7 +207,46 @@ class PublicFeedController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $feedobj,
-            'message' => 'Public Feed List',
+            'message' =>  trans('message.feed'),
+            'status' => 200
+        ]);
+    }
+
+    public function public_feed_list_pagination(Request $request)
+    {
+        $search = $request->search;
+        $start_from = $request->offset;
+        $limit = $request->limit;
+
+        $user_id = Auth::user()->id;
+
+        $feedobj = PublicFeed::with('images')
+                    ->select('public_feed.*',DB::raw('IFNULL( public_feed_like.is_like, 2) as is_like'))
+                    ->leftJoin('public_feed_like', function($join) use($user_id) {
+                        $join->on('public_feed_like.public_feed_id', '=', 'public_feed.public_feed_id')
+                        ->where('public_feed_like.user_id',$user_id);
+                    })
+                    ->where(function ($query) use ($search) {
+                        if(!empty($search)) {
+                            $query->where('public_feed.public_feed_title', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.public_feed_title_ab', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.public_feed_title_he', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.content', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.content_he', 'LIKE', '%'.$search.'%')
+                            ->orWhere('public_feed.content_ab', 'LIKE', '%'.$search.'%');
+                        }
+                    })
+                    ->where('public_feed.status','=',1)
+                    ->where('public_feed.is_report','=',0)
+                    ->offset($start_from)
+                    ->limit($limit)
+                    ->orderby('public_feed.public_feed_id','DESC')
+                    ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $feedobj,
+            'message' => trans('message.feed'),
             'status' => 200
         ]);
     }
@@ -249,7 +299,65 @@ class PublicFeedController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $feed_comment_res,
-            'message' => 'Recent Public Feed Comment List',
+            'message' => trans('message.feed_recent_comment'),
+            'status' => 200
+        ]);
+
+    }
+
+    public function recent_feed_comment_list_pagination(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        $start_from = $request->offset;
+        $limit = $request->limit;
+
+        $validator = Validator::make($request->all(), [
+            'public_feed_id' => 'required',
+        ]);
+    
+        if($validator->fails()){
+
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'status' => 400
+            ];
+    
+            return response()->json($response, 400);
+        }
+
+        $feed_comment_res = PublicFeedComment::leftJoin('users', function($join) {
+                            $join->on('users.id', '=', 'public_feed_comment.user_id');
+                        })
+                        ->leftJoin('public_feed_comment_like', function($join) use($user_id){
+                            $join->on('public_feed_comment.public_feed_comment_id', '=', 'public_feed_comment_like.public_feed_comment_id')
+                            ->where('public_feed_comment_like.user_id',$user_id);
+                        })
+                        ->leftJoin('public_feed', function($join) {
+                            $join->on('public_feed.public_feed_id', '=', 'public_feed_comment.public_feed_id');
+                        })
+                        ->select ('public_feed_comment.*',DB::raw('(CASE 
+                        WHEN users.user_status = "0" THEN CONCAT(first_name, " ",last_name ) 
+                        WHEN users.status = "1" THEN users.business_name 
+                        END) AS name'),DB::raw('IFNULL( public_feed_comment_like.is_like, 2) as is_like'),
+                        DB::raw('(CASE 
+                            WHEN users.user_status = "0" THEN users.profile_pic
+                            WHEN users.status = "1" THEN users.business_logo 
+                            END) AS profile_pic')
+                        )
+                        ->where('public_feed_comment.public_feed_id',$request->public_feed_id)
+                        ->where('public_feed.status','=',1)
+                        ->where('users.is_block','=',0)
+                        ->where('public_feed_comment.is_remove_comment','=',0)
+                        ->offset($start_from)
+                        ->limit($limit)
+                        ->orderby('public_feed_comment.public_feed_comment_id','DESC')
+                        ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $feed_comment_res,
+            'message' => trans('message.feed_recent_comment'),
             'status' => 200
         ]);
 
@@ -284,7 +392,7 @@ class PublicFeedController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Added Public Feed Report Successfully',
+            'message' => trans('message.comment_report'),
             'status' => 200
         ]);
     }
@@ -320,7 +428,7 @@ class PublicFeedController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $feed_res,
-            'message' => 'Public Feed List',
+            'message' =>  trans('message.feed'),
             'status' => 200
         ]);
     

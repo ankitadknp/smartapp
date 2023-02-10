@@ -13,8 +13,8 @@ class ResetPasswordController extends Controller {
         $this->middleware('guest');
     }
 
-    public function showResetForm(\Illuminate\Http\Request $request, $token) {
-        return view('passwords.reset')->with(['token' => $token, 'email' => $request->email]);
+    public function showResetForm(\Illuminate\Http\Request $request) {
+        return view('passwords.reset')->with(['email' => $request->email]);
     }
 
     public function resetPassword(Request $request)
@@ -25,11 +25,16 @@ class ResetPasswordController extends Controller {
         ]);
 
         $email_data = DB::table('password_resets')->where('token', $request->token)->first();
-        
-        $user = User::where('email', $email_data->email)
-                      ->update(['password' => Hash::make($request->password)]);
 
-        return redirect()->route('password.success');
+        if(isset($email_data) && !empty($email_data)) {
+        
+            $user = User::where('email', $email_data->email)
+                        ->update(['password' => Hash::make($request->password)]);
+
+            return redirect()->route('password.success');
+        }  else {
+            return redirect()->back()->with('message', 'Reset password token has been Expired !');
+        }
     }
 
     public function showResetSuccessForm() {

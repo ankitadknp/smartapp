@@ -53,7 +53,7 @@ class ShareController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Shared Successfully',
+            'message' => trans('message.share'),
             'status' => 200
         ]);
     }

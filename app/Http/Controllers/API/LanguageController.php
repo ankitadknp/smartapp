@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
 use App\Language;
+use App\User;
 use App\LanguageSetting;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +22,7 @@ class LanguageController extends Controller
            $response = [
                 'success' => true,
                 'data'    => $data,
-                'message' => "Language List",
+                'message' => trans('message.language'),
                 'status' => 200
             ];
 
@@ -34,7 +35,7 @@ class LanguageController extends Controller
         $user_id = Auth::user()->id;
 
         $validator = Validator::make($request->all(), [
-            'language_id' => 'required',
+            'language_code' => 'required',
         ]);
     
         if($validator->fails()){
@@ -48,33 +49,16 @@ class LanguageController extends Controller
             return response()->json($response, 400);
         }
 
-        $lan_set_data = LanguageSetting::where('user_id',$user_id)->first();
+        $lan_set_data = User::where('id',$user_id)->first();
 
-        $input = $request->all();
-        $input['user_id'] = $user_id;
+        $language = User::where('id',$user_id)->update(['language_code'=>$request->language_code]);
 
-        if ( empty($lan_set_data) || !isset($lan_set_data)) {
-
-            $success = LanguageSetting::create($input);
-
-        } else {
-
-            $language = LanguageSetting::where('user_id',$user_id)->update(['language_id'=>$request->language_id]);
-
-            $success['language_id'] =  $lan_set_data->language_id ;
-            $success['user_id'] =  $lan_set_data->user_id;
-
-        }
-
-        $lan_data = Language::where('language_id',$request->language_id)->first();
-
-        $success['language_name'] =  $lan_data->language_name;
-        $success['language_code'] =  $lan_data->language_code;
+        $success['language_code'] =  $request->language_code ;
 
         return response()->json([
             'success' => true,
             'data'    => $success,
-            'message' => 'Language Setting',
+            'message' =>  trans('message.language_setting'),
             'status' => 200
         ]);
 

@@ -18,7 +18,7 @@ class CategoriesController extends Controller
         return response()->json([
             'success' => true,
             'data' => $couponRes,
-            'message' => 'Category List',
+            'message' => trans('message.category'),
             'status' => 200,
         ]);
     }

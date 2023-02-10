@@ -37,7 +37,7 @@ class NotificationController extends Controller
         return response()->json([
             'success' => true,
             'data'=>$notification,
-            'message' => 'Notification List Successfully',
+            'message' => trans('message.notification'),
             'status' => 200
         ]);
     }
@@ -98,7 +98,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Notification Clear Successfully',
+            'message' => trans('message.notification_clear'),
             'status' => 200
         ]);
     }
